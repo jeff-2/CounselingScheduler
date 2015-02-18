@@ -1,7 +1,5 @@
 package gui;
 
-import javax.swing.JFrame;
-
 /**
  * Tester class to create a simple clinician ID list GUI frame.
  * 
