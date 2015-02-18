@@ -3,6 +3,8 @@ package gui;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -16,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -27,7 +31,8 @@ import net.miginfocom.swing.MigLayout;
  * @author dtli2
  * 
  */
-public class ClinicianIDListEditor extends JFrame implements ActionListener {
+public class ClinicianIDListEditor extends JFrame 
+				implements ActionListener, KeyListener, ListSelectionListener {
 
 	/**
 	 * Generated Serial Version UID
@@ -92,6 +97,7 @@ public class ClinicianIDListEditor extends JFrame implements ActionListener {
 		this.newClinicianLabel = new JLabel("New Clinician ID:");
 		this.panel.add(newClinicianLabel, "gapleft 30");
 		this.newIDField = new JTextField();
+		this.newIDField.addKeyListener(this);
 		this.panel.add(newIDField, "span, grow, wrap 15px");
 		// Add "Add" and "Remove" buttons
 		this.addButton = new JButton("Add Clinician");
@@ -102,9 +108,11 @@ public class ClinicianIDListEditor extends JFrame implements ActionListener {
 		this.panel.add(removeButton, "gap unrelated, wrap 15px");
 		// Add list & scrollpane
 		this.clinicianList = new JList<String>();
+		this.clinicianList.addListSelectionListener(this);
 		this.listScrollPane = new JScrollPane(clinicianList);
 		this.panel.add(listScrollPane, "grow, push, span");
 		// Pack and make visible
+		this.updateButtonStatus();
 		this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
@@ -113,11 +121,24 @@ public class ClinicianIDListEditor extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.addButton) {
-			this.addNewClinicianID();
+			this.addNewClinicianID();			
 		}
 		if(e.getSource() == this.removeButton) {
 			this.removeClinicianID();
 		}
+		this.updateButtonStatus();
+	}
+
+	/**
+	 * If there is no new clinician ID text, gray out add user button.
+	 * If no selected clinician in list, gray out remove user button.
+	 * @param e 
+	 */
+	private void updateButtonStatus() {
+		boolean emptyClinicianID = this.newIDField.getText().isEmpty();
+		this.addButton.setEnabled(!emptyClinicianID);
+		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
+		this.removeButton.setEnabled(!noListSelection);
 	}
 
 	/**
@@ -135,7 +156,6 @@ public class ClinicianIDListEditor extends JFrame implements ActionListener {
 				    "Please enter a new clinician ID in the text box above.",
 				    "Adding empty ID",
 				    JOptionPane.ERROR_MESSAGE);
-			return;
 		}
 		else {
 			ArrayList<String> data = new ArrayList<String>();
@@ -150,7 +170,6 @@ public class ClinicianIDListEditor extends JFrame implements ActionListener {
 					    "Please enter a unique clinician ID in the text box above.",
 					    "Adding duplicate ID",
 					    JOptionPane.ERROR_MESSAGE);
-				return;
 			}
 			else {
 				// Add new clinician ID to alphanumerically-sorted list
@@ -189,6 +208,28 @@ public class ClinicianIDListEditor extends JFrame implements ActionListener {
 		}
 		revalidate();
 	    repaint();
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		if(e.getSource() == this.newIDField) {
+			this.updateButtonStatus();
+		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// do nothing	
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// do nothing	
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		this.updateButtonStatus();
 	}
 
 }
