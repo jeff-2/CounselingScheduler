@@ -2,7 +2,7 @@ package runner;
 
 import javax.swing.JFrame;
 
-import ui.InputFormPanel;
+import gui.InputFormPanel;
 
 /**
  * 
