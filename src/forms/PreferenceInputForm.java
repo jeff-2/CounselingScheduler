@@ -11,11 +11,11 @@ import java.util.Date;
  *
  */
 public class PreferenceInputForm {
-	private String name;
 	private Semester semester;
 	private int year;
 	private Date periodStart;
 	private Date periodEnd;
+	private String name;
 	private ArrayList<TimeAwayPlan> timesAway;
 	private ArrayList<WeeklyConflict> weeklyConflicts;
 	private EmergencyCoveragePreference preference;
@@ -24,9 +24,9 @@ public class PreferenceInputForm {
 	 * Creates a preference form using the given semester and current date's year.
 	 * @param semester
 	 */
-	public PreferenceInputForm(Semester semester)
+	public PreferenceInputForm(Semester semester, Date start, Date end)
 	{
-		this(semester, Calendar.getInstance().get(Calendar.YEAR));
+		this(semester, Calendar.getInstance().get(Calendar.YEAR), start, end);
 	}
 	
 	/**
@@ -34,10 +34,17 @@ public class PreferenceInputForm {
 	 * @param semester
 	 * @param year
 	 */
-	public PreferenceInputForm(Semester semester, int year)
+	public PreferenceInputForm(Semester semester, int year, Date start, Date end)
 	{
 		this.semester = semester;
 		this.year = year;
+		this.periodStart = start;
+		this.periodEnd = end;
+		this.name = "";
+		this.timesAway = new ArrayList<>();
+		this.weeklyConflicts = new ArrayList<>();
+		this.preference = new EmergencyCoveragePreference();
+		
 	}
 
 	public String getName() {

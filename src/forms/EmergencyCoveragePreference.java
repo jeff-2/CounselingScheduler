@@ -11,6 +11,14 @@ public class EmergencyCoveragePreference {
 	private int afternoonRank;
 
 	/**
+	 * Create a default coverage preference
+	 */
+	public EmergencyCoveragePreference()
+	{
+		this(1, 2, 3);
+	}
+	
+	/**
 	 * Creates a clinician's coverage for emergence coverage sessions
 	 * @param morning ranking, between 1 and 3, cannot overlap with others
 	 * @param noon ranking, between 1 and 3, cannot overlap with others
