@@ -5,9 +5,12 @@ import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 
@@ -22,16 +25,26 @@ import forms.Semester;
  */
 public class InputFormPanel extends JPanel implements ActionListener {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5377691259929030865L;
+
 	private PreferenceInputForm form;
 	
-	private JPanel timeAwayPanel;
-	private JPanel conflictsPanel;
-	private JPanel ecPreferencePanel;
+	private JScrollPane timeAwayPane, commitmentsPane;
+	private JList<String> timeAway, commitments;
+	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
+	private JTextField commitmentHour, commitmentDay, commitmentDescription;
+	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
+	private JLabel commitmentHourLabel, commitmentDayLabel, commitmentDescriptionLabel;
+	private JButton addTimeAwayButton, removeTimeAwayButton;
+	private JButton addCommitmentButton, removeCommitmentButton;
+	private JButton clearButton, restoreButton, submitButton;
 	
-	//private ArrayList<>
-
 	private JTextField nameField;
 	private int nameLength;
+
  
 	/**
 	 * 
@@ -43,10 +56,10 @@ public class InputFormPanel extends JPanel implements ActionListener {
 
 	public InputFormPanel(PreferenceInputForm form) {
 		this.form = form;
-		this.setLayout(new MigLayout("fillx", "", ""));
+		this.setLayout(new MigLayout("gap rel", "grow"));
 
 		// create fields for adding names
-		this.add(new JLabel("NAME:"), "split, align center");
+		this.add(new JLabel("NAME:"));
 		nameLength = 20;
 		nameField = new JTextField(nameLength);
 		nameField.setName("nameField");
@@ -64,20 +77,65 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		String timeAwayText = "" + form.getSemester() + " Semester "
 				+ form.getYear() + "\"Time Away\" Plans";
 		this.add(new JLabel(timeAwayText), "align center, span, wrap");
+		
+		timeAwayName = new JTextField(7);
+		timeAwayStartDate = new JTextField(7);
+		timeAwayEndDate = new JTextField(7);
+		
+		timeAwayNameLabel = new JLabel("Description");
+		timeAwayStartDateLabel = new JLabel("Start Date");
+		timeAwayEndDateLabel = new JLabel("End Date");
+		
+		timeAway = new JList<String>();
+		timeAway.setModel(new DefaultListModel<String>());
+		timeAwayPane = new JScrollPane(timeAway);
+		
+		addTimeAwayButton = new JButton("Add Time Away");
+		addTimeAwayButton.addActionListener(this);
+		removeTimeAwayButton = new JButton("Remove Time Away");
+		removeTimeAwayButton.addActionListener(this);
+		
+		this.add(timeAwayNameLabel);
+		this.add(timeAwayName);
+		this.add(timeAwayStartDateLabel);
+		this.add(timeAwayStartDate);
+		this.add(timeAwayEndDateLabel);
+		this.add(timeAwayEndDate, "wrap");
+		
+		this.add(timeAwayPane, "grow, span, wrap");
+		
+		this.add(addTimeAwayButton);
+		this.add(removeTimeAwayButton, "wrap");
+		
+		commitments = new JList<String>();
+		commitments.setModel(new DefaultListModel<String>());
+		commitmentsPane = new JScrollPane(commitments);
+		
+		commitmentHour = new JTextField(7);
+		commitmentDay = new JTextField(7);
+		commitmentDescription = new JTextField(7);	
 
-		JTable timeAwayTable = new JTable(5, 4);
-		timeAwayTable.setValueAt("Plan", 0, 0);
-		timeAwayTable.setValueAt("Start Date", 0, 1);
-		timeAwayTable.setValueAt("End Date", 0, 2);
-		timeAwayTable.setValueAt("Add/Remove", 0, 3);
-		this.add(timeAwayTable, "wrap, align center, span");
+		commitmentHourLabel = new JLabel("Hour");
+		commitmentDayLabel = new JLabel("Day");
+		commitmentDescriptionLabel = new JLabel("Description");
+		
+		addCommitmentButton = new JButton("Add Commitment");
+		addCommitmentButton.addActionListener(this);
+		removeCommitmentButton = new JButton("Remove Commitment");
+		removeCommitmentButton.addActionListener(this);
 
-		JTable weeklyConflictTable = new JTable(5, 4);
-		weeklyConflictTable.setValueAt("Time", 0, 0);
-		weeklyConflictTable.setValueAt("Day of Week", 0, 1);
-		weeklyConflictTable.setValueAt("Activity or Meeting", 0, 2);
-		weeklyConflictTable.setValueAt("Add/Remove", 0, 3);
-		this.add(weeklyConflictTable, "wrap, align center, span");
+		this.add(commitmentHourLabel);
+		this.add(commitmentHour);
+		this.add(commitmentDayLabel);
+		this.add(commitmentDay);
+		this.add(commitmentDescriptionLabel);
+		this.add(commitmentDescription, "wrap");
+		
+		this.add(commitmentsPane, "grow, span, wrap");
+		
+		this.add(addCommitmentButton);
+		this.add(removeCommitmentButton, "wrap");
+		
 
 		JTable ecPreferenceTable = new JTable(2, 4);
 		ecPreferenceTable.setValueAt("Times", 0, 0);
@@ -87,29 +145,35 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		ecPreferenceTable.setValueAt("Rank", 1, 0);
 		this.add(ecPreferenceTable, "wrap, align center, span");
 
-		JButton clearButton = new JButton("Clear");
+		clearButton = new JButton("Clear");
 		clearButton.addActionListener(this);
-		JButton restoreButton = new JButton("Restore Saved");
-		JButton submitButton = new JButton("Submit");
-		this.add(clearButton, "split 3, align center");
-		this.add(restoreButton, "align center");
-		this.add(submitButton, "align center");
+		restoreButton = new JButton("Restore Saved");
+		submitButton = new JButton("Submit");
+		this.add(clearButton);
+		this.add(restoreButton);
+		this.add(submitButton, "wrap");
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		switch (e.getActionCommand()) {
-		case "Clear":
+		if (e.getSource() == clearButton) {
 			clearFields();
+		} else if (e.getSource() == restoreButton) {
 			
-			break;
-		case "Restore Saved":
-			break;
-		case "Submit":
-			break;
+		} else if (e.getSource() == submitButton) {
+			// do validation
+		} else if (e.getSource() == addTimeAwayButton) {
+			
+		} else if (e.getSource() == removeTimeAwayButton) {
+			
+		} else if (e.getSource() == addCommitmentButton) {
+			// do validation
+		} else if (e.getSource() == removeCommitmentButton) {
+			
 		}
-		
 	}
+	
+
 	
 	/**
 	 * Clear all fields in this form
