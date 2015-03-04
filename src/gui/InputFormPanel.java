@@ -1,16 +1,15 @@
 package gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import net.miginfocom.swing.MigLayout;
 import forms.PreferenceInputForm;
@@ -33,7 +32,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 
 	private JTextField nameField;
 	private int nameLength;
-
+ 
 	/**
 	 * 
 	 */
@@ -53,7 +52,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		nameField.setName("nameField");
 		this.add(nameField, "wrap, align center");
 
-		String preferenceFormText = "" + form.getSemester() + ' '
+		String preferenceFormText = "" + Semester.asString(form.getSemester()) + ' '
 				+ form.getYear() + " IA/EC Preference Form";
 		SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, Y");
 		String periodText = "This covers the period from "

@@ -110,10 +110,10 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	 * Initialize season box.
 	 */
 	private void initializeSeasonBox() {
-		Semester[] seasons = Semester.values();
+		int[] seasons = Semester.getValues();
 		String[] seasonNames = new String[seasons.length];
 		for (int i = 0; i < seasons.length; i++) {
-			seasonNames[i] = seasons[i].name();
+			seasonNames[i] = Semester.asString(seasons[i]);
 		}
 		semesterSeasonBox = new JComboBox<String>(seasonNames);
 	}

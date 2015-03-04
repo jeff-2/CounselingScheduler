@@ -11,7 +11,7 @@ import java.util.Date;
  *
  */
 public class PreferenceInputForm {
-	private Semester semester;
+	private int semester;
 	private int year;
 	private Date periodStart;
 	private Date periodEnd;
@@ -24,7 +24,7 @@ public class PreferenceInputForm {
 	 * Creates a preference form using the given semester and current date's year.
 	 * @param semester
 	 */
-	public PreferenceInputForm(Semester semester, Date start, Date end)
+	public PreferenceInputForm(int semester, Date start, Date end)
 	{
 		this(semester, Calendar.getInstance().get(Calendar.YEAR), start, end);
 	}
@@ -34,7 +34,7 @@ public class PreferenceInputForm {
 	 * @param semester
 	 * @param year
 	 */
-	public PreferenceInputForm(Semester semester, int year, Date start, Date end)
+	public PreferenceInputForm(int semester, int year, Date start, Date end)
 	{
 		this.semester = semester;
 		this.year = year;
@@ -55,11 +55,11 @@ public class PreferenceInputForm {
 		this.name = name;
 	}
 
-	public Semester getSemester() {
+	public int getSemester() {
 		return semester;
 	}
 
-	public void setSemester(Semester semester) {
+	public void setSemester(int semester) {
 		this.semester = semester;
 	}
 
