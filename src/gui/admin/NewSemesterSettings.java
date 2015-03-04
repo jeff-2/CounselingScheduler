@@ -48,8 +48,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private JScrollPane listScrollPane;
 	private JList<String> holidayStringList;
 	private List<Holiday> holidayList = new ArrayList<Holiday>();
-	
-	
+
+
 	/**
 	 * Instantiates a new semester settings.
 	 */
@@ -60,7 +60,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		initializeComponents();
 		initializeFrame();
 	}
-	
+
 	/**
 	 * Initialize labels.
 	 */
@@ -76,7 +76,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		IAHoursLabel = new JLabel("hours/week");
 		ECHoursLabel = new JLabel("hours/week");
 	}
-	
+
 	/**
 	 * Initialize text fields.
 	 */
@@ -88,11 +88,15 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		endHolidayText = new JTextField(7);
 		endHolidayText.setName("endHolidayText");
 		startDateText = new JTextField(7);
+		startDateText.setName("startDateText");
 		endDateText = new JTextField(7);
+		endDateText.setName("endDateText");
 		IAHoursText = new JTextField(7);
+		IAHoursText.setName("IAHoursText");
 		ECHoursText = new JTextField(7);
+		ECHoursText.setName("ECHoursText");
 	}
-	
+
 	/**
 	 * Initialize buttons.
 	 */
@@ -102,8 +106,9 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		removeHolidayButton = new JButton("Remove Holiday");
 		removeHolidayButton.setName("removeHolidayButton");
 		submitButton = new JButton("create");
+		submitButton.setName("submitButton");
 	}
-	
+
 	/**
 	 * Initialize scroll pane.
 	 */
@@ -112,7 +117,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		holidayStringList.setModel(new DefaultListModel<String>());
 		listScrollPane = new JScrollPane(holidayStringList);
 	}
-	
+
 	/**
 	 * Initialize season box.
 	 */
@@ -124,7 +129,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		}
 		semesterSeasonBox = new JComboBox<String>(seasonNames);
 	}
-	
+
 	/**
 	 * Initialize components.
 	 */
@@ -135,7 +140,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		initializeScrollPane();
 		initializeSeasonBox();
 	}
-	
+
 	/**
 	 * Adds the semester date components.
 	 */
@@ -146,7 +151,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		panel.add(endDateText);
 		panel.add(semesterSeasonBox, "center, wrap");
 	}
-	
+
 	/**
 	 * Adds the holiday components.
 	 */
@@ -158,13 +163,13 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		panel.add(holidayEndDateLabel);
 		panel.add(endHolidayText, "wrap");
 		panel.add(listScrollPane, "grow, span, wrap");
-		
+
 		removeHolidayButton.addActionListener(this);
 		addHolidayButton.addActionListener(this);
 		panel.add(addHolidayButton);
 		panel.add(removeHolidayButton, "wrap");
 	}
-	
+
 	/**
 	 * Adds the clinician components.
 	 */
@@ -177,56 +182,57 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		panel.add(ECHoursText);
 		panel.add(ECHoursLabel, "wrap");
 		submitButton.addActionListener(new ActionListener() {
-			
+
 			public void actionPerformed(ActionEvent e) {
-				Calendar calendar = new Calendar();
-				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-				try {
-					calendar.setStartDate(format.parse(startDateText.getText()));
-					calendar.setEndDate(format.parse(endDateText.getText()));
-				} catch (ParseException e1) {
-					e1.printStackTrace();
-				}
-				
-				calendar.setSemester(semesterSeasonBox.getSelectedIndex());
-				calendar.setEcMinHours(Integer.parseInt(ECHoursText.getText()));
-				calendar.setIaMinHours(Integer.parseInt(IAHoursText.getText()));
-			
-				CalendarDao calendarDao = new CalendarDao();
-				HolidayDao holidayDao = new HolidayDao();
-				try {
-					int calendarId = calendarDao.getNextAvailableId();
-					calendar.setId(calendarId);
-					calendarDao.insertCalendar(calendar);
-					for (int i = 0; i < holidayList.size(); i++) {
-						holidayDao.insertHoliday(holidayList.get(i), calendarId, i);
+				if (createSemester()) {
+					Calendar calendar = new Calendar();
+					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+					try {
+						calendar.setStartDate(format.parse(startDateText.getText()));
+						calendar.setEndDate(format.parse(endDateText.getText()));
+					} catch (ParseException e1) {
+						e1.printStackTrace();
 					}
-				} catch (SQLException e1) {
-					e1.printStackTrace();
+
+					calendar.setSemester(semesterSeasonBox.getSelectedIndex());
+					calendar.setEcMinHours(Integer.parseInt(ECHoursText.getText()));
+					calendar.setIaMinHours(Integer.parseInt(IAHoursText.getText()));
+
+					CalendarDao calendarDao = new CalendarDao();
+					HolidayDao holidayDao = new HolidayDao();
+					try {
+						int calendarId = calendarDao.getNextAvailableId();
+						calendar.setId(calendarId);
+						calendarDao.insertCalendar(calendar);
+						for (int i = 0; i < holidayList.size(); i++) {
+							holidayDao.insertHoliday(holidayList.get(i), calendarId, i);
+						}
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
 				}
-				
 			}
 		});
 		panel.add(submitButton, "right");
 	}
-	
+
 	/**
 	 * Initialize frame.
 	 */
 	private void initializeFrame() {
 		panel.setPreferredSize(new Dimension(500, 500));
-		
+
 		addSemesterDateComponents();
 		addHolidayComponents();
 		addClinicianComponents();
-		
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
 	}
-	
-	
+
+
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
 	 */
@@ -240,54 +246,53 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 			}			
 		} else if (e.getSource() == removeHolidayButton) {
 			removeHoliday();
-		} else if (e.getSource() == submitButton) {
-			createSemester();
 		}
 	}
-	
+
 	/**
 	 * Creates the semester.
 	 */
-	private void createSemester() {
+	private boolean createSemester() {
 		String IAHours = IAHoursText.getText().trim();
 		String ECHours = ECHoursText.getText().trim();
 		String semesterStart = startDateText.getText().trim(); 
 		String semesterEnd = endDateText.getText().trim();
-		
+
 		try {
 			double IAHrs = Double.parseDouble(IAHours);
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
-				    "Cannot create new semester. " +
-				    "IA hours assigned must be a non-negative number",
-				    "Setting invalid semester settings",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
+					"Cannot create new semester. " +
+							"IA hours assigned must be a non-negative number",
+							"Setting invalid semester settings",
+							JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-		
+
 		try {
 			double ECHrs = Double.parseDouble(ECHours);
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
-				    "Cannot create new semester. " +
-				    "EC hours assigned must be a non-negative number",
-				    "Setting invalid semester settings",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
+					"Cannot create new semester. " +
+							"EC hours assigned must be a non-negative number",
+							"Setting invalid semester settings",
+							JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
-		
+
 		try {
 			checkDateRange(semesterStart, semesterEnd);
 		} catch (InvalidDateRangeException e) {
 			JOptionPane.showMessageDialog(this,
-				    "Cannot create new semester. " +
-				    e.getMessage(),
-				    "Setting invalid semester settings",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
+					"Cannot create new semester. " +
+							e.getMessage(),
+							"Setting invalid semester settings",
+							JOptionPane.ERROR_MESSAGE);
+			return false;
 		}
+		return true;
 	}
-	
+
 	/**
 	 * Parses the date. Ensures it is in the proper date format MM/dd/yyyy with a year 
 	 * between 1800 and 10000. 
@@ -311,10 +316,10 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		if (d.after(new SimpleDateFormat("MM/dd/yyyy").parse("12/31/9999"))) {
 			throw new ParseException("The year must be a year of the form yyyy, where yyyy is less than 10000", 0);
 		}
-		
+
 		return d;
 	}
-	
+
 	/**
 	 * Check for valid date range.
 	 *
@@ -332,7 +337,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 			throw new InvalidDateRangeException(e.getMessage());
 		}
 	}
-	
+
 	/**
 	 * Removes the holiday from the list of displayed holidays.
 	 */
@@ -344,7 +349,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 			holidayList.remove(index);
 		}
 	}
-	
+
 	/**
 	 * Adds the holiday to the list of displayed holidays.
 	 * @throws ParseException 
@@ -353,23 +358,23 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		String holiday = holidayNameText.getText().trim();
 		String startDate = startHolidayText.getText().trim();
 		String endDate = endHolidayText.getText().trim();
-		
+
 		if (holiday.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
-				    "You must enter in the name for the holiday. ",
-				    "Adding invalid holiday",
-				    JOptionPane.ERROR_MESSAGE);
+					"You must enter in the name for the holiday. ",
+					"Adding invalid holiday",
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		
+
 		try {
 			checkDateRange(startDate, endDate);
 		} catch (InvalidDateRangeException e) {
 			JOptionPane.showMessageDialog(this,
-				    "Cannot add the given holiday to the list. " +
-				    e.getMessage(),
-				    "Adding invalid holiday",
-				    JOptionPane.ERROR_MESSAGE);
+					"Cannot add the given holiday to the list. " +
+							e.getMessage(),
+							"Adding invalid holiday",
+							JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -379,7 +384,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 
 		DefaultListModel<String> model = (DefaultListModel<String>) holidayStringList.getModel();
 		model.add(model.size(), holiday + " " + startDate + "-" + endDate);
-		
+
 		Holiday h = new Holiday();
 		h.setName(holiday);
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
