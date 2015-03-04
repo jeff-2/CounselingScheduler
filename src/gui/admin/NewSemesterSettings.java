@@ -1,14 +1,14 @@
 package gui.admin;
 
-import forms.Semester;
-import gui.InvalidDateRangeException;
-
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -22,6 +22,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
+import db.CalendarDao;
+import db.HolidayDao;
+import forms.Calendar;
+import forms.Holiday;
+import forms.Semester;
+import gui.InvalidDateRangeException;
 
 /**
  * Interface for the administrator to initialize the settings for the new semester. 
@@ -40,7 +46,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private JButton submitButton, addHolidayButton, removeHolidayButton;
 	private JComboBox<String> semesterSeasonBox;
 	private JScrollPane listScrollPane;
-	private JList<String> holidayList;
+	private JList<String> holidayStringList;
+	private List<Holiday> holidayList = new ArrayList<Holiday>();
 	
 	
 	/**
@@ -101,9 +108,9 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	 * Initialize scroll pane.
 	 */
 	private void initializeScrollPane() {
-		holidayList = new JList<String>();
-		holidayList.setModel(new DefaultListModel<String>());
-		listScrollPane = new JScrollPane(holidayList);
+		holidayStringList = new JList<String>();
+		holidayStringList.setModel(new DefaultListModel<String>());
+		listScrollPane = new JScrollPane(holidayStringList);
 	}
 	
 	/**
@@ -169,7 +176,37 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		panel.add(ECLabel);
 		panel.add(ECHoursText);
 		panel.add(ECHoursLabel, "wrap");
-		submitButton.addActionListener(this);
+		submitButton.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				Calendar calendar = new Calendar();
+				SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+				try {
+					calendar.setStartDate(format.parse(startDateText.getText()));
+					calendar.setEndDate(format.parse(endDateText.getText()));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+				
+				calendar.setSemester(semesterSeasonBox.getSelectedIndex());
+				calendar.setEcMinHours(Integer.parseInt(ECHoursText.getText()));
+				calendar.setIaMinHours(Integer.parseInt(IAHoursText.getText()));
+			
+				CalendarDao calendarDao = new CalendarDao();
+				HolidayDao holidayDao = new HolidayDao();
+				try {
+					int calendarId = calendarDao.getNextAvailableId();
+					calendar.setId(calendarId);
+					calendarDao.insertCalendar(calendar);
+					for (int i = 0; i < holidayList.size(); i++) {
+						holidayDao.insertHoliday(holidayList.get(i), calendarId, i);
+					}
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+		});
 		panel.add(submitButton, "right");
 	}
 	
@@ -196,7 +233,11 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == addHolidayButton) {
-			addHoliday();			
+			try {
+				addHoliday();
+			} catch (ParseException e1) {
+				e1.printStackTrace();
+			}			
 		} else if (e.getSource() == removeHolidayButton) {
 			removeHoliday();
 		} else if (e.getSource() == submitButton) {
@@ -296,17 +337,19 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	 * Removes the holiday from the list of displayed holidays.
 	 */
 	private void removeHoliday() {
-		int index = holidayList.getSelectedIndex();
+		int index = holidayStringList.getSelectedIndex();
 		if (index >= 0) {
-			DefaultListModel<String> oldModel = (DefaultListModel<String>) holidayList.getModel();
+			DefaultListModel<String> oldModel = (DefaultListModel<String>) holidayStringList.getModel();
 			oldModel.remove(index);
+			holidayList.remove(index);
 		}
 	}
 	
 	/**
 	 * Adds the holiday to the list of displayed holidays.
+	 * @throws ParseException 
 	 */
-	private void addHoliday() {
+	private void addHoliday() throws ParseException {
 		String holiday = holidayNameText.getText().trim();
 		String startDate = startHolidayText.getText().trim();
 		String endDate = endHolidayText.getText().trim();
@@ -334,7 +377,14 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		startHolidayText.setText("");
 		endHolidayText.setText("");
 
-		DefaultListModel<String> model = (DefaultListModel<String>) holidayList.getModel();
+		DefaultListModel<String> model = (DefaultListModel<String>) holidayStringList.getModel();
 		model.add(model.size(), holiday + " " + startDate + "-" + endDate);
+		
+		Holiday h = new Holiday();
+		h.setName(holiday);
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		h.setStartDate(format.parse(startDate));
+		h.setEndDate(format.parse(endDate));
+		holidayList.add(h);
 	}
 }

@@ -3,17 +3,10 @@ package forms;
 import java.util.Date;
 
 public class Holiday {
-	private int calendarId;
 	private String name;
 	private Date startDate;
 	private Date endDate;
 	
-	public int getCalendarId() {
-		return calendarId;
-	}
-	public void setCalendarId(int calendarId) {
-		this.calendarId = calendarId;
-	}
 	public String getName() {
 		return name;
 	}
