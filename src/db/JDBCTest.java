@@ -11,7 +11,7 @@ public class JDBCTest {
 	public static void main(String [] args) throws Exception {
 		
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-		   "databaseName=Test;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+		   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		// Test with simple table named Test with columns 'name' (varchar) and 'id' (int) 
