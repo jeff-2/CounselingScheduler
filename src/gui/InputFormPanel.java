@@ -2,8 +2,11 @@ package gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.SimpleDateFormat;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -13,15 +16,20 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.TableModel;
 
+import db.Clinician;
+import db.ClinicianDao;
+import db.ClinicianPreferencesDao;
+import db.CommitmentsDao;
+import db.ConnectionFactory;
+import db.TimeAwayDao;
 import validator.DateRangeValidator;
 import net.miginfocom.swing.MigLayout;
+import forms.ClinicianPreferences;
+import forms.Commitment;
 import forms.OperatingHours;
-import forms.PreferenceInputForm;
-import forms.Semester;
+import forms.TimeAway;
 import forms.Weekday;
 
 /**
@@ -35,35 +43,26 @@ public class InputFormPanel extends JPanel implements ActionListener {
 	 * 
 	 */
 	private static final long serialVersionUID = -5377691259929030865L;
-
-	private PreferenceInputForm form;
 	
 	private JScrollPane timeAwayPane, commitmentsPane;
-	private JList<String> timeAway, commitments;
+	private JList<TimeAway> timeAway;
+	private JList<Commitment> commitments;
 	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
 	private JTextField commitmentDescription;
 	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
 	private JLabel commitmentHourLabel, commitmentDayLabel, commitmentDescriptionLabel;
+	private JLabel timeLabel, rankLabel;
+	private JLabel morningLabel, noonLabel, afternoonLabel;
 	private JButton addTimeAwayButton, removeTimeAwayButton;
 	private JButton addCommitmentButton, removeCommitmentButton;
 	private JButton clearButton, submitButton;
 	private JComboBox<String> daysOfWeekBox, operatingHoursBox;
+	private JComboBox<Integer> morningRankBox, noonRankBox, afternoonRankBox;
 	
 	private JTextField nameField;
 	private static final int NAME_LENGTH = 20;
 
-	private JTable ecPreferenceTable;
-
-	/**
-	 * 
-	 */
 	public InputFormPanel() {
-		this(new PreferenceInputForm(Semester.SPRING, new Date(2015 - 1900,
-				1 - 1, 20), new Date(2015 - 1900, 5 - 1, 15)));
-	}
-
-	public InputFormPanel(PreferenceInputForm form) {
-		this.form = form;
 		this.setLayout(new MigLayout("gap rel", "grow"));
 
 		// create fields for adding names
@@ -72,17 +71,12 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		nameField.setName("nameField");
 		this.add(nameField, "wrap, align center");
 
-		String preferenceFormText = "" + Semester.asString(form.getSemester()) + ' '
-				+ form.getYear() + " IA/EC Preference Form";
-		SimpleDateFormat dateFormat = new SimpleDateFormat("EEEE, MMMM d, Y");
-		String periodText = "This covers the period from "
-				+ dateFormat.format(form.getPeriodStart()) + " through "
-				+ dateFormat.format(form.getPeriodEnd()) + ".";
+		String preferenceFormText = "Spring 2015 IA/EC Preference Form";
+		String periodText = "This covers the period from 1/19/2015-5/10/2015.";
 		this.add(new JLabel(preferenceFormText), "align center, span, wrap");
 		this.add(new JLabel(periodText), "align center, span, wrap");
 
-		String timeAwayText = "" + form.getSemester() + " Semester "
-				+ form.getYear() + "\"Time Away\" Plans";
+		String timeAwayText = "Spring Semester 2015 \"Time Away\" Plans";
 		this.add(new JLabel(timeAwayText), "align center, span, wrap");
 		
 		timeAwayName = new JTextField(7);
@@ -93,8 +87,8 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		timeAwayStartDateLabel = new JLabel("Start Date");
 		timeAwayEndDateLabel = new JLabel("End Date");
 		
-		timeAway = new JList<String>();
-		timeAway.setModel(new DefaultListModel<String>());
+		timeAway = new JList<TimeAway>();
+		timeAway.setModel(new DefaultListModel<TimeAway>());
 		timeAwayPane = new JScrollPane(timeAway);
 		
 		addTimeAwayButton = new JButton("Add Time Away");
@@ -114,8 +108,8 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		this.add(addTimeAwayButton);
 		this.add(removeTimeAwayButton, "wrap");
 		
-		commitments = new JList<String>();
-		commitments.setModel(new DefaultListModel<String>());
+		commitments = new JList<Commitment>();
+		commitments.setModel(new DefaultListModel<Commitment>());
 		commitmentsPane = new JScrollPane(commitments);
 		
 		operatingHoursBox = new JComboBox<String>();
@@ -127,7 +121,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		for (Weekday day : Weekday.values()) {
 			daysOfWeekBox.addItem(day.name());
 		}
-		commitmentDescription = new JTextField(7);	
+		commitmentDescription = new JTextField(7);
 
 		commitmentHourLabel = new JLabel("Hour");
 		commitmentDayLabel = new JLabel("Day");
@@ -150,14 +144,29 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		this.add(addCommitmentButton);
 		this.add(removeCommitmentButton, "wrap");
 		
-
-		ecPreferenceTable = new JTable(2, 4);
-		ecPreferenceTable.setValueAt("Times", 0, 0);
-		ecPreferenceTable.setValueAt("8:00 a.m.", 0, 1);
-		ecPreferenceTable.setValueAt("12:00 noon", 0, 2);
-		ecPreferenceTable.setValueAt("4:00 p.m.", 0, 3);
-		ecPreferenceTable.setValueAt("Rank", 1, 0);
-		this.add(ecPreferenceTable, "wrap, align center, span");
+		morningRankBox = new JComboBox<Integer>();
+		noonRankBox = new JComboBox<Integer>();
+		afternoonRankBox = new JComboBox<Integer>();
+		for (int i = 1; i <= 3; i++) {
+			morningRankBox.addItem(i);
+			noonRankBox.addItem(i);
+			afternoonRankBox.addItem(i);
+		}
+		
+		timeLabel = new JLabel("Time");
+		rankLabel = new JLabel("Rank");
+		morningLabel = new JLabel("8:00am");
+		noonLabel = new JLabel("12:00pm");
+		afternoonLabel = new JLabel("4:00pm");
+		
+		this.add(timeLabel);
+		this.add(morningLabel);
+		this.add(noonLabel);
+		this.add(afternoonLabel, "wrap");
+		this.add(rankLabel);
+		this.add(morningRankBox);
+		this.add(noonRankBox);
+		this.add(afternoonRankBox, "wrap");
 
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(this);
@@ -172,7 +181,15 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		if (e.getSource() == clearButton) {
 			clearFields();
 		} else if (e.getSource() == submitButton) {
-			submit();
+			try {
+				submit();
+			} catch (SQLException e1) {
+				JOptionPane.showMessageDialog(this,
+					    "An error occurred accessing the database. Please contact your system administrator. " + e1.getMessage(),
+					    "Error accessing database",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
 		} else if (e.getSource() == addTimeAwayButton) {
 			addTimeAway();
 		} else if (e.getSource() == removeTimeAwayButton) {
@@ -184,23 +201,98 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		}
 	}
 	
-	private void submit() {
-		// TODO: ensure name is a valid clinician id
+	private void submit() throws SQLException {
+		
 		String clinicianName = nameField.getText().trim();
-		System.out.println("'" + clinicianName + "'");
-		if (clinicianName.isEmpty()) {
+		int morningRank = ((Integer)morningRankBox.getSelectedItem()).intValue();
+		int noonRank = ((Integer)noonRankBox.getSelectedItem()).intValue();
+		int afternoonRank = ((Integer)afternoonRankBox.getSelectedItem()).intValue();
+		
+		Connection conn = ConnectionFactory.getInstance();
+
+		ClinicianDao clinicianDao = new ClinicianDao(conn);
+		int clinicianID = -1;
+		boolean isValidID = false;
+		List<Clinician> clinicians = clinicianDao.loadClinicians();
+		for (Clinician clinician : clinicians) {
+			if (clinician.getName().equals(clinicianName)) {
+				clinicianID = clinician.getClinicianID();
+				isValidID = true;
+			}
+		}
+		
+		if (!isValidID) {
 			JOptionPane.showMessageDialog(this,
 				    "You must enter in a valid clinician name. ",
 				    "Adding invalid clinician name",
 				    JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
+		if (morningRank == noonRank || afternoonRank == morningRank || noonRank == afternoonRank) {
+			JOptionPane.showMessageDialog(this,
+				    "You must enter unique ranks for each time preference.",
+				    "Adding clinician ec preferences",
+				    JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		
-		TableModel model = ecPreferenceTable.getModel();
-		String morningRank = (String)model.getValueAt(1, 1);
-		String noonRank = (String)model.getValueAt(1, 2);
-		String afternoonRank = (String)model.getValueAt(1, 3);
-		System.out.println("8am: " + morningRank + " 12pm:" + noonRank + " 4pm: " + afternoonRank);
+		ClinicianPreferences preferences = new ClinicianPreferences(clinicianID, morningRank, noonRank,afternoonRank);
+		ClinicianPreferencesDao clinicianPreferencesDao = new ClinicianPreferencesDao(conn);
+		CommitmentsDao commitmentDao = new CommitmentsDao(conn);
+		TimeAwayDao timeAwayDao = new TimeAwayDao(conn);
+		
+		ClinicianPreferences existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);
+		int result = -2;
+		if (existing != null) {
+			result = JOptionPane.showConfirmDialog(this,
+				    "Are you sure you wish to update your preferences? Your prior preferences will be overwritten.",
+				    "Update clinician preferences",
+				    JOptionPane.YES_NO_OPTION);
+		}
+		if (result == JOptionPane.YES_OPTION) {
+			clinicianPreferencesDao.update(preferences);
+			
+			DefaultListModel<Commitment> model = (DefaultListModel<Commitment>) commitments.getModel();
+			for (int i = 0; i < model.size(); i++) {
+				Commitment commitment = model.get(i);
+				commitment.setClinicianID(clinicianID);
+				commitmentDao.delete(clinicianID);
+				commitmentDao.insert(commitment);
+			}
+			
+
+			DefaultListModel<TimeAway> mdl = (DefaultListModel<TimeAway>) timeAway.getModel();
+			for (int i = 0; i < mdl.size(); i++) {
+				TimeAway timeAway = mdl.get(i);
+				timeAway.setClinicianID(clinicianID);
+				timeAwayDao.delete(clinicianID);
+				timeAwayDao.insert(timeAway);
+			}
+			return;
+		} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
+			return;
+		}
+		clinicianPreferencesDao.insert(preferences);
+		
+		DefaultListModel<Commitment> model = (DefaultListModel<Commitment>) commitments.getModel();
+		for (int i = 0; i < model.size(); i++) {
+			Commitment commitment = model.get(i);
+			commitment.setClinicianID(clinicianID);
+			commitmentDao.insert(commitment);
+		}
+		
+		DefaultListModel<TimeAway> mdl = (DefaultListModel<TimeAway>) timeAway.getModel();
+		for (int i = 0; i < mdl.size(); i++) {
+			TimeAway timeAway = mdl.get(i);
+			timeAway.setClinicianID(clinicianID);
+			timeAwayDao.insert(timeAway);
+		}
+		
+		JOptionPane.showMessageDialog(this,
+			    "Successfully inserted clinician preferences!",
+			    "SUCCESS",
+			    JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	private void addTimeAway() {
@@ -231,8 +323,15 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		timeAwayStartDate.setText("");
 		timeAwayEndDate.setText("");
 
-		DefaultListModel<String> model = (DefaultListModel<String>) timeAway.getModel();
-		model.add(model.size(), name + " " + startDate + "-" + endDate);
+		Date start, end;
+		DefaultListModel<TimeAway> model = (DefaultListModel<TimeAway>) timeAway.getModel();
+		try {
+			start = DateRangeValidator.parseDate(startDate);
+			end = DateRangeValidator.parseDate(endDate);
+		} catch (ParseException e) {
+			throw new RuntimeException("Should never happen");
+		}
+		model.add(model.size(), new TimeAway(-1, name, start, end));
 	}
 	
 	private void addCommitment() {
@@ -251,14 +350,26 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		
 		commitmentDescription.setText("");
 		
-		DefaultListModel<String> model = (DefaultListModel<String>) commitments.getModel();
-		model.add(model.size(), hourOfDay + " " + dayOfWeek + " " + description);
+		DefaultListModel<Commitment> model = (DefaultListModel<Commitment>) commitments.getModel();
+
+		String hr = hourOfDay.replaceAll("\\D+", "");
+		int hour;
+		try {
+			hour = Integer.parseInt(hr);
+		} catch (NumberFormatException e) {
+			throw new RuntimeException("Should never happen");
+		}
+		if (hourOfDay.contains("pm")) {
+			hour += 12;
+		}
+
+		model.add(model.size(), new Commitment(-1, hour, dayOfWeek, description));
 	}
 	
 	private void removeTimeAway() {
 		int index = timeAway.getSelectedIndex();
 		if (index >= 0) {
-			DefaultListModel<String> oldModel = (DefaultListModel<String>) timeAway.getModel();
+			DefaultListModel<TimeAway> oldModel = (DefaultListModel<TimeAway>) timeAway.getModel();
 			oldModel.remove(index);
 		}
 	}
@@ -266,7 +377,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 	private void removeCommitment() {
 		int index = commitments.getSelectedIndex();
 		if (index >= 0) {
-			DefaultListModel<String> oldModel = (DefaultListModel<String>) commitments.getModel();
+			DefaultListModel<Commitment> oldModel = (DefaultListModel<Commitment>) commitments.getModel();
 			oldModel.remove(index);
 		}
 	}
@@ -276,7 +387,12 @@ public class InputFormPanel extends JPanel implements ActionListener {
 	 */
 	private void clearFields() {
 		nameField.setText("");
+		timeAwayName.setText("");
+		timeAwayStartDate.setText("");
+		timeAwayEndDate.setText("");
+		commitmentDescription.setText("");
+		((DefaultListModel<Commitment>)commitments.getModel()).clear();
+		((DefaultListModel<TimeAway>)timeAway.getModel()).clear();
 		this.repaint();
-		// TODO
 	}
 }

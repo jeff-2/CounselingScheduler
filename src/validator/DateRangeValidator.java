@@ -22,7 +22,7 @@ public class DateRangeValidator {
 	 * @return the date
 	 * @throws ParseException the parse exception
 	 */
-	private static Date parseDate(String date) throws ParseException {
+	public static Date parseDate(String date) throws ParseException {
 		Date d;
 		try {
 			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
