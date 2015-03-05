@@ -67,7 +67,7 @@ public class CalendarDaoTest {
 	
 	private void clearCalendarTable() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
@@ -76,7 +76,7 @@ public class CalendarDaoTest {
 	
 	private void generateCalendarData() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
@@ -88,7 +88,7 @@ public class CalendarDaoTest {
 	
 	private Calendar getFirstCalendarTableRow() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		

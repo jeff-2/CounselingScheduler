@@ -11,7 +11,7 @@ import forms.Holiday;
 public class HolidayDao {
 	public void insertHoliday(Holiday holiday, int calendarId, int id) throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		
 		PreparedStatement stmt = con.prepareStatement("INSERT INTO Holiday(id, calendarId, "

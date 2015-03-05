@@ -7,16 +7,22 @@ import java.util.Date;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.TableModel;
 
+import validator.DateRangeValidator;
 import net.miginfocom.swing.MigLayout;
+import forms.OperatingHours;
 import forms.PreferenceInputForm;
 import forms.Semester;
+import forms.Weekday;
 
 /**
  * 
@@ -35,17 +41,19 @@ public class InputFormPanel extends JPanel implements ActionListener {
 	private JScrollPane timeAwayPane, commitmentsPane;
 	private JList<String> timeAway, commitments;
 	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
-	private JTextField commitmentHour, commitmentDay, commitmentDescription;
+	private JTextField commitmentDescription;
 	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
 	private JLabel commitmentHourLabel, commitmentDayLabel, commitmentDescriptionLabel;
 	private JButton addTimeAwayButton, removeTimeAwayButton;
 	private JButton addCommitmentButton, removeCommitmentButton;
-	private JButton clearButton, restoreButton, submitButton;
+	private JButton clearButton, submitButton;
+	private JComboBox<String> daysOfWeekBox, operatingHoursBox;
 	
 	private JTextField nameField;
-	private int nameLength;
+	private static final int NAME_LENGTH = 20;
 
- 
+	private JTable ecPreferenceTable;
+
 	/**
 	 * 
 	 */
@@ -60,8 +68,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 
 		// create fields for adding names
 		this.add(new JLabel("NAME:"));
-		nameLength = 20;
-		nameField = new JTextField(nameLength);
+		nameField = new JTextField(NAME_LENGTH);
 		nameField.setName("nameField");
 		this.add(nameField, "wrap, align center");
 
@@ -111,8 +118,15 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		commitments.setModel(new DefaultListModel<String>());
 		commitmentsPane = new JScrollPane(commitments);
 		
-		commitmentHour = new JTextField(7);
-		commitmentDay = new JTextField(7);
+		operatingHoursBox = new JComboBox<String>();
+		for (String hour : OperatingHours.getOperatingHours()) {
+			operatingHoursBox.addItem(hour);
+		}
+		
+		daysOfWeekBox = new JComboBox<String>();
+		for (Weekday day : Weekday.values()) {
+			daysOfWeekBox.addItem(day.name());
+		}
 		commitmentDescription = new JTextField(7);	
 
 		commitmentHourLabel = new JLabel("Hour");
@@ -125,9 +139,9 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		removeCommitmentButton.addActionListener(this);
 
 		this.add(commitmentHourLabel);
-		this.add(commitmentHour);
+		this.add(operatingHoursBox);
 		this.add(commitmentDayLabel);
-		this.add(commitmentDay);
+		this.add(daysOfWeekBox);
 		this.add(commitmentDescriptionLabel);
 		this.add(commitmentDescription, "wrap");
 		
@@ -137,7 +151,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		this.add(removeCommitmentButton, "wrap");
 		
 
-		JTable ecPreferenceTable = new JTable(2, 4);
+		ecPreferenceTable = new JTable(2, 4);
 		ecPreferenceTable.setValueAt("Times", 0, 0);
 		ecPreferenceTable.setValueAt("8:00 a.m.", 0, 1);
 		ecPreferenceTable.setValueAt("12:00 noon", 0, 2);
@@ -147,10 +161,9 @@ public class InputFormPanel extends JPanel implements ActionListener {
 
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(this);
-		restoreButton = new JButton("Restore Saved");
 		submitButton = new JButton("Submit");
+		submitButton.addActionListener(this);
 		this.add(clearButton);
-		this.add(restoreButton);
 		this.add(submitButton, "wrap");
 	}
 
@@ -158,22 +171,105 @@ public class InputFormPanel extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == clearButton) {
 			clearFields();
-		} else if (e.getSource() == restoreButton) {
-			
 		} else if (e.getSource() == submitButton) {
-			// do validation
+			submit();
 		} else if (e.getSource() == addTimeAwayButton) {
-			
+			addTimeAway();
 		} else if (e.getSource() == removeTimeAwayButton) {
-			
+			removeTimeAway();
 		} else if (e.getSource() == addCommitmentButton) {
-			// do validation
+			addCommitment();
 		} else if (e.getSource() == removeCommitmentButton) {
-			
+			removeCommitment();
 		}
 	}
 	
+	private void submit() {
+		// TODO: ensure name is a valid clinician id
+		String clinicianName = nameField.getText().trim();
+		System.out.println("'" + clinicianName + "'");
+		if (clinicianName.isEmpty()) {
+			JOptionPane.showMessageDialog(this,
+				    "You must enter in a valid clinician name. ",
+				    "Adding invalid clinician name",
+				    JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		TableModel model = ecPreferenceTable.getModel();
+		String morningRank = (String)model.getValueAt(1, 1);
+		String noonRank = (String)model.getValueAt(1, 2);
+		String afternoonRank = (String)model.getValueAt(1, 3);
+		System.out.println("8am: " + morningRank + " 12pm:" + noonRank + " 4pm: " + afternoonRank);
+	}
 
+	private void addTimeAway() {
+		String name = timeAwayName.getText().trim();
+		String startDate = timeAwayStartDate.getText().trim();
+		String endDate = timeAwayEndDate.getText().trim();
+		
+		if (name.isEmpty()) {
+			JOptionPane.showMessageDialog(this,
+				    "You must enter in a description. ",
+				    "Adding invalid time away description",
+				    JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		try {
+			DateRangeValidator.validate(startDate, endDate);
+		} catch (InvalidDateRangeException e) {
+			JOptionPane.showMessageDialog(this,
+				    "Cannot add the time away to the list. " +
+				    e.getMessage(),
+				    "Adding invalid time away",
+				    JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		timeAwayName.setText("");
+		timeAwayStartDate.setText("");
+		timeAwayEndDate.setText("");
+
+		DefaultListModel<String> model = (DefaultListModel<String>) timeAway.getModel();
+		model.add(model.size(), name + " " + startDate + "-" + endDate);
+	}
+	
+	private void addCommitment() {
+		String description = commitmentDescription.getText().trim();
+		String dayOfWeek = ((String)daysOfWeekBox.getSelectedItem());
+		String hourOfDay = ((String)operatingHoursBox.getSelectedItem());
+		
+		
+		if (description.isEmpty()) {
+			JOptionPane.showMessageDialog(this,
+				    "You must enter in a description. ",
+				    "Adding invalid commitment description",
+				    JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		
+		commitmentDescription.setText("");
+		
+		DefaultListModel<String> model = (DefaultListModel<String>) commitments.getModel();
+		model.add(model.size(), hourOfDay + " " + dayOfWeek + " " + description);
+	}
+	
+	private void removeTimeAway() {
+		int index = timeAway.getSelectedIndex();
+		if (index >= 0) {
+			DefaultListModel<String> oldModel = (DefaultListModel<String>) timeAway.getModel();
+			oldModel.remove(index);
+		}
+	}
+	
+	private void removeCommitment() {
+		int index = commitments.getSelectedIndex();
+		if (index >= 0) {
+			DefaultListModel<String> oldModel = (DefaultListModel<String>) commitments.getModel();
+			oldModel.remove(index);
+		}
+	}
 	
 	/**
 	 * Clear all fields in this form

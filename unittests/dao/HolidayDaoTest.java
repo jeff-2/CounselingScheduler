@@ -52,7 +52,7 @@ public class HolidayDaoTest {
 	
 	private void clearHolidayTable() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
@@ -61,7 +61,7 @@ public class HolidayDaoTest {
 	
 	private Holiday getFirstHolidayTableRow() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		

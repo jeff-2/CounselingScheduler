@@ -13,7 +13,7 @@ import forms.Calendar;
 public class CalendarDao {
 	public void insertCalendar(Calendar calendar) throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		
 		PreparedStatement stmt = con.prepareStatement("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
@@ -31,7 +31,7 @@ public class CalendarDao {
 	
 	public static int getNextAvailableId() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=sa;password=w5Q[7S2_u2/\\+8Ds;";
+				   "databaseName=CounselingScheduler;user=admin;password=admin;";
 		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
