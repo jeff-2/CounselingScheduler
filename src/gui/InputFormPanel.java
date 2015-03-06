@@ -6,7 +6,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -18,12 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
-import db.Clinician;
+import action.ClinicianPreferencesAction;
 import db.ClinicianDao;
 import db.ClinicianPreferencesDao;
-import db.CommitmentsDao;
 import db.ConnectionFactory;
-import db.TimeAwayDao;
 import validator.DateRangeValidator;
 import net.miginfocom.swing.MigLayout;
 import forms.ClinicianPreferences;
@@ -31,6 +28,7 @@ import forms.Commitment;
 import forms.OperatingHours;
 import forms.TimeAway;
 import forms.Weekday;
+import forms.Utility;
 
 /**
  * 
@@ -209,19 +207,10 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		int afternoonRank = ((Integer)afternoonRankBox.getSelectedItem()).intValue();
 		
 		Connection conn = ConnectionFactory.getInstance();
-
 		ClinicianDao clinicianDao = new ClinicianDao(conn);
-		int clinicianID = -1;
-		boolean isValidID = false;
-		List<Clinician> clinicians = clinicianDao.loadClinicians();
-		for (Clinician clinician : clinicians) {
-			if (clinician.getName().equals(clinicianName)) {
-				clinicianID = clinician.getClinicianID();
-				isValidID = true;
-			}
-		}
 		
-		if (!isValidID) {
+		int clinicianID = clinicianDao.getClinicianID(clinicianName);
+		if (clinicianID == -1) {
 			JOptionPane.showMessageDialog(this,
 				    "You must enter in a valid clinician name. ",
 				    "Adding invalid clinician name",
@@ -237,56 +226,25 @@ public class InputFormPanel extends JPanel implements ActionListener {
 			return;
 		}
 		
-		ClinicianPreferences preferences = new ClinicianPreferences(clinicianID, morningRank, noonRank,afternoonRank);
 		ClinicianPreferencesDao clinicianPreferencesDao = new ClinicianPreferencesDao(conn);
-		CommitmentsDao commitmentDao = new CommitmentsDao(conn);
-		TimeAwayDao timeAwayDao = new TimeAwayDao(conn);
-		
+		ClinicianPreferences preferences = new ClinicianPreferences(clinicianID, morningRank, noonRank,afternoonRank);
 		ClinicianPreferences existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);
-		int result = -2;
-		if (existing != null) {
-			result = JOptionPane.showConfirmDialog(this,
+
+		
+		ClinicianPreferencesAction action = new ClinicianPreferencesAction(preferences, 
+				Utility.toCommitmentList(commitments.getModel()), Utility.toTimeAwayList(timeAway.getModel()), conn);
+		if (existing == null) {
+			action.insertPreferences();
+		} else {
+			int result = JOptionPane.showConfirmDialog(this,
 				    "Are you sure you wish to update your preferences? Your prior preferences will be overwritten.",
 				    "Update clinician preferences",
 				    JOptionPane.YES_NO_OPTION);
-		}
-		if (result == JOptionPane.YES_OPTION) {
-			clinicianPreferencesDao.update(preferences);
-			
-			DefaultListModel<Commitment> model = (DefaultListModel<Commitment>) commitments.getModel();
-			for (int i = 0; i < model.size(); i++) {
-				Commitment commitment = model.get(i);
-				commitment.setClinicianID(clinicianID);
-				commitmentDao.delete(clinicianID);
-				commitmentDao.insert(commitment);
+			if (result == JOptionPane.YES_OPTION) {
+				action.updatePreferences();
+			} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
+				return;
 			}
-			
-
-			DefaultListModel<TimeAway> mdl = (DefaultListModel<TimeAway>) timeAway.getModel();
-			for (int i = 0; i < mdl.size(); i++) {
-				TimeAway timeAway = mdl.get(i);
-				timeAway.setClinicianID(clinicianID);
-				timeAwayDao.delete(clinicianID);
-				timeAwayDao.insert(timeAway);
-			}
-			return;
-		} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
-			return;
-		}
-		clinicianPreferencesDao.insert(preferences);
-		
-		DefaultListModel<Commitment> model = (DefaultListModel<Commitment>) commitments.getModel();
-		for (int i = 0; i < model.size(); i++) {
-			Commitment commitment = model.get(i);
-			commitment.setClinicianID(clinicianID);
-			commitmentDao.insert(commitment);
-		}
-		
-		DefaultListModel<TimeAway> mdl = (DefaultListModel<TimeAway>) timeAway.getModel();
-		for (int i = 0; i < mdl.size(); i++) {
-			TimeAway timeAway = mdl.get(i);
-			timeAway.setClinicianID(clinicianID);
-			timeAwayDao.insert(timeAway);
 		}
 		
 		JOptionPane.showMessageDialog(this,

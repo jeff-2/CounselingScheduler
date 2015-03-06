@@ -9,12 +9,28 @@ import java.util.List;
 
 import forms.Commitment;
 
+/**
+ * The Class CommitmentsDao handles the interaction with the database dealing with the table Commitments.
+ * 
+ * @author jmfoste2, lim92
+ */
 public class CommitmentsDao extends Dao {
 	
+	/**
+	 * Instantiates a new commitments dao.
+	 *
+	 * @param conn the conn
+	 */
 	public CommitmentsDao(Connection conn) {
 		super(conn);
 	}
 
+	/**
+	 * Inserts a commitment into the database.
+	 *
+	 * @param commitment the commitment
+	 * @throws SQLException the SQL exception
+	 */
 	public void insert(Commitment commitment) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO Commitments (id, hour, day, description) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, commitment.getClinicianID());
@@ -25,6 +41,13 @@ public class CommitmentsDao extends Dao {
 		stmt.close();
 	}
 	
+	/**
+	 * Load all the commitments associated with a particular clinician id from the database.
+	 *
+	 * @param clinicianID the clinician id
+	 * @return the list
+	 * @throws SQLException the SQL exception
+	 */
 	public List<Commitment> loadCommitments(int clinicianID) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("SELECT hour, day, description FROM Commitments WHERE id = ?");
 		stmt.setInt(1, clinicianID);
@@ -40,6 +63,14 @@ public class CommitmentsDao extends Dao {
 		return commitments;
 	}
 	
+	/**
+	 * Loads a commitment from a resultset.
+	 *
+	 * @param clinicianID the clinician id
+	 * @param results the results
+	 * @return the commitment
+	 * @throws SQLException the SQL exception
+	 */
 	private Commitment loadCommitment(int clinicianID, ResultSet results) throws SQLException {
 		int hour = results.getInt("hour");
 		String day = results.getString("day");
@@ -47,16 +78,12 @@ public class CommitmentsDao extends Dao {
 		return new Commitment(clinicianID, hour, day, description);
 	}
 	
-	public void update(Commitment commitment) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("UPDATE Commitments SET hour = ?, day = ?, description = ? WHERE id = ?");
-		stmt.setInt(1, commitment.getHourOfDay());
-		stmt.setString(2, commitment.getDayOfWeek());
-		stmt.setString(3, commitment.getDescription());
-		stmt.setInt(4, commitment.getClinicianID());
-		stmt.executeUpdate();
-		stmt.close();
-	}
-	
+	/**
+	 * Delete the commitments associated with a particular clinicianID from the database.
+	 *
+	 * @param clinicianID the clinician id
+	 * @throws SQLException the SQL exception
+	 */
 	public void delete(int clinicianID) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Commitments WHERE id = ?");
 		stmt.setInt(1, clinicianID);

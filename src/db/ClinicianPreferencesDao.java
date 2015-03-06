@@ -7,12 +7,28 @@ import java.sql.SQLException;
 
 import forms.ClinicianPreferences;
 
+/**
+ * The Class ClinicianPreferencesDao handles interactions with the database to access the ClinicianPreferences table.
+ * 
+ * @author jmfoste2, lim92
+ */
 public class ClinicianPreferencesDao extends Dao {
 	
+	/**
+	 * Instantiates a new clinician preferences dao.
+	 *
+	 * @param conn the conn
+	 */
 	public ClinicianPreferencesDao(Connection conn) {
 		super(conn);
 	}
 
+	/**
+	 * Insert a clinicians preferences into the database.
+	 *
+	 * @param preferences the preferences
+	 * @throws SQLException the SQL exception
+	 */
 	public void insert(ClinicianPreferences preferences) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO ClinicianPreferences (id, morningRank, noonRank, afternoonRank) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, preferences.getClinicianID());
@@ -23,6 +39,13 @@ public class ClinicianPreferencesDao extends Dao {
 		stmt.close();
 	}
 	
+	/**
+	 * Loads all clinician preferences from the database.
+	 *
+	 * @param clinicianID the clinician id
+	 * @return the clinician preferences
+	 * @throws SQLException the SQL exception
+	 */
 	public ClinicianPreferences loadClinicianPreferences(int clinicianID) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("SELECT morningRank, noonRank, afternoonRank FROM ClinicianPreferences WHERE id = ?");
 		stmt.setInt(1, clinicianID);
@@ -41,6 +64,12 @@ public class ClinicianPreferencesDao extends Dao {
 		return preferences;
 	}
 	
+	/**
+	 * Update the preferences for a particular clinician in the database.
+	 *
+	 * @param preferences the preferences
+	 * @throws SQLException the SQL exception
+	 */
 	public void update(ClinicianPreferences preferences) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("UPDATE ClinicianPreferences SET morningRank = ?, noonRank = ?, afternoonRank = ? WHERE id = ?");
 		stmt.setInt(1, preferences.getMorningRank());
@@ -51,6 +80,12 @@ public class ClinicianPreferencesDao extends Dao {
 		stmt.close();
 	}
 	
+	/**
+	 * Delete a particular clinician's preferences from the database.
+	 *
+	 * @param clinicianID the clinician id
+	 * @throws SQLException the SQL exception
+	 */
 	public void delete(int clinicianID) throws SQLException {
 		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM ClinicianPreferences WHERE id = ?");
 		stmt.setInt(1, clinicianID);
