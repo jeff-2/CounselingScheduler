@@ -3,14 +3,14 @@ package runner;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import gui.InputFormPanel;
+import gui.ClinicianForm;
 
 /**
  * 
  * @author Yusheng Hou and Kevin Lim
  *
  */
-public class ClinicianRunner {
+public class ClinicianFormRunner {
 
 	public static void main(String[] args) {
 		try {
@@ -21,7 +21,7 @@ public class ClinicianRunner {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
 		JFrame frame = new JFrame("Input Form");
-		frame.add(new InputFormPanel());
+		frame.add(new ClinicianForm());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(600, 600);
 		frame.setVisible(true);

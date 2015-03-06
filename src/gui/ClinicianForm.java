@@ -35,7 +35,7 @@ import forms.Utility;
  * @author Yusheng Hou and Kevin Lim
  *
  */
-public class InputFormPanel extends JPanel implements ActionListener {
+public class ClinicianForm extends JPanel implements ActionListener {
 
 	/**
 	 * 
@@ -60,7 +60,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 	private JTextField nameField;
 	private static final int NAME_LENGTH = 20;
 
-	public InputFormPanel() {
+	public ClinicianForm() {
 		this.setLayout(new MigLayout("gap rel", "grow"));
 
 		// create fields for adding names
@@ -78,8 +78,11 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		this.add(new JLabel(timeAwayText), "align center, span, wrap");
 		
 		timeAwayName = new JTextField(7);
+		timeAwayName.setName("timeAwayName");
 		timeAwayStartDate = new JTextField(7);
+		timeAwayStartDate.setName("timeAwayStartDate");
 		timeAwayEndDate = new JTextField(7);
+		timeAwayEndDate.setName("timeAwayEndDate");
 		
 		timeAwayNameLabel = new JLabel("Description");
 		timeAwayStartDateLabel = new JLabel("Start Date");
@@ -90,6 +93,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		timeAwayPane = new JScrollPane(timeAway);
 		
 		addTimeAwayButton = new JButton("Add Time Away");
+		addTimeAwayButton.setName("addTimeAwayButton");
 		addTimeAwayButton.addActionListener(this);
 		removeTimeAwayButton = new JButton("Remove Time Away");
 		removeTimeAwayButton.addActionListener(this);
@@ -111,21 +115,25 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		commitmentsPane = new JScrollPane(commitments);
 		
 		operatingHoursBox = new JComboBox<String>();
+		operatingHoursBox.setName("operatingHoursBox");
 		for (String hour : OperatingHours.getOperatingHours()) {
 			operatingHoursBox.addItem(hour);
 		}
 		
 		daysOfWeekBox = new JComboBox<String>();
+		daysOfWeekBox.setName("daysOfWeekBox");
 		for (Weekday day : Weekday.values()) {
 			daysOfWeekBox.addItem(day.name());
 		}
 		commitmentDescription = new JTextField(7);
+		commitmentDescription.setName("commitmentDescription");
 
 		commitmentHourLabel = new JLabel("Hour");
 		commitmentDayLabel = new JLabel("Day");
 		commitmentDescriptionLabel = new JLabel("Description");
 		
 		addCommitmentButton = new JButton("Add Commitment");
+		addCommitmentButton.setName("addCommitmentButton");
 		addCommitmentButton.addActionListener(this);
 		removeCommitmentButton = new JButton("Remove Commitment");
 		removeCommitmentButton.addActionListener(this);
@@ -143,8 +151,11 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		this.add(removeCommitmentButton, "wrap");
 		
 		morningRankBox = new JComboBox<Integer>();
+		morningRankBox.setName("morningRankBox");
 		noonRankBox = new JComboBox<Integer>();
+		noonRankBox.setName("noonRankBox");
 		afternoonRankBox = new JComboBox<Integer>();
+		afternoonRankBox.setName("afternoonRankBox");
 		for (int i = 1; i <= 3; i++) {
 			morningRankBox.addItem(i);
 			noonRankBox.addItem(i);
@@ -169,6 +180,7 @@ public class InputFormPanel extends JPanel implements ActionListener {
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(this);
 		submitButton = new JButton("Submit");
+		submitButton.setName("submitButton");
 		submitButton.addActionListener(this);
 		this.add(clearButton);
 		this.add(submitButton, "wrap");
