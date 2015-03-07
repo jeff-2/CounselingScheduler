@@ -23,6 +23,8 @@ import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import db.Clinician;
+
 /**
  * A GUI element for adding and removing clinicians from the clinician ID list. 
  * Allows saving and loading clinician list to disk.
@@ -75,9 +77,9 @@ public class ClinicianIDListEditor extends JFrame
 	private JButton removeButton;
 	
 	/**
-	 * JList storing the current list of clinician IDs
+	 * JList storing the current list of Clinicians
 	 */
-	private JList<String> clinicianList;
+	private JList<Clinician> clinicianList;
 	
 	/**
 	 * JScrollPane displaying the current list of clinican IDs
@@ -123,7 +125,7 @@ public class ClinicianIDListEditor extends JFrame
 		this.removeButton.addActionListener(this);
 		this.panel.add(removeButton, "gap unrelated, wrap 15px");
 		// Add list & scrollpane
-		this.clinicianList = new JList<String>();
+		this.clinicianList = new JList<>();
 		this.clinicianList.addListSelectionListener(this);
 		this.listScrollPane = new JScrollPane(clinicianList);
 		this.panel.add(listScrollPane, "grow, push, span");
@@ -165,22 +167,24 @@ public class ClinicianIDListEditor extends JFrame
 	 */
 	private void addNewClinicianID() {
 		String newClinicianID = this.newUsernameField.getText().trim();
+		String newClinicianName = this.newFullnameField.getText().trim();
 		this.newUsernameField.setText("");
-		if(newClinicianID.isEmpty()) {
+		this.newFullnameField.setText("");
+		if(newClinicianID.isEmpty() || newClinicianName.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
-				    "Cannot add an empty clinician ID to the list. " +
-				    "Please enter a new clinician ID in the text box above.",
+				    "Cannot add a clinician without a username and full name to the list. " +
+				    "Please enter a username and name in the text boxex above.",
 				    "Adding empty ID",
 				    JOptionPane.ERROR_MESSAGE);
 		}
 		else {
-			ArrayList<String> data = new ArrayList<String>();
-			ListModel<String> model = 
-					(ListModel<String>) this.clinicianList.getModel();
+			Clinician newClinician = new Clinician(0, newClinicianName, newClinicianID);
+			ArrayList<Clinician> data = new ArrayList<>();
+			ListModel<Clinician> model = this.clinicianList.getModel();
 			for(int i=0; i<model.getSize(); i++) {
 				data.add(model.getElementAt(i));
 			}
-			if (data.contains(newClinicianID)) {
+			if (data.contains(newClinician)) {
 				JOptionPane.showMessageDialog(this,
 					    "Cannot add a duplicate clinician ID to the list. " +
 					    "Please enter a unique clinician ID in the text box above.",
@@ -189,10 +193,10 @@ public class ClinicianIDListEditor extends JFrame
 			}
 			else {
 				// Add new clinician ID to alphanumerically-sorted list
-				data.add(newClinicianID);
+				data.add(newClinician);
 				Collections.sort(data);
-				DefaultListModel<String> newModel = new DefaultListModel<String>();
-				for(String id : data) {
+				DefaultListModel<Clinician> newModel = new DefaultListModel<>();
+				for(Clinician id : data) {
 					newModel.addElement(id);
 				}
 				this.clinicianList.setModel(newModel);
@@ -210,9 +214,8 @@ public class ClinicianIDListEditor extends JFrame
 		int index = this.clinicianList.getSelectedIndex();
 		if(index >= 0) {
 			// Add new clinician ID to alphanumerically-sorted list
-			ListModel<String> oldModel = 
-					(ListModel<String>) this.clinicianList.getModel();
-			DefaultListModel<String> newModel = new DefaultListModel<String>();
+			ListModel<Clinician> oldModel = this.clinicianList.getModel();
+			DefaultListModel<Clinician> newModel = new DefaultListModel<>();
 			for(int i=0; i<oldModel.getSize(); i++) {
 				if(i != index) {
 					newModel.addElement(oldModel.getElementAt(i));

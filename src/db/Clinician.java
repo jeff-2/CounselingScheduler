@@ -5,13 +5,16 @@ package db;
  * 
  * @author jmfoste2, lim92
  */
-public class Clinician {
+public class Clinician implements Comparable<Clinician>{
 	
 	/** The clinician id. */
 	private int clinicianID;
 	
 	/** The name. */
 	private String name;
+	
+	/** The username */
+	private String username;
 	
 	/**
 	 * Instantiates a new clinician.
@@ -20,8 +23,20 @@ public class Clinician {
 	 * @param n the n
 	 */
 	public Clinician(int id, String n) {
+		this(id, n, n);
+	}
+
+	/**
+	 * Instantiates a new clinician.
+	 *
+	 * @param id the id
+	 * @param n the n
+	 * @param username
+	 */
+	public Clinician(int id, String n, String username) {
 		clinicianID = id;
 		name = n;
+		this.username = username;
 	}
 
 	/**
@@ -60,6 +75,24 @@ public class Clinician {
 		name = n;
 	}
 	
+	/**
+	 * Gets the username.
+	 *
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * Sets the username.
+	 *
+	 * @param n the new username
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -76,4 +109,34 @@ public class Clinician {
 		Clinician clinician = (Clinician)other;
 		return clinicianID == clinician.clinicianID && name.equals(clinician.name);
 	}
+
+	/**
+	 * Represent a Clinician as a String using their username and real name
+	 * 
+	 * @return String representation of Clinician as username (full name)
+	 */
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return username + " (" + name + ")";
+	}
+
+	/**
+	 * Compares Clinician using their usernames
+	 * 
+	 * @param o Clinician to compare to
+	 * @return how this Clinician's username compares to the other Clinician's username
+	 */
+	@Override
+	public int compareTo(Clinician o) {
+		if (o != null)
+		{
+			return getUsername().compareTo(o.getUsername());
+		}
+		else
+		{
+			return 1;
+		}
+	}
+	
 }
