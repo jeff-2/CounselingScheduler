@@ -2,6 +2,13 @@ package forms;
 
 import java.util.Date;
 
+/**
+ * Represents the calendar parameters that an administrator creates
+ * when entering setting for a new semester
+ *  
+ * @author nbeltr2
+ * @author dtli2
+ */
 public class Calendar {
 	private int id;
 	private Date startDate;
