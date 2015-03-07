@@ -152,8 +152,6 @@ public class ClinicianIDListEditor extends JFrame
 	 */
 	private void updateButtonStatus() {
 		boolean emptyClinicianID = this.newUsernameField.getText().isEmpty() || this.newFullnameField.getText().isEmpty();
-		System.out.println(newUsernameField.getText());
-		System.out.println(newFullnameField.getText());
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
