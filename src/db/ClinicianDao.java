@@ -111,7 +111,7 @@ public class ClinicianDao extends Dao {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getNextClinicianID() throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT MAX(id) FROM Customers;");
+		PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM Clinicians");
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
 		if (!results.next()) {
@@ -119,7 +119,11 @@ public class ClinicianDao extends Dao {
 			return -1;
 		}
 
-		int curMaxID = results.getInt("id");
+		int curMaxID = -1;
+		while(results.next()) {
+			int id = results.getInt("id");
+			curMaxID = Math.max(curMaxID, id);
+		}
 		stmt.close();
 		return curMaxID + 1;
 	}

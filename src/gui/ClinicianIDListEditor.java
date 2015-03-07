@@ -25,7 +25,6 @@ import javax.swing.event.ListSelectionListener;
 
 import db.Clinician;
 import db.ClinicianDao;
-import db.ClinicianPreferencesDao;
 import db.ConnectionFactory;
 import net.miginfocom.swing.MigLayout;
 
@@ -51,14 +50,24 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	private final JPanel panel;
 
 	/**
-	 * JLabel for new clinican field
+	 * JLabel for new clinican username field
 	 */
-	private JLabel newClinicianLabel;
-
+	private JLabel newUsernameLabel;
+	
 	/**
-	 * JTextField for entering the ID of a new clinician
+	 * JTextField for entering the username of a new clinician
 	 */
-	private JTextField newIDField;
+	private JTextField newUsernameField;
+	
+	/**
+	 * JLabel for new clinican name field
+	 */
+	private JLabel newFullnameLabel;
+	
+	/**
+	 * JTextField for entering the name of a new clinician
+	 */
+	private JTextField newFullnameField;
 
 	/**
 	 * JButton for adding the current clinician ID to the list
@@ -112,11 +121,16 @@ implements ActionListener, KeyListener, ListSelectionListener {
 			dao = new ClinicianDao(conn);
 		}
 		catch(Exception e) {
-			JOptionPane.showMessageDialog(this,
-					"Failed to connect to the remote SQL database; please contact the network administrator.",
-					"Database connection error",
-					JOptionPane.ERROR_MESSAGE);
+			handleDBException(e);
 		}
+	}
+
+	private void handleDBException(Exception e) {
+		e.printStackTrace();
+		JOptionPane.showMessageDialog(this,
+				"Failed to connect to the remote SQL database; please contact the network administrator.",
+				"Database connection error",
+				JOptionPane.ERROR_MESSAGE);
 	}
 
 	private void updateClinicianList() {
@@ -124,10 +138,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 			this.localClinicians = this.dao.loadClinicians();
 		}
 		catch(Exception e) {
-			JOptionPane.showMessageDialog(this,
-					"Failed to connect to the remote SQL database; please contact the network administrator.",
-					"Database connection error",
-					JOptionPane.ERROR_MESSAGE);
+			handleDBException(e);
 		}
 	}
 
@@ -139,12 +150,18 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.panel.setPreferredSize( new Dimension( 400, 480 ) );
 		// Set exit behavior
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// Add label and ID field for new clinicians
-		this.newClinicianLabel = new JLabel("New Clinician ID:");
-		this.panel.add(newClinicianLabel, "gapleft 30");
-		this.newIDField = new JTextField();
-		this.newIDField.addKeyListener(this);
-		this.panel.add(newIDField, "span, grow, wrap 15px");
+		// Add label and username field for new clinicians
+		this.newUsernameLabel = new JLabel("New Clinician Username:");
+		this.panel.add(newUsernameLabel, "gapleft 30");
+		this.newUsernameField = new JTextField();
+		this.newUsernameField.addKeyListener(this);
+		this.panel.add(newUsernameField, "span, grow, wrap 15px");
+		// Add label and full name field for new clinicians
+		this.newFullnameLabel = new JLabel("New Clinician Name:");
+		this.panel.add(newFullnameLabel, "gapleft 30");
+		this.newFullnameField = new JTextField();
+		this.newFullnameField.addKeyListener(this);
+		this.panel.add(newFullnameField, "span, grow, wrap 15px");
 		// Add "Add" and "Remove" buttons
 		this.addButton = new JButton("Add Clinician");
 		this.addButton.addActionListener(this);
@@ -170,15 +187,9 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 */
 	private void populateClinicianList() {
 		this.updateClinicianList();
-		ArrayList<Clinician> data = new ArrayList<Clinician>();
-		ListModel<Clinician> model = 
-				(ListModel<Clinician>) this.clinicianList.getModel();
-		for(int i=0; i<model.getSize(); i++) {
-			data.add(model.getElementAt(i));
-		}
-		Collections.sort(data);
+		Collections.sort(this.localClinicians);
 		DefaultListModel<Clinician> newModel = new DefaultListModel<Clinician>();
-		for(Clinician c : data) {
+		for(Clinician c : this.localClinicians) {
 			newModel.addElement(c);
 		}
 		this.clinicianList.setModel(newModel);
@@ -203,7 +214,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * @param e 
 	 */
 	private void updateButtonStatus() {
-		boolean emptyClinicianID = this.newIDField.getText().isEmpty();
+		boolean emptyClinicianID = this.newUsernameField.getText().isEmpty() || this.newFullnameField.getText().isEmpty();
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
@@ -216,13 +227,23 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * if this is not the case.
 	 */
 	private void addNewClinicianID() {
-		String newClinicianName = this.newIDField.getText().trim();
-		this.newIDField.setText("");
+		// TODO: Modify Clinicians table to store username as well; check for unique USERNAME, not full name.
+		String newClinicianUserName = this.newUsernameField.getText().trim();
+		String newClinicianName = this.newFullnameField.getText().trim();
+		this.newUsernameField.setText("");
+		this.newFullnameField.setText("");
 		if(newClinicianName.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
 					"Cannot add an empty clinician ID to the list. " +
 							"Please enter a new clinician ID in the text box above.",
 							"Adding empty ID",
+							JOptionPane.ERROR_MESSAGE);
+		}
+		else if(clinicianNameExists(newClinicianName)) {
+			JOptionPane.showMessageDialog(this,
+					"Cannot clinician with a duplicate name to the list. " +
+							"Please enter a new clinician ID in the text box above.",
+							"Adding duplicate clinician",
 							JOptionPane.ERROR_MESSAGE);
 		}
 		else {
@@ -233,12 +254,18 @@ implements ActionListener, KeyListener, ListSelectionListener {
 				this.populateClinicianList();
 			}
 			catch(Exception e) {
-				JOptionPane.showMessageDialog(this,
-						"Failed to connect to the remote SQL database; please contact the network administrator.",
-						"Database connection error",
-						JOptionPane.ERROR_MESSAGE);
+				handleDBException(e);
 			}			
 		}
+	}
+
+	private boolean clinicianNameExists(String newClinicianName) {
+		for(Clinician c : this.localClinicians) {
+			if(c.getName().equals(newClinicianName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -253,10 +280,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 			this.populateClinicianList();
 		}
 		catch(Exception e) {
-			JOptionPane.showMessageDialog(this,
-					"Failed to connect to the remote SQL database; please contact the network administrator.",
-					"Database connection error",
-					JOptionPane.ERROR_MESSAGE);
+			handleDBException(e);
 		}	
 	}
 
@@ -271,7 +295,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getSource() == this.newIDField) {
+		if(e.getSource() == this.newUsernameField || e.getSource() == this.newFullnameField) {
 			this.updateButtonStatus();
 		}
 	}
