@@ -45,15 +45,25 @@ public class ClinicianIDListEditor extends JFrame
 	private final JPanel panel;
 	
 	/**
-	 * JLabel for new clinican field
+	 * JLabel for new clinican username field
 	 */
-	private JLabel newClinicianLabel;
+	private JLabel newUsernameLabel;
 	
 	/**
-	 * JTextField for entering the ID of a new clinician
+	 * JTextField for entering the username of a new clinician
 	 */
-	private JTextField newIDField;
+	private JTextField newUsernameField;
 	
+	/**
+	 * JLabel for new clinican name field
+	 */
+	private JLabel newFullnameLabel;
+	
+	/**
+	 * JTextField for entering the name of a new clinician
+	 */
+	private JTextField newFullnameField;
+
 	/**
 	 * JButton for adding the current clinician ID to the list
 	 */
@@ -93,12 +103,18 @@ public class ClinicianIDListEditor extends JFrame
 		this.panel.setPreferredSize( new Dimension( 400, 480 ) );
 		// Set exit behavior
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// Add label and ID field for new clinicians
-		this.newClinicianLabel = new JLabel("New Clinician ID:");
-		this.panel.add(newClinicianLabel, "gapleft 30");
-		this.newIDField = new JTextField();
-		this.newIDField.addKeyListener(this);
-		this.panel.add(newIDField, "span, grow, wrap 15px");
+		// Add label and username field for new clinicians
+		this.newUsernameLabel = new JLabel("New Clinician Username:");
+		this.panel.add(newUsernameLabel, "gapleft 30");
+		this.newUsernameField = new JTextField();
+		this.newUsernameField.addKeyListener(this);
+		this.panel.add(newUsernameField, "span, grow, wrap 15px");
+		// Add label and full name field for new clinicians
+		this.newFullnameLabel = new JLabel("New Clinician Name:");
+		this.panel.add(newFullnameLabel, "gapleft 30");
+		this.newFullnameField = new JTextField();
+		this.newFullnameField.addKeyListener(this);
+		this.panel.add(newFullnameField, "span, grow, wrap 15px");
 		// Add "Add" and "Remove" buttons
 		this.addButton = new JButton("Add Clinician");
 		this.addButton.addActionListener(this);
@@ -135,7 +151,9 @@ public class ClinicianIDListEditor extends JFrame
 	 * @param e 
 	 */
 	private void updateButtonStatus() {
-		boolean emptyClinicianID = this.newIDField.getText().isEmpty();
+		boolean emptyClinicianID = this.newUsernameField.getText().isEmpty() || this.newFullnameField.getText().isEmpty();
+		System.out.println(newUsernameField.getText());
+		System.out.println(newFullnameField.getText());
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
@@ -148,8 +166,8 @@ public class ClinicianIDListEditor extends JFrame
 	 * if this is not the case.
 	 */
 	private void addNewClinicianID() {
-		String newClinicianID = this.newIDField.getText().trim();
-		this.newIDField.setText("");
+		String newClinicianID = this.newUsernameField.getText().trim();
+		this.newUsernameField.setText("");
 		if(newClinicianID.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
 				    "Cannot add an empty clinician ID to the list. " +
@@ -212,9 +230,6 @@ public class ClinicianIDListEditor extends JFrame
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		if(e.getSource() == this.newIDField) {
-			this.updateButtonStatus();
-		}
 	}
 
 	@Override
@@ -224,7 +239,9 @@ public class ClinicianIDListEditor extends JFrame
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// do nothing	
+		if(e.getSource() == this.newUsernameField || e.getSource() == this.newFullnameField) {
+			this.updateButtonStatus();
+		}
 	}
 
 	@Override
