@@ -2,6 +2,12 @@ package forms;
 
 import java.util.Date;
 
+/**
+ * Represents a holiday that an administrator adds to the settings for a new semester
+ *  
+ * @author nbeltr2
+ * @author dtli2
+ */
 public class Holiday {
 	private String name;
 	private Date startDate;

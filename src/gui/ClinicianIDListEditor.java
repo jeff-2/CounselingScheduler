@@ -28,6 +28,8 @@ import db.ClinicianDao;
 import db.ConnectionFactory;
 import net.miginfocom.swing.MigLayout;
 
+import db.Clinician;
+
 /**
  * A GUI element for adding and removing clinicians from the clinician ID list. 
  * Allows saving and loading clinician list to disk.
@@ -80,10 +82,10 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	private JButton removeButton;
 
 	/**
-	 * JList storing the current list of clinician IDs
+	 * JList storing the current list of Clinicians
 	 */
 	private JList<Clinician> clinicianList;
-
+	
 	/**
 	 * JScrollPane displaying the current list of clinican IDs
 	 */

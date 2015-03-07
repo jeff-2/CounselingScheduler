@@ -2,8 +2,6 @@ package db;
 
 /**
  * The Class Clinician handles the storage of clinician data.
- * 
- * @author jmfoste2, lim92
  */
 public class Clinician implements Comparable {
 	
@@ -13,6 +11,9 @@ public class Clinician implements Comparable {
 	/** The name. */
 	private String name;
 	
+	/** The username */
+	private String username;
+	
 	/**
 	 * Instantiates a new clinician.
 	 *
@@ -20,8 +21,20 @@ public class Clinician implements Comparable {
 	 * @param n the n
 	 */
 	public Clinician(int id, String n) {
+		this(id, n, n);
+	}
+
+	/**
+	 * Instantiates a new clinician.
+	 *
+	 * @param id the id
+	 * @param n the n
+	 * @param username
+	 */
+	public Clinician(int id, String n, String username) {
 		clinicianID = id;
 		name = n;
+		this.username = username;
 	}
 
 	/**
@@ -60,6 +73,24 @@ public class Clinician implements Comparable {
 		name = n;
 	}
 	
+	/**
+	 * Gets the username.
+	 *
+	 * @return the username
+	 */
+	public String getUsername() {
+		return username;
+	}
+
+	/**
+	 * Sets the username.
+	 *
+	 * @param n the new username
+	 */
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
@@ -76,7 +107,7 @@ public class Clinician implements Comparable {
 		Clinician clinician = (Clinician)other;
 		return clinicianID == clinician.clinicianID && name.equals(clinician.name);
 	}
-
+	
 	@Override
 	public int compareTo(Object arg0) {
 		if(!(arg0 instanceof Clinician)) {

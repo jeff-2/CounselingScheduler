@@ -16,7 +16,10 @@ import org.junit.Test;
 import db.CalendarDao;
 import forms.Calendar;
 
-
+/**
+ * @author nbeltr2
+ * @author dtli2
+ */
 public class CalendarDaoTest {
 	private CalendarDao calendarDao;
 	private SimpleDateFormat format;

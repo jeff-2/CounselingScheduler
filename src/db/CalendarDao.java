@@ -1,7 +1,6 @@
 package db;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,7 +9,20 @@ import java.sql.Statement;
 
 import forms.Calendar;
 
+/**
+ * Handles interactions with the database to access the Calendar table.
+ * 
+ * @author nbeltr2
+ * @author dtli2
+ */
 public class CalendarDao {
+	
+	/**
+	 * Inserts a calendar object into the database.
+	 *
+	 * @param calendar the Calendar to add
+	 * @throws SQLException the SQL exception
+	 */
 	public void insertCalendar(Calendar calendar) throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
 				   "databaseName=CounselingScheduler;user=admin;password=admin;";
@@ -29,6 +41,12 @@ public class CalendarDao {
 		stmt.executeUpdate();
 	}
 	
+	/**
+	 * Gets the next available id for a row in the table.
+	 *
+	 * @return int representing the next available id
+	 * @throws SQLException the SQL exception
+	 */
 	public static int getNextAvailableId() throws SQLException {
 		String connectionUrl = "jdbc:sqlserver://localhost;" +
 				   "databaseName=CounselingScheduler;user=admin;password=admin;";

@@ -15,9 +15,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import db.HolidayDao;
-import forms.Calendar;
 import forms.Holiday;
 
+/**
+ * @author nbeltr2
+ * @author dtli2
+ */
 public class HolidayDaoTest {
 	private HolidayDao holidayDao;
 	private SimpleDateFormat format;
