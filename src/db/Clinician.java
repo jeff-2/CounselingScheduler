@@ -5,7 +5,7 @@ package db;
  * 
  * @author jmfoste2, lim92
  */
-public class Clinician {
+public class Clinician implements Comparable {
 	
 	/** The clinician id. */
 	private int clinicianID;
@@ -75,5 +75,18 @@ public class Clinician {
 		}
 		Clinician clinician = (Clinician)other;
 		return clinicianID == clinician.clinicianID && name.equals(clinician.name);
+	}
+
+	@Override
+	public int compareTo(Object arg0) {
+		if(!(arg0 instanceof Clinician)) {
+			return -1;
+		}
+		return this.name.compareTo(((Clinician)arg0).name);
+	}
+	
+	@Override
+	public String toString() {
+		return this.name;
 	}
 }

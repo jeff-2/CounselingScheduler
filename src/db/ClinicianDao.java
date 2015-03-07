@@ -104,4 +104,23 @@ public class ClinicianDao extends Dao {
 		stmt.close();
 		return clinicianID;
 	}
+	
+	/**
+	 * Gets the next possible clinician id.
+	 * 
+	 * @throws SQLException the SQL exception
+	 */
+	public int getNextClinicianID() throws SQLException {
+		PreparedStatement stmt = getConnection().prepareStatement("SELECT MAX(id) FROM Customers;");
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		if (!results.next()) {
+			stmt.close();
+			return -1;
+		}
+
+		int curMaxID = results.getInt("id");
+		stmt.close();
+		return curMaxID + 1;
+	}
 }
