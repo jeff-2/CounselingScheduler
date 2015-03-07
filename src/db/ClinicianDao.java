@@ -116,10 +116,10 @@ public class ClinicianDao extends Dao {
 		ResultSet results = stmt.getResultSet();
 		if (!results.next()) {
 			stmt.close();
-			return -1;
+			return 0;
 		}
 
-		int curMaxID = -1;
+		int curMaxID = 0;
 		while(results.next()) {
 			int id = results.getInt("id");
 			curMaxID = Math.max(curMaxID, id);
