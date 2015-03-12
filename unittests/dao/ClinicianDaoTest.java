@@ -2,6 +2,7 @@ package dao;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import generators.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,23 +28,19 @@ public class ClinicianDaoTest {
 	
 	private ClinicianDao clinicianDao;
 	private Connection conn;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		clinicianDao = new ClinicianDao(conn);
-		clearCliniciansTable();
+		gen = new TestDataGenerator(conn);
+		gen.clearCliniciansTable();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		clearCliniciansTable();
-	}
-	
-	private void clearCliniciansTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Clinicians");
-		stmt.execute();
-		stmt.close();
+		gen.clearCliniciansTable();
 	}
 	
 	@Test

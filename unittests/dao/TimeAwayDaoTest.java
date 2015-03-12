@@ -17,6 +17,7 @@ import org.junit.Test;
 import db.ConnectionFactory;
 import db.TimeAwayDao;
 import forms.TimeAway;
+import generators.TestDataGenerator;
 
 /**
  * 
@@ -26,23 +27,19 @@ import forms.TimeAway;
 public class TimeAwayDaoTest {
 	private TimeAwayDao timeAwayDao;
 	private Connection conn;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		timeAwayDao = new TimeAwayDao(conn);
-		clearTimeAwayTable();
+		gen = new TestDataGenerator(conn);
+		gen.clearTimeAwayTable();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		clearTimeAwayTable();
-	}
-	
-	private void clearTimeAwayTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM TimeAway");
-		stmt.execute();
-		stmt.close();
+		gen.clearTimeAwayTable();
 	}
 	
 	@Test

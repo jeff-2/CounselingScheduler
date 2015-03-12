@@ -16,27 +16,31 @@ import org.junit.Test;
 import db.ConnectionFactory;
 import db.HolidayDao;
 import forms.Holiday;
+import generators.TestDataGenerator;
 
 /**
  * @author nbeltr2
  * @author dtli2
  */
 public class HolidayDaoTest {
+	
 	private HolidayDao holidayDao;
 	private SimpleDateFormat format;
 	private Connection con;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws SQLException {
 		con = ConnectionFactory.getInstance();
 		holidayDao = new HolidayDao(con);
 		format = new SimpleDateFormat("MM/dd/yyyy");
-		clearHolidayTable();
+		gen = new TestDataGenerator(con);
+		gen.clearHolidayTable();
 	}
 	
 	@After
 	public void tearDown() throws SQLException {
-		clearHolidayTable();
+		gen.clearHolidayTable();
 	}
 
 
@@ -53,12 +57,6 @@ public class HolidayDaoTest {
 		assertEquals(new java.sql.Date(holiday.getEndDate().getTime()), output.getEndDate());
 		assertEquals(holiday.getName(), output.getName());
 
-	}
-	
-	private void clearHolidayTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Holiday");
 	}
 	
 	private Holiday getFirstHolidayTableRow() throws SQLException {

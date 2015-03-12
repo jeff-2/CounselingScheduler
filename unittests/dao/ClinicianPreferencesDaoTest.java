@@ -16,6 +16,7 @@ import org.junit.Test;
 import db.ClinicianPreferencesDao;
 import db.ConnectionFactory;
 import forms.ClinicianPreferences;
+import generators.TestDataGenerator;
 
 /**
  * 
@@ -23,25 +24,22 @@ import forms.ClinicianPreferences;
  *
  */
 public class ClinicianPreferencesDaoTest {
+	
 	private ClinicianPreferencesDao clinicianPreferencesDao;
 	private Connection conn;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		clinicianPreferencesDao = new ClinicianPreferencesDao(conn);
-		clearClinicianPreferencesTable();
+		gen = new TestDataGenerator(conn);
+		gen.clearClinicianPreferencesTable();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		clearClinicianPreferencesTable();
-	}
-	
-	private void clearClinicianPreferencesTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM ClinicianPreferences");
-		stmt.execute();
-		stmt.close();
+		gen.clearClinicianPreferencesTable();
 	}
 	
 	@Test

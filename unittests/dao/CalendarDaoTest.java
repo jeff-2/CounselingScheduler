@@ -15,6 +15,7 @@ import org.junit.Test;
 import db.CalendarDao;
 import db.ConnectionFactory;
 import forms.Calendar;
+import generators.TestDataGenerator;
 
 /**
  * @author nbeltr2
@@ -24,18 +25,20 @@ public class CalendarDaoTest {
 	private CalendarDao calendarDao;
 	private SimpleDateFormat format;
 	private Connection con;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws SQLException {
 		con = ConnectionFactory.getInstance();
 		calendarDao = new CalendarDao(con);
 		format = new SimpleDateFormat("MM/dd/yyyy");
-		clearCalendarTable();
+		gen = new TestDataGenerator(con);
+		gen.clearCalendarTable();
 	}
 	
 	@After
 	public void tearDown() throws SQLException {
-		clearCalendarTable();
+		gen.clearCalendarTable();
 	}
 
 	@Test
@@ -68,12 +71,6 @@ public class CalendarDaoTest {
 		assertEquals(calendar.getIaMinHours(), output.getIaMinHours());
 		assertEquals(calendar.getEcMinHours(), output.getEcMinHours());
 
-	}
-	
-	private void clearCalendarTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Calendar");
 	}
 	
 	private void generateCalendarData() throws SQLException {

@@ -16,6 +16,7 @@ import org.junit.Test;
 import db.CommitmentsDao;
 import db.ConnectionFactory;
 import forms.Commitment;
+import generators.TestDataGenerator;
 
 /**
  * 
@@ -26,23 +27,19 @@ public class CommitmentsDaoTest {
 
 	private CommitmentsDao commitmentsDao;
 	private Connection conn;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		commitmentsDao = new CommitmentsDao(conn);
-		clearCommitmentsTable();
+		gen = new TestDataGenerator(conn);
+		gen.clearCommitmentsTable();
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		clearCommitmentsTable();
-	}
-	
-	private void clearCommitmentsTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Commitments");
-		stmt.execute();
-		stmt.close();
+		gen.clearCommitmentsTable();
 	}
 	
 	@Test
