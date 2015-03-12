@@ -1,9 +1,6 @@
 package gui.admin;
 
-import static org.junit.Assert.assertEquals;
-
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,9 +14,8 @@ import org.uispec4j.Window;
 import org.uispec4j.interception.MainClassAdapter;
 
 import db.CalendarDao;
+import db.ConnectionFactory;
 import db.HolidayDao;
-import forms.Calendar;
-import forms.Holiday;
 
 /**
  * The Class NewSemesterSettingsTest.
@@ -29,6 +25,7 @@ import forms.Holiday;
  */
 public class NewSemesterSettingsTest extends UISpecTestCase {
 	
+	private Connection con;
 	private HolidayDao holidayDao;
 	private CalendarDao calendarDao;
 	private SimpleDateFormat format;
@@ -38,7 +35,8 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	 */
 	protected void setUp() throws Exception {
 		setAdapter(new MainClassAdapter(NewSemesterSettingsRunner.class, new String[0]));
-		holidayDao = new HolidayDao();
+		con = ConnectionFactory.getInstance();
+		holidayDao = new HolidayDao(con);
 		format = new SimpleDateFormat("MM/dd/yyyy");
 		clearHolidayTable();
 		clearCalendarTable();
@@ -161,9 +159,6 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	}
 	
 	private int countRowsInHolidayTable() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("SELECT COUNT(*) AS count FROM Holiday");
@@ -173,9 +168,6 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	}
 	
 	private int countRowsInCalendarTable() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("SELECT COUNT(*) AS count FROM Calendar");
@@ -185,18 +177,12 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	}
 	
 	private void clearHolidayTable() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("DELETE FROM Holiday");
 	}
 	
 	private void clearCalendarTable() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("DELETE FROM Calendar");

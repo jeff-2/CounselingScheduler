@@ -2,7 +2,6 @@ package dao;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import db.CalendarDao;
+import db.ConnectionFactory;
 import forms.Calendar;
 
 /**
@@ -23,10 +23,12 @@ import forms.Calendar;
 public class CalendarDaoTest {
 	private CalendarDao calendarDao;
 	private SimpleDateFormat format;
+	private Connection con;
 	
 	@Before
 	public void setUp() throws SQLException {
-		calendarDao = new CalendarDao();
+		con = ConnectionFactory.getInstance();
+		calendarDao = new CalendarDao(con);
 		format = new SimpleDateFormat("MM/dd/yyyy");
 		clearCalendarTable();
 	}
@@ -69,18 +71,12 @@ public class CalendarDaoTest {
 	}
 	
 	private void clearCalendarTable() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("DELETE FROM Calendar");
 	}
 	
 	private void generateCalendarData() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
@@ -90,9 +86,6 @@ public class CalendarDaoTest {
 	}
 	
 	private Calendar getFirstCalendarTableRow() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("Select * From Calendar");

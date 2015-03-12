@@ -3,6 +3,7 @@ package gui.admin;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -23,6 +24,7 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 import db.CalendarDao;
+import db.ConnectionFactory;
 import db.HolidayDao;
 import forms.Calendar;
 import forms.Holiday;
@@ -198,9 +200,10 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 					calendar.setEcMinHours(Integer.parseInt(ECHoursText.getText()));
 					calendar.setIaMinHours(Integer.parseInt(IAHoursText.getText()));
 
-					CalendarDao calendarDao = new CalendarDao();
-					HolidayDao holidayDao = new HolidayDao();
 					try {
+						Connection conn = ConnectionFactory.getInstance();
+						CalendarDao calendarDao = new CalendarDao(conn);
+						HolidayDao holidayDao = new HolidayDao(conn);
 						int calendarId = calendarDao.getNextAvailableId();
 						calendar.setId(calendarId);
 						calendarDao.insertCalendar(calendar);

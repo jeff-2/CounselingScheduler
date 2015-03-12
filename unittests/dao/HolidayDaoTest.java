@@ -3,7 +3,6 @@ package dao;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -14,6 +13,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import db.ConnectionFactory;
 import db.HolidayDao;
 import forms.Holiday;
 
@@ -24,10 +24,12 @@ import forms.Holiday;
 public class HolidayDaoTest {
 	private HolidayDao holidayDao;
 	private SimpleDateFormat format;
+	private Connection con;
 	
 	@Before
 	public void setUp() throws SQLException {
-		holidayDao = new HolidayDao();
+		con = ConnectionFactory.getInstance();
+		holidayDao = new HolidayDao(con);
 		format = new SimpleDateFormat("MM/dd/yyyy");
 		clearHolidayTable();
 	}
@@ -54,18 +56,12 @@ public class HolidayDaoTest {
 	}
 	
 	private void clearHolidayTable() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("DELETE FROM Holiday");
 	}
 	
 	private Holiday getFirstHolidayTableRow() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("Select * From Holiday");

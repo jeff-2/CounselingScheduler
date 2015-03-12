@@ -1,7 +1,6 @@
 package db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -15,8 +14,12 @@ import forms.Calendar;
  * @author nbeltr2
  * @author dtli2
  */
-public class CalendarDao {
+public class CalendarDao extends Dao {
 	
+	public CalendarDao(Connection conn) {
+		super(conn);
+	}
+
 	/**
 	 * Inserts a calendar object into the database.
 	 *
@@ -24,9 +27,7 @@ public class CalendarDao {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insertCalendar(Calendar calendar) throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
+		Connection con = getConnection();
 		
 		PreparedStatement stmt = con.prepareStatement("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
 				+ "ecMinHours, term) VALUES(?, ?, ?, ?, ?, ?)");
@@ -48,9 +49,7 @@ public class CalendarDao {
 	 * @throws SQLException the SQL exception
 	 */
 	public static int getNextAvailableId() throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
+		Connection con = ConnectionFactory.getInstance();
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("SELECT COUNT(*) AS count FROM Calendar");

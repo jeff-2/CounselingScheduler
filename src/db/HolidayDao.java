@@ -1,7 +1,6 @@
 package db;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -10,8 +9,12 @@ import forms.Holiday;
 /**
  * Handles interactions with the database to access the Holiday table.
  */
-public class HolidayDao {
+public class HolidayDao extends Dao {
 	
+	public HolidayDao(Connection conn) {
+		super(conn);
+	}
+
 	/**
 	 * Inserts holiday object into the database.
 	 *
@@ -21,9 +24,8 @@ public class HolidayDao {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insertHoliday(Holiday holiday, int calendarId, int id) throws SQLException {
-		String connectionUrl = "jdbc:sqlserver://localhost;" +
-				   "databaseName=CounselingScheduler;user=admin;password=admin;";
-		Connection con = DriverManager.getConnection(connectionUrl);
+
+		Connection con = getConnection();
 		
 		PreparedStatement stmt = con.prepareStatement("INSERT INTO Holiday(id, calendarId, "
 				+ "name, startDate, endDate) VALUES (?, ?, ?, ?, ?)");
