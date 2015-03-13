@@ -9,9 +9,29 @@ import java.util.Date;
  * @author dtli2
  */
 public class HolidayBean {
+	int id;
 	private String name;
 	private Date startDate;
 	private Date endDate;
+	
+	/**
+	 * Default constructor
+	 */
+	public HolidayBean() {}
+	
+	/**
+	 * Full constructor
+	 */
+	public HolidayBean(int index, String n, Date start, Date end) {
+		id = index;
+		name = n;
+		startDate = start;
+		endDate = end;
+	}
+	
+	public int getID() {
+		return id;
+	}
 	
 	public String getName() {
 		return name;
