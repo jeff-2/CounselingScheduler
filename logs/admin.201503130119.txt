@@ -1,5 +1,0 @@
-Started admin application.
-Started edit semester settings task.
-Tried to start edit meetings task.
-Closing admin application.
-Closing logfile logs/admin.201503130119.txt
