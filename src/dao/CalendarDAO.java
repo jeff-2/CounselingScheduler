@@ -41,6 +41,29 @@ public class CalendarDAO extends DAO {
 		
 		stmt.executeUpdate();
 	}
+
+	/**
+	 * Inserts a calendar object into the database.
+	 *
+	 * @param calendar the Calendar to add
+	 * @throws SQLException the SQL exception
+	 */
+	public CalendarBean loadCalendar() throws SQLException {
+		Connection conn = getConnection();
+		Statement stmt = conn.createStatement();
+		stmt.execute("Select * From Calendar");
+		
+		ResultSet res = stmt.getResultSet();
+		res.next();
+		CalendarBean cal = new CalendarBean();
+		cal.setId(res.getInt("id"));
+		cal.setStartDate(res.getDate("startDate"));
+		cal.setEndDate(res.getDate("endDate"));
+		cal.setIaMinHours(res.getInt("iaMinHours"));
+		cal.setEcMinHours(res.getInt("ecMinHours"));
+		cal.setSemester(res.getInt("term"));
+		return cal;
+	}
 	
 	/**
 	 * Gets the next available id for a row in the table.
