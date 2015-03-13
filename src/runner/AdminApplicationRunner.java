@@ -25,7 +25,6 @@ public class AdminApplicationRunner {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
 		// Set up logger
-		Logger.setDebugStatus(true);
 		Logger.initialize("admin");
 		Logger.logln("Started admin application.");
 		
