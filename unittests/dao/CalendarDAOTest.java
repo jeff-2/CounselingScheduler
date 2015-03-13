@@ -63,7 +63,7 @@ public class CalendarDAOTest {
 		calendar.setEcMinHours(44);
 		calendarDAO.insertCalendar(calendar);
 		
-		CalendarBean output = getFirstCalendarTableRow();
+		CalendarBean output = calendarDAO.loadCalendar();
 		assertEquals(calendar.getId(), output.getId());
 		assertEquals(calendar.getSemester(), output.getSemester());
 		assertEquals(new java.sql.Date(calendar.getStartDate().getTime()), output.getStartDate());

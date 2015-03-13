@@ -11,9 +11,6 @@ public class ClinicianBean implements Comparable {
 	/** The name. */
 	private String name;
 	
-	/** The username */
-	private String username;
-	
 	/**
 	 * Instantiates a new clinician.
 	 *
@@ -21,20 +18,8 @@ public class ClinicianBean implements Comparable {
 	 * @param n the n
 	 */
 	public ClinicianBean(int id, String n) {
-		this(id, n, n);
-	}
-
-	/**
-	 * Instantiates a new clinician.
-	 *
-	 * @param id the id
-	 * @param n the n
-	 * @param username
-	 */
-	public ClinicianBean(int id, String n, String username) {
 		clinicianID = id;
 		name = n;
-		this.username = username;
 	}
 
 	/**
@@ -71,24 +56,6 @@ public class ClinicianBean implements Comparable {
 	 */
 	public void setName(String n) {
 		name = n;
-	}
-	
-	/**
-	 * Gets the username.
-	 *
-	 * @return the username
-	 */
-	public String getUsername() {
-		return username;
-	}
-
-	/**
-	 * Sets the username.
-	 *
-	 * @param n the new username
-	 */
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 	/* (non-Javadoc)

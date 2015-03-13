@@ -36,7 +36,7 @@ public class TimeAwayDAO extends DAO {
 		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, timeAway.getClinicianID());
 		stmt.setLong(2, timeAway.getStartDate().getTime());
-		stmt.setLong(3, timeAway.getEndDate().getTime());
+		stmt.setLong(3, timeAway.getEndDate().getTime());	
 		stmt.setString(4, timeAway.getDescription());
 		stmt.execute();
 		stmt.close();
