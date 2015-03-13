@@ -48,16 +48,6 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * The main panel for the GUI frame
 	 */
 	private final JPanel panel;
-
-	/**
-	 * JLabel for new clinican username field
-	 */
-	private JLabel newUsernameLabel;
-	
-	/**
-	 * JTextField for entering the username of a new clinician
-	 */
-	private JTextField newUsernameField;
 	
 	/**
 	 * JLabel for new clinican name field
@@ -149,12 +139,6 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.panel.setPreferredSize( new Dimension( 400, 480 ) );
 		// Set exit behavior
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// Add label and username field for new clinicians
-		this.newUsernameLabel = new JLabel("New Clinician Username:");
-		this.panel.add(newUsernameLabel, "gapleft 30");
-		this.newUsernameField = new JTextField();
-		this.newUsernameField.addKeyListener(this);
-		this.panel.add(newUsernameField, "span, grow, wrap 15px");
 		// Add label and full name field for new clinicians
 		this.newFullnameLabel = new JLabel("New Clinician Name:");
 		this.panel.add(newFullnameLabel, "gapleft 30");
@@ -213,7 +197,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * @param e 
 	 */
 	private void updateButtonStatus() {
-		boolean emptyClinicianID = this.newUsernameField.getText().isEmpty() || this.newFullnameField.getText().isEmpty();
+		boolean emptyClinicianID = this.newFullnameField.getText().isEmpty();
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
@@ -227,9 +211,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 */
 	private void addNewClinicianID() {
 		// TODO: Modify Clinicians table to store username as well; check for unique USERNAME, not full name.
-		String newClinicianUserName = this.newUsernameField.getText().trim();
 		String newClinicianName = this.newFullnameField.getText().trim();
-		this.newUsernameField.setText("");
 		this.newFullnameField.setText("");
 		if(newClinicianName.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
@@ -294,7 +276,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getSource() == this.newUsernameField || e.getSource() == this.newFullnameField) {
+		if(e.getSource() == this.newFullnameField) {
 			this.updateButtonStatus();
 		}
 	}
