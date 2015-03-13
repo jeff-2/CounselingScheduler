@@ -1,6 +1,6 @@
 package runner;
 
-import gui.clinician.ClinicianIDListEditor;
+import gui.admin.ClinicianIDListEditor;
 
 import javax.swing.UIManager;
 

@@ -1,4 +1,4 @@
-package gui.clinician;
+package gui.admin;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -109,7 +109,6 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.panel = new JPanel(new MigLayout("gap rel 0", "grow"));
 		this.initializeFrame();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-		// TODO: initialize Clinician ID list data structure
 	}
 
 	/**
@@ -223,7 +222,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	/**
 	 * Adds a new clinician ID to the list, where the ID is taken
 	 * from the input text box. Checks that the new ID is non-empty
-	 * and that the ID does not already exist. Creates an error dialog
+	 * and that the ID does not already exist. Creates an error g
 	 * if this is not the case.
 	 */
 	private void addNewClinicianID() {
