@@ -13,9 +13,10 @@ import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.MainClassAdapter;
 
-import db.CalendarDao;
-import db.ConnectionFactory;
-import db.HolidayDao;
+import runner.NewSemesterSettingsRunner;
+import dao.CalendarDAO;
+import dao.ConnectionFactory;
+import dao.HolidayDAO;
 
 /**
  * The Class NewSemesterSettingsTest.
@@ -26,8 +27,8 @@ import db.HolidayDao;
 public class NewSemesterSettingsTest extends UISpecTestCase {
 	
 	private Connection con;
-	private HolidayDao holidayDao;
-	private CalendarDao calendarDao;
+	private HolidayDAO holidayDAO;
+	private CalendarDAO calendarDAO;
 	private SimpleDateFormat format;
 
 	/* (non-Javadoc)
@@ -36,7 +37,7 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	protected void setUp() throws Exception {
 		setAdapter(new MainClassAdapter(NewSemesterSettingsRunner.class, new String[0]));
 		con = ConnectionFactory.getInstance();
-		holidayDao = new HolidayDao(con);
+		holidayDAO = new HolidayDAO(con);
 		format = new SimpleDateFormat("MM/dd/yyyy");
 		clearHolidayTable();
 		clearCalendarTable();

@@ -1,6 +1,7 @@
 package action;
 
 import static org.junit.Assert.assertEquals;
+import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,13 +13,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import db.ClinicianPreferencesDao;
-import db.CommitmentsDao;
-import db.ConnectionFactory;
-import db.TimeAwayDao;
-import forms.ClinicianPreferences;
-import forms.Commitment;
-import forms.TimeAway;
+import bean.ClinicianPreferencesBean;
+import bean.CommitmentBean;
+import bean.TimeAwayBean;
+import dao.ClinicianPreferencesDAO;
+import dao.CommitmentsDAO;
+import dao.ConnectionFactory;
+import dao.TimeAwayDAO;
 
 /**
  * 
@@ -29,25 +30,24 @@ public class ClinicianPreferencesActionTest {
 
 	private ClinicianPreferencesAction action;
 	private Connection conn;
-	private List<Commitment> commitments;
-	private ClinicianPreferences preferences;
-	private List<TimeAway> timeAway;
-	private ClinicianPreferencesDao clinicianPreferencesDao;
-	private CommitmentsDao commitmentsDao;
-	private TimeAwayDao timeAwayDao;
+	private List<CommitmentBean> commitments;
+	private ClinicianPreferencesBean preferences;
+	private List<TimeAwayBean> timeAway;
+	private ClinicianPreferencesDAO clinicianPreferencesDAO;
+	private CommitmentsDAO commitmentsDAO;
+	private TimeAwayDAO timeAwayDAO;
+	private TestDataGenerator gen;
 	
 	@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		
-		clearCliniciansTable();
-		clearClinicianPreferencesTable();
-		clearCommitmentsTable();
-		clearTimeAwayTable();
+		gen = new TestDataGenerator(conn);
+		gen.clearTables();
 		
-		clinicianPreferencesDao = new ClinicianPreferencesDao(conn);
-		commitmentsDao = new CommitmentsDao(conn);
-		timeAwayDao = new TimeAwayDao(conn);
+		clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		commitmentsDAO = new CommitmentsDAO(conn);
+		timeAwayDAO = new TimeAwayDAO(conn);
 		
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
 		stmt.setInt(1, 0);
@@ -55,48 +55,21 @@ public class ClinicianPreferencesActionTest {
 		stmt.execute();
 		stmt.close();
 		
-		preferences = new ClinicianPreferences(0, 1, 2, 3);
-		commitments = new ArrayList<Commitment>();
-		commitments.add(new Commitment(0, 8, "Wednesday", "desc"));
-		commitments.add(new Commitment(0, 10, "Monday", "other desc"));
+		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		commitments = new ArrayList<CommitmentBean>();
+		commitments.add(new CommitmentBean(0, 8, "Wednesday", "desc"));
+		commitments.add(new CommitmentBean(0, 10, "Monday", "other desc"));
 		
-		timeAway = new ArrayList<TimeAway>();
-		timeAway.add(new TimeAway(0, "some desc", new Date(1000000l), new Date(12512500000l)));
-		timeAway.add(new TimeAway(0, "some other desc", new Date(5l), new Date(1555555l)));
+		timeAway = new ArrayList<TimeAwayBean>();
+		timeAway.add(new TimeAwayBean(0, "some desc", new Date(1000000l), new Date(12512500000l)));
+		timeAway.add(new TimeAwayBean(0, "some other desc", new Date(5l), new Date(1555555l)));
 		
 		action = new ClinicianPreferencesAction(preferences, commitments, timeAway, conn);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		clearCliniciansTable();
-		clearClinicianPreferencesTable();
-		clearCommitmentsTable();
-		clearTimeAwayTable();
-	}
-	
-	private void clearCliniciansTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Clinicians");
-		stmt.execute();
-		stmt.close();
-	}
-	
-	private void clearClinicianPreferencesTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM ClinicianPreferences");
-		stmt.execute();
-		stmt.close();
-	}
-	
-	private void clearCommitmentsTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Commitments");
-		stmt.execute();
-		stmt.close();
-	}
-	
-	private void clearTimeAwayTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM TimeAway");
-		stmt.execute();
-		stmt.close();
+		gen.clearTables();
 	}
 	
 	@Test
@@ -104,20 +77,20 @@ public class ClinicianPreferencesActionTest {
 		
 		action.insertPreferences();
 		
-		ClinicianPreferences prefs = new ClinicianPreferences(0, 3, 2, 1);
-		List<Commitment> cmts = new ArrayList<Commitment>();
-		cmts.add(new Commitment(0, 11, "Tuesday", "apple"));
-		cmts.add(new Commitment(0, 14, "Thursday", "pear"));
+		ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2, 1);
+		List<CommitmentBean> cmts = new ArrayList<CommitmentBean>();
+		cmts.add(new CommitmentBean(0, 11, "Tuesday", "apple"));
+		cmts.add(new CommitmentBean(0, 14, "Thursday", "pear"));
 		
-		List<TimeAway> tsAway = new ArrayList<TimeAway>();
-		tsAway.add(new TimeAway(0, "orange", new Date(1000l), new Date(1251000l)));
+		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
+		tsAway.add(new TimeAwayBean(0, "orange", new Date(1000l), new Date(1251000l)));
 		
 		ClinicianPreferencesAction a = new ClinicianPreferencesAction(prefs, cmts, tsAway, conn);
 		a.updatePreferences();
 		
-		ClinicianPreferences actualPreferences = clinicianPreferencesDao.loadClinicianPreferences(0);
-		List<Commitment> actualCommitments = commitmentsDao.loadCommitments(0);
-		List<TimeAway> actualTimeAway = timeAwayDao.loadTimeAway(0);
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDAO.loadTimeAway(0);
 		
 		assertEquals(prefs, actualPreferences);
 		assertEquals(cmts, actualCommitments);
@@ -128,9 +101,9 @@ public class ClinicianPreferencesActionTest {
 	public void testInsertPreferences() throws Exception {
 		action.insertPreferences();
 		
-		ClinicianPreferences actualPreferences = clinicianPreferencesDao.loadClinicianPreferences(0);
-		List<Commitment> actualCommitments = commitmentsDao.loadCommitments(0);
-		List<TimeAway> actualTimeAway = timeAwayDao.loadTimeAway(0);
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDAO.loadTimeAway(0);
 		
 		assertEquals(preferences, actualPreferences);
 		assertEquals(commitments, actualCommitments);

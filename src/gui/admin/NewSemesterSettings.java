@@ -22,14 +22,14 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import validator.InvalidDateRangeException;
+import bean.CalendarBean;
+import bean.HolidayBean;
+import bean.Semester;
 import net.miginfocom.swing.MigLayout;
-import db.CalendarDao;
-import db.ConnectionFactory;
-import db.HolidayDao;
-import forms.Calendar;
-import forms.Holiday;
-import forms.Semester;
-import gui.InvalidDateRangeException;
+import dao.CalendarDAO;
+import dao.ConnectionFactory;
+import dao.HolidayDAO;
 
 /**
  * Interface for the administrator to initialize the settings for the new semester. 
@@ -49,7 +49,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private JComboBox<String> semesterSeasonBox;
 	private JScrollPane listScrollPane;
 	private JList<String> holidayStringList;
-	private List<Holiday> holidayList = new ArrayList<Holiday>();
+	private List<HolidayBean> holidayList = new ArrayList<HolidayBean>();
 
 
 	/**
@@ -187,7 +187,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 
 			public void actionPerformed(ActionEvent e) {
 				if (createSemester()) {
-					Calendar calendar = new Calendar();
+					CalendarBean calendar = new CalendarBean();
 					SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 					try {
 						calendar.setStartDate(format.parse(startDateText.getText()));
@@ -202,8 +202,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 
 					try {
 						Connection conn = ConnectionFactory.getInstance();
-						CalendarDao calendarDao = new CalendarDao(conn);
-						HolidayDao holidayDao = new HolidayDao(conn);
+						CalendarDAO calendarDao = new CalendarDAO(conn);
+						HolidayDAO holidayDao = new HolidayDAO(conn);
 						int calendarId = calendarDao.getNextAvailableId();
 						calendar.setId(calendarId);
 						calendarDao.insertCalendar(calendar);
@@ -388,7 +388,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		DefaultListModel<String> model = (DefaultListModel<String>) holidayStringList.getModel();
 		model.add(model.size(), holiday + " " + startDate + "-" + endDate);
 
-		Holiday h = new Holiday();
+		HolidayBean h = new HolidayBean();
 		h.setName(holiday);
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		h.setStartDate(format.parse(startDate));

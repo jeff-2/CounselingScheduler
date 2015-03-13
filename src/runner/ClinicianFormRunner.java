@@ -3,7 +3,7 @@ package runner;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
-import gui.ClinicianForm;
+import gui.clinician.ClinicianForm;
 
 /**
  * 
