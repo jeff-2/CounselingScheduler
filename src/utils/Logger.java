@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * A static class for logging debug statements to file
  *  
- * @author ramusa2
+ * @author ramusa2, jmfoste2
  *
  */
 public abstract class Logger {
@@ -17,7 +17,7 @@ public abstract class Logger {
 	/**
 	 * Default directory for writing logs
 	 */
-	private static final String DEFAULT_DIR_NAME = "logs/";
+	private static String DEFAULT_DIR_NAME = "logs/";
 	
 	/**
 	 * Name of the log file
@@ -41,8 +41,6 @@ public abstract class Logger {
 	
 	// Set initial state (both logging and debugging off)
 	static {
-		File logDir = new File(Logger.DEFAULT_DIR_NAME);
-		logDir.mkdirs();
 		Logger.LOG_FILE_NAME = "";
 		Logger.PW = null;
 		Logger.LOG = false;
@@ -76,6 +74,8 @@ public abstract class Logger {
 	public static void openFileForLogging(String filename) {
 		Logger.closeFileForLogging();
 		try {
+			File logDir = new File(Logger.DEFAULT_DIR_NAME);
+			logDir.mkdirs();
 			Logger.PW = new PrintWriter(new File(filename));
 			Logger.LOG_FILE_NAME = filename;
 			Logger.LOG = true;
@@ -165,5 +165,46 @@ public abstract class Logger {
 	 */
 	public static void logln(String statement) {
 		Logger.log(statement+"\n");
+	}
+
+	/**
+	 * Returns the name of this current log file
+	 */
+	public static String getLogFileName() {
+		return Logger.LOG_FILE_NAME;
+	}
+	
+	/**
+	 * Returns the directory the logs are written to
+	 */
+	public static String getLogDir() {
+		return Logger.DEFAULT_DIR_NAME;
+	}
+	
+
+
+	/**
+	 * Sets the log directory
+	 */
+	public static void setLogDir(String dir) {
+		if(!dir.endsWith("/")) {
+			dir += "/";
+		}
+		Logger.closeFileForLogging();
+		Logger.DEFAULT_DIR_NAME = dir;
+	}
+
+	/**
+	 * Returns true if the logger is set to write to file
+	 */
+	public static boolean getLogStatus() {
+		return Logger.LOG;
+	}
+
+	/**
+	 * Returns true if the logger is set to write to file
+	 */
+	public static boolean getDebugStatus() {
+		return Logger.DEBUG;
 	}
 }
