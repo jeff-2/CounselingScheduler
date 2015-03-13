@@ -19,6 +19,8 @@ public class TestDataGenerator {
 		clearClinicianPreferencesTable();
 		clearCommitmentsTable();
 		clearTimeAwayTable();
+		clearSessionsTable();
+		clearSessionCliniciansTable();
 	}
 	
 	public void clearCalendarTable() throws SQLException {
@@ -54,6 +56,18 @@ public class TestDataGenerator {
 	public void clearTimeAwayTable() throws SQLException {
 		Statement stmt = conn.createStatement();
 		stmt.execute("DELETE FROM TimeAway");
+		stmt.close();
+	}
+	
+	public void clearSessionsTable() throws SQLException {
+		Statement stmt = conn.createStatement();
+		stmt.execute("DELETE FROM Sessions");
+		stmt.close();
+	}
+	
+	public void clearSessionCliniciansTable() throws SQLException {
+		Statement stmt = conn.createStatement();
+		stmt.execute("DELETE FROM SessionClinicians");
 		stmt.close();
 	}
 }

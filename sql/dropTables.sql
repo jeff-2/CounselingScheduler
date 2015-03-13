@@ -15,3 +15,9 @@ DROP TABLE Holiday;
 
 IF OBJECT_ID('TimeAway') IS NOT NULL
 DROP TABLE TimeAway;
+
+IF OBJECT_ID('Sessions') IS NOT NULL
+DROP TABLE Sessions;
+
+IF OBJECT_ID('SessionClinicians') IS NOT NULL
+DROP TABLE SessionClinicians;

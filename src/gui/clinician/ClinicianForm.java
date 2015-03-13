@@ -368,18 +368,7 @@ public class ClinicianForm extends JPanel implements ActionListener {
 		
 		DefaultListModel<CommitmentBean> model = (DefaultListModel<CommitmentBean>) commitments.getModel();
 
-		String hr = hourOfDay.replaceAll("\\D+", "");
-		int hour;
-		try {
-			hour = Integer.parseInt(hr);
-		} catch (NumberFormatException e) {
-			throw new RuntimeException("Should never happen");
-		}
-		if (hourOfDay.contains("pm")) {
-			hour += 12;
-		}
-
-		model.add(model.size(), new CommitmentBean(-1, hour, dayOfWeek, description));
+		model.add(model.size(), new CommitmentBean(-1, OperatingHours.toInt(hourOfDay), dayOfWeek, description));
 	}
 	
 	/**

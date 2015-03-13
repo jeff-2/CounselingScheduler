@@ -110,13 +110,8 @@ public class CommitmentBean {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		String hour = "";
-		if (hourOfDay >= 12) {
-			hour = (hourOfDay - 12) + " pm";
-		} else {
-			hour = hourOfDay + " am";
-		}
-		return hour + " " + dayOfWeek + " " + description;
+
+		return OperatingHours.toString(hourOfDay) + " " + dayOfWeek + " " + description;
 	}
 	
 	/* (non-Javadoc)

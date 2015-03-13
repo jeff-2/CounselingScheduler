@@ -43,3 +43,18 @@ CREATE TABLE TimeAway (
 	endDate bigint NOT NULL,
 	description varchar(50) NOT NULL
 );
+
+CREATE TABLE Sessions (
+	id int,
+	startTime int NOT NULL,
+	duration int NOT NULL,
+	weekday varchar(9) NOT NULL,
+	sDate bigint NOT NULL,
+	sType int NOT NULL,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE SessionClinicians (
+	clinicianID int NOT NULL,
+	sessionID int NOT NULL
+);
