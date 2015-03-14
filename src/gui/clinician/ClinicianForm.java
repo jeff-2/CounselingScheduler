@@ -1,5 +1,6 @@
 package gui.clinician;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -10,6 +11,7 @@ import java.util.Date;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -36,10 +38,16 @@ import net.miginfocom.swing.MigLayout;
  *
  * @author Yusheng Hou and Kevin Lim
  */
-public class ClinicianForm extends JPanel implements ActionListener {
+public class ClinicianForm extends JFrame implements ActionListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5377691259929030865L;
+	
+	/** The panel. */
+	private JPanel panel;
+	
+	/** The name label. */
+	private JLabel nameLabel, preferenceFormLabel, periodLabel, timeAwayLabel;
 	
 	/** The commitments pane. */
 	private JScrollPane timeAwayPane, commitmentsPane;
@@ -93,59 +101,98 @@ public class ClinicianForm extends JPanel implements ActionListener {
 	 * Instantiates a new clinician form.
 	 */
 	public ClinicianForm() {
-		this.setLayout(new MigLayout("gap rel", "grow"));
-
-		// create fields for adding names
-		this.add(new JLabel("NAME:"));
+		super("Clinician Input Form");
+		panel = new JPanel();
+		panel.setLayout(new MigLayout("gap rel", "grow"));
+		initializeComponents();
+		initializeFrame();
+	}
+	
+	/**
+	 * Initialize components.
+	 */
+	private void initializeComponents() {
+		initializeTextFields();
+		initializeLabels();
+		initializeButtons();
+		initializeScrollPanes();
+		initializeComboBoxes();
+	}
+	
+	/**
+	 * Initialize text fields.
+	 */
+	private void initializeTextFields() {
 		nameField = new JTextField(NAME_LENGTH);
 		nameField.setName("nameField");
-		this.add(nameField, "wrap, align center");
-
-		String preferenceFormText = "Spring 2015 IA/EC Preference Form";
-		String periodText = "This covers the period from 1/19/2015-5/10/2015.";
-		this.add(new JLabel(preferenceFormText), "align center, span, wrap");
-		this.add(new JLabel(periodText), "align center, span, wrap");
-
-		String timeAwayText = "Spring Semester 2015 \"Time Away\" Plans";
-		this.add(new JLabel(timeAwayText), "align center, span, wrap");
-		
 		timeAwayName = new JTextField(7);
 		timeAwayName.setName("timeAwayName");
 		timeAwayStartDate = new JTextField(7);
 		timeAwayStartDate.setName("timeAwayStartDate");
 		timeAwayEndDate = new JTextField(7);
 		timeAwayEndDate.setName("timeAwayEndDate");
-		
+		commitmentDescription = new JTextField(7);
+		commitmentDescription.setName("commitmentDescription");
+	}
+	
+	/**
+	 * Initialize labels.
+	 */
+	private void initializeLabels() {
+		nameLabel = new JLabel("NAME:");
+		preferenceFormLabel = new JLabel( "Spring 2015 IA/EC Preference Form");
+		periodLabel = new JLabel("This covers the period from 1/19/2015-5/10/2015.");
+		timeAwayLabel = new JLabel("Spring Semester 2015 \"Time Away\" Plans");
 		timeAwayNameLabel = new JLabel("Description");
 		timeAwayStartDateLabel = new JLabel("Start Date");
 		timeAwayEndDateLabel = new JLabel("End Date");
-		
-		timeAway = new JList<TimeAwayBean>();
-		timeAway.setModel(new DefaultListModel<TimeAwayBean>());
-		timeAwayPane = new JScrollPane(timeAway);
-		
+		commitmentHourLabel = new JLabel("Hour");
+		commitmentDayLabel = new JLabel("Day");
+		commitmentDescriptionLabel = new JLabel("Description");
+		timeLabel = new JLabel("Time");
+		rankLabel = new JLabel("Rank");
+		morningLabel = new JLabel("8:00am");
+		noonLabel = new JLabel("12:00pm");
+		afternoonLabel = new JLabel("4:00pm");
+	}
+	
+	/**
+	 * Initialize buttons.
+	 */
+	private void initializeButtons() {
 		addTimeAwayButton = new JButton("Add Time Away");
 		addTimeAwayButton.setName("addTimeAwayButton");
 		addTimeAwayButton.addActionListener(this);
 		removeTimeAwayButton = new JButton("Remove Time Away");
 		removeTimeAwayButton.addActionListener(this);
-		
-		this.add(timeAwayNameLabel);
-		this.add(timeAwayName);
-		this.add(timeAwayStartDateLabel);
-		this.add(timeAwayStartDate);
-		this.add(timeAwayEndDateLabel);
-		this.add(timeAwayEndDate, "wrap");
-		
-		this.add(timeAwayPane, "grow, span, wrap");
-		
-		this.add(addTimeAwayButton);
-		this.add(removeTimeAwayButton, "wrap");
-		
+		addCommitmentButton = new JButton("Add Commitment");
+		addCommitmentButton.setName("addCommitmentButton");
+		addCommitmentButton.addActionListener(this);
+		removeCommitmentButton = new JButton("Remove Commitment");
+		removeCommitmentButton.addActionListener(this);
+		clearButton = new JButton("Clear");
+		clearButton.addActionListener(this);
+		submitButton = new JButton("Submit");
+		submitButton.setName("submitButton");
+		submitButton.addActionListener(this);
+	}
+	
+	/**
+	 * Initialize scroll panes.
+	 */
+	private void initializeScrollPanes() {
+		timeAway = new JList<TimeAwayBean>();
+		timeAway.setModel(new DefaultListModel<TimeAwayBean>());
+		timeAwayPane = new JScrollPane(timeAway);
 		commitments = new JList<CommitmentBean>();
 		commitments.setModel(new DefaultListModel<CommitmentBean>());
 		commitmentsPane = new JScrollPane(commitments);
-		
+	}
+	
+	/**
+	 * Initialize combo boxes.
+	 */
+	private void initializeComboBoxes() {
 		operatingHoursBox = new JComboBox<String>();
 		operatingHoursBox.setName("operatingHoursBox");
 		for (String hour : OperatingHours.getOperatingHours()) {
@@ -157,31 +204,6 @@ public class ClinicianForm extends JPanel implements ActionListener {
 		for (Weekday day : Weekday.values()) {
 			daysOfWeekBox.addItem(day.name());
 		}
-		commitmentDescription = new JTextField(7);
-		commitmentDescription.setName("commitmentDescription");
-
-		commitmentHourLabel = new JLabel("Hour");
-		commitmentDayLabel = new JLabel("Day");
-		commitmentDescriptionLabel = new JLabel("Description");
-		
-		addCommitmentButton = new JButton("Add Commitment");
-		addCommitmentButton.setName("addCommitmentButton");
-		addCommitmentButton.addActionListener(this);
-		removeCommitmentButton = new JButton("Remove Commitment");
-		removeCommitmentButton.addActionListener(this);
-
-		this.add(commitmentHourLabel);
-		this.add(operatingHoursBox);
-		this.add(commitmentDayLabel);
-		this.add(daysOfWeekBox);
-		this.add(commitmentDescriptionLabel);
-		this.add(commitmentDescription, "wrap");
-		
-		this.add(commitmentsPane, "grow, span, wrap");
-		
-		this.add(addCommitmentButton);
-		this.add(removeCommitmentButton, "wrap");
-		
 		morningRankBox = new JComboBox<Integer>();
 		morningRankBox.setName("morningRankBox");
 		noonRankBox = new JComboBox<Integer>();
@@ -193,30 +215,77 @@ public class ClinicianForm extends JPanel implements ActionListener {
 			noonRankBox.addItem(i);
 			afternoonRankBox.addItem(i);
 		}
-		
-		timeLabel = new JLabel("Time");
-		rankLabel = new JLabel("Rank");
-		morningLabel = new JLabel("8:00am");
-		noonLabel = new JLabel("12:00pm");
-		afternoonLabel = new JLabel("4:00pm");
-		
-		this.add(timeLabel);
-		this.add(morningLabel);
-		this.add(noonLabel);
-		this.add(afternoonLabel, "wrap");
-		this.add(rankLabel);
-		this.add(morningRankBox);
-		this.add(noonRankBox);
-		this.add(afternoonRankBox, "wrap");
-
-		clearButton = new JButton("Clear");
-		clearButton.addActionListener(this);
-		submitButton = new JButton("Submit");
-		submitButton.setName("submitButton");
-		submitButton.addActionListener(this);
-		this.add(clearButton);
-		this.add(submitButton, "wrap");
 	}
+	
+	/**
+	 * Initialize frame.
+	 */
+	private void initializeFrame() {
+		panel.setPreferredSize(new Dimension(600, 600));
+		
+		panel.add(nameLabel);
+		panel.add(nameField, "wrap, align center");
+		panel.add(preferenceFormLabel, "align center, span, wrap");
+		panel.add(periodLabel, "align center, span, wrap");
+		
+		addTimeAwayComponents();
+		addCommitmentComponents();
+		addPreferenceComponents();
+		
+		panel.add(clearButton);
+		panel.add(submitButton, "wrap");
+		
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.getContentPane().add(panel);
+		this.pack();
+		this.setVisible(true);
+	}
+	
+	/**
+	 * Adds the time away components.
+	 */
+	private void addTimeAwayComponents() {
+		panel.add(timeAwayLabel, "align center, span, wrap");
+		panel.add(timeAwayNameLabel);
+		panel.add(timeAwayName);
+		panel.add(timeAwayStartDateLabel);
+		panel.add(timeAwayStartDate);
+		panel.add(timeAwayEndDateLabel);
+		panel.add(timeAwayEndDate, "wrap");
+		panel.add(timeAwayPane, "grow, span, wrap");
+		panel.add(addTimeAwayButton);
+		panel.add(removeTimeAwayButton, "wrap");
+	}
+	
+	/**
+	 * Adds the commitment components.
+	 */
+	private void addCommitmentComponents() {
+		panel.add(commitmentHourLabel);
+		panel.add(operatingHoursBox);
+		panel.add(commitmentDayLabel);
+		panel.add(daysOfWeekBox);
+		panel.add(commitmentDescriptionLabel);
+		panel.add(commitmentDescription, "wrap");
+		panel.add(commitmentsPane, "grow, span, wrap");
+		panel.add(addCommitmentButton);
+		panel.add(removeCommitmentButton, "wrap");
+	}
+	
+	/**
+	 * Adds the preference components.
+	 */
+	private void addPreferenceComponents() {
+		panel.add(timeLabel);
+		panel.add(morningLabel);
+		panel.add(noonLabel);
+		panel.add(afternoonLabel, "wrap");
+		panel.add(rankLabel);
+		panel.add(morningRankBox);
+		panel.add(noonRankBox);
+		panel.add(afternoonRankBox, "wrap");
+	}
+
 
 	/* (non-Javadoc)
 	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)

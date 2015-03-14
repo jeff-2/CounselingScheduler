@@ -141,13 +141,16 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.newFullnameLabel = new JLabel("New Clinician Name:");
 		this.panel.add(newFullnameLabel, "gapleft 30");
 		this.newFullnameField = new JTextField();
+		this.newFullnameField.setName("newFullnameField");
 		this.newFullnameField.addKeyListener(this);
 		this.panel.add(newFullnameField, "span, grow, wrap 15px");
 		// Add "Add" and "Remove" buttons
 		this.addButton = new JButton("Add Clinician");
+		this.addButton.setName("addButton");
 		this.addButton.addActionListener(this);
 		this.panel.add(addButton, "gapleft 30");
 		this.removeButton = new JButton("Remove Clinician");
+		this.removeButton.setName("removeButton");
 		this.removeButton.addActionListener(this);
 		this.panel.add(removeButton, "gap unrelated, wrap 15px");
 		// Add list & scrollpane
@@ -208,7 +211,6 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * if this is not the case.
 	 */
 	private void addNewClinicianID() {
-		// TODO: Modify Clinicians table to store username as well; check for unique USERNAME, not full name.
 		String newClinicianName = this.newFullnameField.getText().trim();
 		this.newFullnameField.setText("");
 		if(newClinicianName.isEmpty()) {
@@ -264,13 +266,10 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {
-	}
+	public void keyTyped(KeyEvent e) {}
 
 	@Override
-	public void keyPressed(KeyEvent e) {
-		// do nothing	
-	}
+	public void keyPressed(KeyEvent e) {}
 
 	@Override
 	public void keyReleased(KeyEvent e) {

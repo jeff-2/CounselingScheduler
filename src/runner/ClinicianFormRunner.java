@@ -1,6 +1,5 @@
 package runner;
 
-import javax.swing.JFrame;
 import javax.swing.UIManager;
 
 import gui.clinician.ClinicianForm;
@@ -20,11 +19,7 @@ public class ClinicianFormRunner {
 		catch(Exception e) {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
-		JFrame frame = new JFrame("Input Form");
-		frame.add(new ClinicianForm());
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(600, 600);
-		frame.setVisible(true);
+		new ClinicianForm();
 	}
 
 }

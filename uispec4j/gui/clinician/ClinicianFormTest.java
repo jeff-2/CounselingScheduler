@@ -1,5 +1,7 @@
 package gui.clinician;
 
+import generator.TestDataGenerator;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
@@ -41,17 +43,16 @@ public class ClinicianFormTest extends UISpecTestCase {
 	private ClinicianPreferencesDAO clinicianPreferencesDao;
 	private CommitmentsDAO commitmentsDao;
 	private TimeAwayDAO timeAwayDao;
+	private TestDataGenerator gen;
 	
 	@Before
 	protected void setUp() throws Exception {
 		setAdapter(new MainClassAdapter(ClinicianFormRunner.class, new String[0]));
 		
 		conn = ConnectionFactory.getInstance();
+		gen = new TestDataGenerator(conn);
 		
-		clearCliniciansTable();
-		clearClinicianPreferencesTable();
-		clearCommitmentsTable();
-		clearTimeAwayTable();
+		gen.clearTables();
 		
 		clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
 		commitmentsDao = new CommitmentsDAO(conn);
@@ -73,36 +74,9 @@ public class ClinicianFormTest extends UISpecTestCase {
 		timeAway.add(new TimeAwayBean(0, "some other desc", DateRangeValidator.parseDate("1/3/1970"), DateRangeValidator.parseDate("1/6/1970")));
 	}
 	
-	private void clearCliniciansTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Clinicians");
-		stmt.execute();
-		stmt.close();
-	}
-	
-	private void clearClinicianPreferencesTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM ClinicianPreferences");
-		stmt.execute();
-		stmt.close();
-	}
-	
-	private void clearCommitmentsTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Commitments");
-		stmt.execute();
-		stmt.close();
-	}
-	
-	private void clearTimeAwayTable() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM TimeAway");
-		stmt.execute();
-		stmt.close();
-	}
-	
 	@After
 	public void tearDown() throws Exception {
-		clearCliniciansTable();
-		clearClinicianPreferencesTable();
-		clearCommitmentsTable();
-		clearTimeAwayTable();
+		gen.clearTables();
 	}
 
 	/**
