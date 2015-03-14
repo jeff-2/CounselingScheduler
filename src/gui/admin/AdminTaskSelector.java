@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 
 import javax.swing.ButtonGroup;
 import javax.swing.ButtonModel;
@@ -31,6 +32,11 @@ import net.miginfocom.swing.MigLayout;
  * 
  */
 public class AdminTaskSelector extends JFrame implements ActionListener {
+
+	/**
+	 * Generated serial version UID
+	 */
+	private static final long serialVersionUID = -5684205646507101495L;
 
 	/**
 	 * The main panel for the GUI frame
@@ -75,11 +81,6 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	 * JButton for running the currently-selected item
 	 */
 	private JButton runButton;
-
-	/**
-	 * JButton for ending the current admin session
-	 */
-	private JButton exitButton;	
 
 	/**
 	 * Create an empty client ID list
@@ -178,7 +179,15 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 				this.editMeetings();
 			}
 			else if(cur == this.generateScheduleButton.getModel()) {
-				this.generateSchedule();
+				try {
+					this.generateSchedule();
+				}
+				catch(SQLException ex) {
+					JOptionPane.showMessageDialog(this,
+							"Failed to connect to the remote SQL database; please contact the network administrator.",
+							"Database connection error",
+							JOptionPane.ERROR_MESSAGE);
+				}
 			}
 			this.runButton.setEnabled(false);
 			this.choicesGroup.clearSelection();
@@ -210,8 +219,12 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	}
 
 
-	private void generateSchedule() {
-		// TODO Implement me!
+	private void generateSchedule() throws SQLException {
+		// Fill empty slots in Sessions table
+		// TODO: run TestDataGenerator.generateStandardDataset before demoing this part
+		//GenerateUnfilledScheduleAction genAction = new GenerateUnfilledScheduleAction(ConnectionFactory.getInstance());
+		//genAction.generateUnfilledSchedule();
+		// TODO Implement the rest of me!
 		Logger.logln("Tried to start generate schedule task.");
 		JOptionPane.showMessageDialog(this,
 				"TODO: Implement generate schedule task",

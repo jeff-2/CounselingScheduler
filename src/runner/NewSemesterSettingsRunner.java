@@ -25,6 +25,6 @@ public class NewSemesterSettingsRunner {
 		catch(Exception e) {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
-		NewSemesterSettings semester = new NewSemesterSettings();
+		new NewSemesterSettings();
 	}
 }

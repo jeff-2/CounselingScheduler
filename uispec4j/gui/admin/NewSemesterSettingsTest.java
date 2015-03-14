@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 
 import org.uispec4j.Button;
 import org.uispec4j.ListBox;
@@ -14,9 +13,7 @@ import org.uispec4j.Window;
 import org.uispec4j.interception.MainClassAdapter;
 
 import runner.NewSemesterSettingsRunner;
-import dao.CalendarDAO;
 import dao.ConnectionFactory;
-import dao.HolidayDAO;
 
 /**
  * The Class NewSemesterSettingsTest.
@@ -27,9 +24,6 @@ import dao.HolidayDAO;
 public class NewSemesterSettingsTest extends UISpecTestCase {
 	
 	private Connection con;
-	private HolidayDAO holidayDAO;
-	private CalendarDAO calendarDAO;
-	private SimpleDateFormat format;
 
 	/* (non-Javadoc)
 	 * @see org.uispec4j.UISpecTestCase#setUp()
@@ -37,8 +31,6 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	protected void setUp() throws Exception {
 		setAdapter(new MainClassAdapter(NewSemesterSettingsRunner.class, new String[0]));
 		con = ConnectionFactory.getInstance();
-		holidayDAO = new HolidayDAO(con);
-		format = new SimpleDateFormat("MM/dd/yyyy");
 		clearHolidayTable();
 		clearCalendarTable();
 	}

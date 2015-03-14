@@ -71,21 +71,7 @@ public class CalendarDAO extends DAO {
 	 * @return int representing the next available id
 	 * @throws SQLException the SQL exception
 	 */
-	public static int getNextAvailableId() throws SQLException {
-		Connection con = ConnectionFactory.getInstance();
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("SELECT COUNT(*) AS count FROM Calendar");
-		ResultSet res = stmt.getResultSet();
-		res.next();
-		if(res.getInt("count") == 0) {
-			return 0;
-		}
-				
-		stmt.execute("SELECT MAX(id) AS max FROM Calendar");
-		res = stmt.getResultSet();
-		res.next();
-		return res.getInt("max") + 1;
-		
+	public int getNextAvailableId() throws SQLException {
+		return DAO.getNextID("Calendar");		
 	}
 }

@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 import bean.HolidayBean;
-import bean.TimeAwayBean;
 
 /**
  * Handles interactions with the database to access the Holiday table.
@@ -71,7 +70,7 @@ public class HolidayDAO extends DAO {
 	 */
 	private HolidayBean loadHoliday(ResultSet res) throws SQLException {
 		int id = res.getInt("id");
-		int calendarID = res.getInt("calendarId");
+		//int calendarID = res.getInt("calendarId");
 		String name = res.getString("name");
 		Date startDate = res.getDate("startDate");
 		Date endDate = res.getDate("endDate");

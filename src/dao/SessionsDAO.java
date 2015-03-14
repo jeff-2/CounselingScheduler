@@ -153,20 +153,15 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getNextSessionID() throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM Clinicians");
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		if (!results.next()) {
-			stmt.close();
-			return 0;
-		}
+		return DAO.getNextID("Sessions");
+	}
 
-		int curMaxID = 0;
-		while(results.next()) {
-			int id = results.getInt("id");
-			curMaxID = Math.max(curMaxID, id);
-		}
-		stmt.close();
-		return curMaxID + 1;
+	/**
+	 * Deletes all sessions from the database
+	 */
+	public void clearSessions() throws SQLException {
+		// TODO: could depend on (what is currently) TestDataGenerator.java
+		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Clinicians");
+		stmt.execute();
 	}
 }

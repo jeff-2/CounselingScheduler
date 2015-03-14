@@ -208,7 +208,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 						calendar.setId(calendarId);
 						calendarDao.insertCalendar(calendar);
 						for (int i = 0; i < holidayList.size(); i++) {
-							holidayDao.insertHoliday(holidayList.get(i), calendarId, i);
+							HolidayBean holiday = holidayList.get(i);
+							holidayDao.insertHoliday(holiday, calendarId, i);
 						}
 					} catch (SQLException e1) {
 						e1.printStackTrace();
@@ -262,7 +263,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		String semesterEnd = endDateText.getText().trim();
 
 		try {
-			double IAHrs = Double.parseDouble(IAHours);
+			Double.parseDouble(IAHours);
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
 					"Cannot create new semester. " +
@@ -273,7 +274,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		}
 
 		try {
-			double ECHrs = Double.parseDouble(ECHours);
+			Double.parseDouble(ECHours);
 		} catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(this,
 					"Cannot create new semester. " +
@@ -388,6 +389,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		DefaultListModel<String> model = (DefaultListModel<String>) holidayStringList.getModel();
 		model.add(model.size(), holiday + " " + startDate + "-" + endDate);
 
+		
 		HolidayBean h = new HolidayBean();
 		h.setName(holiday);
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");

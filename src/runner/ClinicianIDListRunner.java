@@ -25,7 +25,7 @@ public class ClinicianIDListRunner {
 		catch(Exception e) {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
-		ClinicianIDListEditor editor = new ClinicianIDListEditor();
+		new ClinicianIDListEditor();
 	}
 
 }

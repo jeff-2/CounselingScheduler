@@ -1,9 +1,9 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class DAO {
 	
@@ -25,21 +25,20 @@ public class DAO {
 	 * @return the next ID
 	 * @throws SQLException
 	 */
-	public int getNextID(String table) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM "+table);
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		if (!results.next()) {
-			stmt.close();
+	protected static final int getNextID(String table) throws SQLException {
+		Connection con = ConnectionFactory.getInstance();
+		Statement stmt = con.createStatement();
+		
+		stmt.execute("SELECT COUNT(*) AS count FROM "+table);
+		ResultSet res = stmt.getResultSet();
+		res.next();
+		if(res.getInt("count") == 0) {
 			return 0;
 		}
-
-		int curMaxID = 0;
-		while(results.next()) {
-			int id = results.getInt("id");
-			curMaxID = Math.max(curMaxID, id);
-		}
-		stmt.close();
-		return curMaxID + 1;
+				
+		stmt.execute("SELECT MAX(id) AS max FROM "+table);
+		res = stmt.getResultSet();
+		res.next();
+		return res.getInt("max") + 1;
 	}
 }

@@ -2,7 +2,6 @@ package dao;
 import static org.junit.Assert.assertEquals;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -81,24 +80,4 @@ public class CalendarDAOTest {
 				+ "(1, '2000-02-02', '2000-02-03', 7, 8, 1)");
 		
 	}
-	
-	private CalendarBean getFirstCalendarTableRow() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("Select * From Calendar");
-		
-		ResultSet res = stmt.getResultSet();
-		res.next();
-		
-		CalendarBean cal = new CalendarBean();
-		cal.setId(res.getInt("id"));
-		cal.setStartDate(res.getDate("startDate"));
-		cal.setEndDate(res.getDate("endDate"));
-		cal.setIaMinHours(res.getInt("iaMinHours"));
-		cal.setEcMinHours(res.getInt("ecMinHours"));
-		cal.setSemester(res.getInt("term"));
-
-		return cal;
-	}
-
 }

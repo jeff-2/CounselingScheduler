@@ -3,7 +3,7 @@ package bean;
 /**
  * The Class Clinician handles the storage of clinician data.
  */
-public class ClinicianBean implements Comparable {
+public class ClinicianBean implements Comparable<ClinicianBean> {
 	
 	/** The clinician id. */
 	private int clinicianID;
@@ -76,11 +76,8 @@ public class ClinicianBean implements Comparable {
 	}
 	
 	@Override
-	public int compareTo(Object arg0) {
-		if(!(arg0 instanceof ClinicianBean)) {
-			return -1;
-		}
-		return this.name.compareTo(((ClinicianBean)arg0).name);
+	public int compareTo(ClinicianBean other) {
+		return this.name.compareTo(other.name);
 	}
 	
 	@Override

@@ -32,7 +32,7 @@ public class AdminApplicationRunner {
 		// e.g. SQLDB IP address/port info, log file location, etc.
 		
 		// Start admin's task selector GUI
-		AdminTaskSelector admin = new AdminTaskSelector();
+		new AdminTaskSelector();
 	}
 
 }

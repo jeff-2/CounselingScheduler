@@ -1,28 +1,14 @@
 package utils;
 
 import static org.junit.Assert.assertEquals;
-import generator.TestDataGenerator;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-import action.ClinicianPreferencesAction;
-import bean.ClinicianPreferencesBean;
-import bean.CommitmentBean;
-import bean.TimeAwayBean;
-import dao.ClinicianPreferencesDAO;
-import dao.CommitmentsDAO;
-import dao.ConnectionFactory;
-import dao.TimeAwayDAO;
 
 /**
  * A class for testing utils/Logger.java

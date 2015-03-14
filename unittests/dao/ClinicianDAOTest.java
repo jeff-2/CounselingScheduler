@@ -81,6 +81,7 @@ public class ClinicianDAOTest {
 		expected.add(new ClinicianBean(0, "Jeff"));
 		expected.add(new ClinicianBean(1, "Kevin"));
 		assertEquals(actual, expected);
+		assertEquals(clinicianDAO.getNextClinicianID(), 2);
 	}
 	
 	@Test

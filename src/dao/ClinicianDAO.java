@@ -113,20 +113,6 @@ public class ClinicianDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getNextClinicianID() throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM Clinicians");
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		if (!results.next()) {
-			stmt.close();
-			return 0;
-		}
-
-		int curMaxID = 0;
-		while(results.next()) {
-			int id = results.getInt("id");
-			curMaxID = Math.max(curMaxID, id);
-		}
-		stmt.close();
-		return curMaxID + 1;
+		return DAO.getNextID("Clinicians");
 	}
 }
