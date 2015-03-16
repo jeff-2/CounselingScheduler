@@ -114,7 +114,7 @@ public class SessionsDAO extends DAO {
 	 * @param clinicians the clinicians
 	 * @throws SQLException the SQL exception
 	 */
-	private void insertSessionClinicians(int sessionID, List<Integer> clinicians) throws SQLException {
+	public void insertSessionClinicians(int sessionID, List<Integer> clinicians) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO SessionClinicians (sessionID, clinicianID) VALUES (?, ?)");
 		for (int clinicianID: clinicians) {
