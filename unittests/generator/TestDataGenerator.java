@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import bean.CalendarBean;
 import bean.HolidayBean;
 import dao.CalendarDAO;
+import dao.ConnectionFactory;
 import dao.HolidayDAO;
 
 public class TestDataGenerator {
@@ -78,10 +79,15 @@ public class TestDataGenerator {
 		stmt.close();
 	}
 
+	/** 
+	 * Fills the database with static demo data
+	 * @throws ParseException
+	 * @throws SQLException
+	 */
 	public void generateStandardDataset() throws ParseException, SQLException {
-		// TODO Auto-generated method stub
 		this.generateStandardCalendarData();
 		this.generateStandardHolidayData();
+		// Add other methods here
 	}
 
 	private void generateStandardCalendarData() throws ParseException, SQLException {
@@ -124,5 +130,11 @@ public class TestDataGenerator {
 		// Same holidays as before
 		this.generateStandardHolidayData();
 		
+	}
+
+	public static void overwriteAndFillDemoData() throws SQLException, ParseException {
+		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
+		gen.clearTables();
+		gen.generateStandardDataset();		
 	}
 }

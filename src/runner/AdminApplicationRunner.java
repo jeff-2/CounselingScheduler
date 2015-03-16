@@ -1,5 +1,9 @@
 package runner;
 
+import java.sql.SQLException;
+import java.text.ParseException;
+
+import generator.TestDataGenerator;
 import gui.admin.AdminTaskSelector;
 
 import javax.swing.UIManager;
@@ -16,7 +20,7 @@ public class AdminApplicationRunner {
 	
 	// TODO: should we create a single connection object, or recreate one for each subroutine?
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException, ParseException {
 		try {
 			UIManager.setLookAndFeel(
 					UIManager.getSystemLookAndFeelClassName());
@@ -30,6 +34,9 @@ public class AdminApplicationRunner {
 		
 		// TODO: Read in configuration parameters from file
 		// e.g. SQLDB IP address/port info, log file location, etc.
+		
+		// Temporary: load demo data
+		TestDataGenerator.overwriteAndFillDemoData();
 		
 		// Start admin's task selector GUI
 		new AdminTaskSelector();
