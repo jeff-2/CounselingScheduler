@@ -1,0 +1,52 @@
+distribute 4:00 EC evenly unless conflict
+
+1.	1 EC per week
+2.	1 IA per day, 0.5 to 3 per week
+3.	alternate 3pm Fri IA session (interns)
+4.	noon EC vs 1:00 IA
+5.	EC cross day conflicts
+
+1.
+EC session
+clinician(id)
+date (year distinct for fall, spring)
+day of week
+hour (start)
+semester
+weeknum (of semester)
+
+select where semester = cur_semester,year, group by weeknum, clinician count(cliniciant id) > 1
+
+2.
+IA session
+week type (A,B)
+day of week
+hour
+clinician ID
+semester
+year
+
+where semester = cursemester,year, group by week type, day of week, clinician, count clinicianid > 1
+
+abs(where semester = cursemester,year, group = A, group by week type, clinician, count(clinician)
+- where semester = cursemester,year, group = B, group by week type, clinician, count(clinician),
+) <= 0.5
+
+add for week A and B, total = 2 * assigned
+
+3.
+select ids where cur semester, friday, 3pm,
+select previds where prev semester, friday, 3pm,
+intersect ids previds, error if there is anyt row returned
+
+4.
+select day of week, clinician from ia of week a, 1:00,  
+
+select day of week, unique(clinician) from  ec of odd week, 12:00
+
+join by day of week, clinician
+
+select day of week, clinician from ia of week b, 1:00,  
+
+select day of week, unique(clinician) from  ec of even week, 12:00
+ 
