@@ -5,8 +5,8 @@ import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
@@ -37,6 +37,7 @@ public class ClinicianPreferencesActionTest {
 	private CommitmentsDAO commitmentsDAO;
 	private TimeAwayDAO timeAwayDAO;
 	private TestDataGenerator gen;
+	private SimpleDateFormat format;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -48,6 +49,8 @@ public class ClinicianPreferencesActionTest {
 		clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
 		commitmentsDAO = new CommitmentsDAO(conn);
 		timeAwayDAO = new TimeAwayDAO(conn);
+		
+		format = new SimpleDateFormat("MM/dd/yyyy");
 		
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
 		stmt.setInt(1, 0);
@@ -61,8 +64,8 @@ public class ClinicianPreferencesActionTest {
 		commitments.add(new CommitmentBean(0, 10, "Monday", "other desc"));
 		
 		timeAway = new ArrayList<TimeAwayBean>();
-		timeAway.add(new TimeAwayBean(0, "some desc", new Date(1000000l), new Date(12512500000l)));
-		timeAway.add(new TimeAwayBean(0, "some other desc", new Date(5l), new Date(1555555l)));
+		timeAway.add(new TimeAwayBean(0, "some desc", format.parse("1/5/2015"), format.parse("2/7/2015")));
+		timeAway.add(new TimeAwayBean(0, "some other desc", format.parse("2/1/2015"), format.parse("2/1/2015")));
 		
 		action = new ClinicianPreferencesAction(preferences, commitments, timeAway, conn);
 	}
@@ -83,7 +86,7 @@ public class ClinicianPreferencesActionTest {
 		cmts.add(new CommitmentBean(0, 14, "Thursday", "pear"));
 		
 		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
-		tsAway.add(new TimeAwayBean(0, "orange", new Date(1000l), new Date(1251000l)));
+		tsAway.add(new TimeAwayBean(0, "orange", format.parse("2/2/2015"), format.parse("2/17/2015")));
 		
 		ClinicianPreferencesAction a = new ClinicianPreferencesAction(prefs, cmts, tsAway, conn);
 		a.updatePreferences();

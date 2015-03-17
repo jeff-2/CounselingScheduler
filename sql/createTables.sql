@@ -39,8 +39,8 @@ CREATE TABLE Holiday (
 
 CREATE TABLE TimeAway (
 	id int NOT NULL,
-	startDate bigint NOT NULL,
-	endDate bigint NOT NULL,
+	startDate date NOT NULL,
+	endDate date NOT NULL,
 	description varchar(50) NOT NULL
 );
 
