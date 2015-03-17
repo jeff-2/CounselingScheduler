@@ -51,6 +51,8 @@ CREATE TABLE Sessions (
 	weekday varchar(9) NOT NULL,
 	sDate bigint NOT NULL,
 	sType int NOT NULL,
+	semester int,
+	weektype int,
 	PRIMARY KEY (id)
 );
 
