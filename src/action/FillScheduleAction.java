@@ -15,7 +15,7 @@ import dao.SessionsDAO;
 import bean.ClinicianBean;
 
 /**
- * Automates assigning clinicians to each session 
+ * Automates assigning clinicians to each session  
  * 
  * @author lim92, dtli2
  *
