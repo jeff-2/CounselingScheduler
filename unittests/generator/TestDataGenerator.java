@@ -7,10 +7,18 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import bean.CalendarBean;
+import bean.ClinicianBean;
+import bean.ClinicianPreferencesBean;
+import bean.CommitmentBean;
 import bean.HolidayBean;
+import bean.TimeAwayBean;
 import dao.CalendarDAO;
+import dao.ClinicianDAO;
+import dao.ClinicianPreferencesDAO;
+import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import dao.HolidayDAO;
+import dao.TimeAwayDAO;
 
 public class TestDataGenerator {
 	
@@ -18,6 +26,12 @@ public class TestDataGenerator {
 	
 	public TestDataGenerator(Connection con) {
 		this.conn = con;
+	}
+	
+	public static void main(String [] args) throws SQLException, ParseException {
+		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
+		gen.clearTables();
+		gen.generateStandardDataset();
 	}
 	
 	public void clearTables() throws SQLException {
@@ -85,9 +99,56 @@ public class TestDataGenerator {
 	 * @throws SQLException
 	 */
 	public void generateStandardDataset() throws ParseException, SQLException {
+		this.generateStandardClinicianData();
+		this.generateStandardClinicianPreferencesData();
+		this.generateStandardCommitmentsData();
+		this.generatedStandardTimeAwayData();
 		this.generateStandardCalendarData();
 		this.generateStandardHolidayData();
 		// Add other methods here
+	}
+	
+	private void generateStandardClinicianData() throws SQLException {
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
+		clinicianDAO.insert(new ClinicianBean(1, "Ryan"));
+		clinicianDAO.insert(new ClinicianBean(2, "Nathan"));
+		clinicianDAO.insert(new ClinicianBean(3, "Kevin"));
+		clinicianDAO.insert(new ClinicianBean(4, "Denise"));
+		clinicianDAO.insert(new ClinicianBean(5, "Yusheng"));
+	}
+	
+	private void generateStandardClinicianPreferencesData() throws SQLException {
+		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(0, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(1, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(2, 3, 2, 1));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(3, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(4, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(5, 1, 3, 3));
+	}
+	
+	private void generateStandardCommitmentsData() throws SQLException {
+		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
+		commitmentsDAO.insert(new CommitmentBean(0, 8, "Wednesday", "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(0, 11, "Friday", "Staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(1, 14, "Monday", "Staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(2, 10, "Monday", "Dropping off child at school"));
+		commitmentsDAO.insert(new CommitmentBean(2, 11, "Wednesday", "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(3, 10, "Friday", "Senior staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(4, 11, "Thursday", "Some commitment"));
+		commitmentsDAO.insert(new CommitmentBean(5, 15, "Tuesday", "Manager meeting"));
+	}
+	
+	private void generatedStandardTimeAwayData() throws SQLException, ParseException {
+		TimeAwayDAO timeAwayDAO = new TimeAwayDAO(conn);
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		timeAwayDAO.insert(new TimeAwayBean(0, "Vacation", format.parse("2/3/2015"), format.parse("2/12/2015")));
+		timeAwayDAO.insert(new TimeAwayBean(1, "Vacation", format.parse("1/23/2015"), format.parse("1/27/2015")));
+		timeAwayDAO.insert(new TimeAwayBean(2, "Vacation", format.parse("3/18/2015"), format.parse("3/22/2015")));
+		timeAwayDAO.insert(new TimeAwayBean(3, "Vacation", format.parse("5/6/2015"), format.parse("5/10/2015")));
+		timeAwayDAO.insert(new TimeAwayBean(4, "Unspecified", format.parse("3/1/2015"), format.parse("3/3/2015")));
+		timeAwayDAO.insert(new TimeAwayBean(5, "Vacation", format.parse("4/17/2015"), format.parse("4/17/2015")));
 	}
 
 	private void generateStandardCalendarData() throws ParseException, SQLException {
@@ -112,7 +173,6 @@ public class TestDataGenerator {
 		holidayDAO.insertHoliday(unofficial, 0, unofficial.getID());
 		HolidayBean springBreak = new HolidayBean(2, "Spring Break", format.parse("03/21/2015"), format.parse("03/29/2015"));
 		holidayDAO.insertHoliday(springBreak, 0, springBreak.getID());
-		
 	}
 
 	public void generateEmptySemesterDataset() throws ParseException, SQLException {
