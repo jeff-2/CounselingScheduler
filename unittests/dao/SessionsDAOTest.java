@@ -6,6 +6,7 @@ import generator.TestDataGenerator;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,7 @@ public class SessionsDAOTest {
 	private Connection conn;
 	private TestDataGenerator gen;
 	private List<Integer> clinicians;
+	private SimpleDateFormat format;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -31,6 +33,8 @@ public class SessionsDAOTest {
 		sessionsDAO = new SessionsDAO(conn);
 		gen = new TestDataGenerator(conn);
 		gen.clearTables();
+		
+		format = new SimpleDateFormat("MM/dd/yyyy");
 		
 
 		clinicians = new ArrayList<Integer>();
@@ -54,7 +58,7 @@ public class SessionsDAOTest {
 	@Test
 	public void testInsertValidSession() throws Exception {
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, new Date(123456789l), SessionType.IA, clinicians);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("2/15/2015"), SessionType.IA, clinicians);
 		sessionsDAO.insertSession(session);
 		
 		List<Integer> actualClinicians = new ArrayList<Integer>();
@@ -67,7 +71,7 @@ public class SessionsDAOTest {
 		int startTime = results.getInt("startTime");
 		int duration = results.getInt("duration");
 		String weekday = results.getString("weekday");
-		Date date = new Date(results.getLong("sDate"));
+		Date date = results.getDate("sDate");
 		int type = results.getInt("sType");
 		stmt.close();
 		
@@ -99,13 +103,13 @@ public class SessionsDAOTest {
 		stmt.setInt(2, 8);
 		stmt.setInt(3, 1);
 		stmt.setString(4, Weekday.Wednesday.toString());
-		stmt.setLong(5, 123456789l);
+		stmt.setDate(5, new java.sql.Date(format.parse("3/18/2015").getTime()));
 		stmt.setInt(6, SessionType.IA.ordinal());
 		stmt.setInt(7, 1);
 		stmt.setInt(8, 10);
 		stmt.setInt(9, 1);
 		stmt.setString(10, Weekday.Monday.toString());
-		stmt.setLong(11, 1111111l);
+		stmt.setDate(11, new java.sql.Date(format.parse("3/16/2015").getTime()));
 		stmt.setInt(12, SessionType.EC.ordinal());
 		stmt.execute();
 		stmt.close();
@@ -120,11 +124,11 @@ public class SessionsDAOTest {
 		stmt.execute();
 		stmt.close();
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, new Date(123456789l), SessionType.IA, clinicians);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians);
 		
 		List<Integer> otherClinicians = new ArrayList<Integer>();
 		otherClinicians.add(1);
-		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, new Date(1111111l), SessionType.EC, otherClinicians);
+		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians);
 		
 		List<SessionBean> sessions = new ArrayList<SessionBean>();
 		sessions.add(session);
@@ -141,13 +145,13 @@ public class SessionsDAOTest {
 		stmt.setInt(2, 8);
 		stmt.setInt(3, 1);
 		stmt.setString(4, Weekday.Wednesday.toString());
-		stmt.setLong(5, 123456789l);
+		stmt.setDate(5, new java.sql.Date(format.parse("3/18/2015").getTime()));
 		stmt.setInt(6, SessionType.IA.ordinal());
 		stmt.setInt(7, 1);
 		stmt.setInt(8, 10);
 		stmt.setInt(9, 1);
 		stmt.setString(10, Weekday.Monday.toString());
-		stmt.setLong(11, 1111111l);
+		stmt.setDate(11, new java.sql.Date(format.parse("3/16/2015").getTime()));
 		stmt.setInt(12, SessionType.EC.ordinal());
 		stmt.execute();
 		stmt.close();
@@ -162,11 +166,11 @@ public class SessionsDAOTest {
 		stmt.execute();
 		stmt.close();
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, new Date(123456789l), SessionType.IA, clinicians);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians);
 		
 		List<Integer> otherClinicians = new ArrayList<Integer>();
 		otherClinicians.add(1);
-		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, new Date(1111111l), SessionType.EC, otherClinicians);
+		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians);
 		
 		sessionsDAO.deleteSession(session);
 		
@@ -178,7 +182,7 @@ public class SessionsDAOTest {
 		int startTime = results.getInt("startTime");
 		int duration = results.getInt("duration");
 		String weekday = results.getString("weekday");
-		Date date = new Date(results.getLong("sDate"));
+		Date date = results.getDate("sDate");
 		int type = results.getInt("sType");
 		stmt.close();
 		

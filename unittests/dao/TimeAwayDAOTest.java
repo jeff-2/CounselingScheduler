@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TimeAwayDAOTest {
 	private TimeAwayDAO timeAwayDAO;
 	private Connection conn;
 	private TestDataGenerator gen;
+	private SimpleDateFormat format;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -36,6 +38,7 @@ public class TimeAwayDAOTest {
 		timeAwayDAO = new TimeAwayDAO(conn);
 		gen = new TestDataGenerator(conn);
 		gen.clearTimeAwayTable();
+		format = new SimpleDateFormat("MM/dd/yyyy");
 	}
 	
 	@After
@@ -46,7 +49,7 @@ public class TimeAwayDAOTest {
 	@Test
 	public void testInsertValidTimeAway() throws Exception {
 		int clinicianID = 0;
-		TimeAwayBean expected = new TimeAwayBean(clinicianID, "description", new Date(8641231100l), new Date(8640325325200l));
+		TimeAwayBean expected = new TimeAwayBean(clinicianID, "description", format.parse("3/5/2015"), format.parse("3/27/2015"));
 		timeAwayDAO.insert(expected);
 		
 		PreparedStatement stmt = conn.prepareStatement("SELECT description, startDate, endDate FROM TimeAway WHERE id = ?");
@@ -55,8 +58,8 @@ public class TimeAwayDAOTest {
 		ResultSet results = stmt.getResultSet();
 		results.next();
 		String description = results.getString("description");
-		Date startDate = new Date(results.getLong("startDate"));
-		Date endDate = new Date(results.getLong("endDate"));
+		Date startDate = results.getDate("startDate");
+		Date endDate = results.getDate("endDate");
 		
 		assertEquals(expected, new TimeAwayBean(clinicianID, description, startDate, endDate));
 		stmt.close();
@@ -67,20 +70,20 @@ public class TimeAwayDAOTest {
 		int clinicianID = 0;
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) VALUES (?, ?, ?, ?), (?, ?, ?, ?)");
 		stmt.setInt(1, clinicianID);
-		stmt.setLong(2, 150000000l);
-		stmt.setLong(3, 2700000000l);
+		stmt.setDate(2, new java.sql.Date(format.parse("1/5/2015").getTime()));
+		stmt.setDate(3, new java.sql.Date(format.parse("1/30/2015").getTime()));
 		stmt.setString(4, "desc");
 		stmt.setInt(5, clinicianID);
-		stmt.setLong(6, 10043630000l);
-		stmt.setLong(7, 10000000000000l);
+		stmt.setDate(6, new java.sql.Date(format.parse("4/5/2015").getTime()));
+		stmt.setDate(7, new java.sql.Date(format.parse("4/5/2015").getTime()));
 		stmt.setString(8, "other desc");
 		stmt.execute();
 		stmt.close();
 		
 		List<TimeAwayBean> actual = timeAwayDAO.loadTimeAway(clinicianID);
 		List<TimeAwayBean> expected = new ArrayList<TimeAwayBean>();
-		expected.add(new TimeAwayBean(clinicianID, "desc", new Date(150000000l), new Date(2700000000l)));
-		expected.add(new TimeAwayBean(clinicianID, "other desc", new Date(10043630000l), new Date(10000000000000l)));
+		expected.add(new TimeAwayBean(clinicianID, "desc", format.parse("1/5/2015"), format.parse("1/30/2015")));
+		expected.add(new TimeAwayBean(clinicianID, "other desc", format.parse("4/5/2015"), format.parse("4/5/2015")));
 		assertEquals(actual, expected);
 	}
 	
@@ -96,8 +99,8 @@ public class TimeAwayDAOTest {
 		int clinicianID = 0;
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, clinicianID);
-		stmt.setLong(2, 123253252l);
-		stmt.setLong(3, 150000000l);
+		stmt.setDate(2, new java.sql.Date(format.parse("1/5/2015").getTime()));
+		stmt.setDate(3, new java.sql.Date(format.parse("1/7/2015").getTime()));
 		stmt.setString(4, "desc");
 		stmt.execute();
 		stmt.close();

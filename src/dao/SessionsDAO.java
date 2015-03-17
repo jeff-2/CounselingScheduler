@@ -42,7 +42,7 @@ public class SessionsDAO extends DAO {
 		stmt.setInt(2, session.getStartTime());
 		stmt.setInt(3, session.getDuration());
 		stmt.setString(4, session.getDayOfWeek().toString());
-		stmt.setLong(5, session.getDate().getTime());
+		stmt.setDate(5, new java.sql.Date(session.getDate().getTime()));
 		stmt.setInt(6, session.getType().ordinal());
 		stmt.execute();
 		stmt.close();
@@ -99,7 +99,7 @@ public class SessionsDAO extends DAO {
 		int startTime = results.getInt("startTime");
 		int duration = results.getInt("duration");
 		String dayOfWeek = results.getString("weekday");
-		Date date = new Date(results.getLong("sDate"));
+		Date date = results.getDate("sDate");
 		int type = results.getInt("sType");
 	
 		List<Integer> clinicians = loadSessionClinicians(id);
@@ -161,7 +161,7 @@ public class SessionsDAO extends DAO {
 	 */
 	public void clearSessions() throws SQLException {
 		// TODO: could depend on (what is currently) TestDataGenerator.java
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Sessions");
+		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Clinicians");
 		stmt.execute();
 	}
 }

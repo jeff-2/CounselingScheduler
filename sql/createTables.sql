@@ -39,8 +39,8 @@ CREATE TABLE Holiday (
 
 CREATE TABLE TimeAway (
 	id int NOT NULL,
-	startDate bigint NOT NULL,
-	endDate bigint NOT NULL,
+	startDate date NOT NULL,
+	endDate date NOT NULL,
 	description varchar(50) NOT NULL
 );
 
@@ -49,8 +49,10 @@ CREATE TABLE Sessions (
 	startTime int NOT NULL,
 	duration int NOT NULL,
 	weekday varchar(9) NOT NULL,
-	sDate bigint NOT NULL,
+	sDate date NOT NULL,
 	sType int NOT NULL,
+	semester int,
+	weektype int,
 	PRIMARY KEY (id)
 );
 
