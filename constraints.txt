@@ -13,7 +13,7 @@ date (year distinct for fall, spring)
 day of week
 hour (start)
 semester
-weeknum (of semester)
+weektype (of semester)
 
 select where semester = cur_semester,year, group by weeknum, clinician count(cliniciant id) > 1
 
