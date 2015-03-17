@@ -44,7 +44,7 @@ public class CommitmentsDAOTest {
 	
 	@Test
 	public void testInsertValidCommitment() throws Exception {
-		int clinicianID = 0;
+		int clinicianID = 1;
 		CommitmentBean expected = new CommitmentBean(clinicianID, 4, "Wednesday", "Description");
 		commitmentsDAO.insert(expected);
 		
@@ -64,7 +64,7 @@ public class CommitmentsDAOTest {
 	
 	@Test
 	public void testLoadCommitments() throws Exception {
-		int clinicianID = 0;
+		int clinicianID = 1;
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Commitments (id, hour, day, description) VALUES (?, ?, ?, ?), (?, ?, ?, ?)");
 		stmt.setInt(1, clinicianID);
 		stmt.setInt(2, 8);
@@ -86,14 +86,14 @@ public class CommitmentsDAOTest {
 	
 	@Test
 	public void testLoadCommitmentsEmpty() throws Exception {
-		List<CommitmentBean> actual = commitmentsDAO.loadCommitments(0);
+		List<CommitmentBean> actual = commitmentsDAO.loadCommitments(1);
 		List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
 		assertEquals(actual, expected);
 	}
 	
 	@Test
 	public void testDeleteCommitment() throws Exception {
-		int clinicianID = 0;
+		int clinicianID = 1;
 		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Commitments (id, hour, day, description) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, clinicianID);
 		stmt.setInt(2, 8);

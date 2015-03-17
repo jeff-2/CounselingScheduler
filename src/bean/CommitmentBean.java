@@ -28,7 +28,7 @@ public class CommitmentBean {
 	 * @param desc the desc
 	 */
 	public CommitmentBean(int id, int hour, String day, String desc) {
-		id = clinicianID;
+		clinicianID = id;
 		hourOfDay = hour;
 		dayOfWeek = day;
 		description = desc;
