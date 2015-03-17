@@ -132,7 +132,7 @@ public class SessionsDAO extends DAO {
 	 * @return the list
 	 * @throws SQLException the SQL exception
 	 */
-	private List<Integer> loadSessionClinicians(int sessionID) throws SQLException {
+	public List<Integer> loadSessionClinicians(int sessionID) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
 		stmt.setInt(1, sessionID);
@@ -161,7 +161,7 @@ public class SessionsDAO extends DAO {
 	 */
 	public void clearSessions() throws SQLException {
 		// TODO: could depend on (what is currently) TestDataGenerator.java
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Clinicians");
+		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Sessions");
 		stmt.execute();
 	}
 }

@@ -116,6 +116,24 @@ public class TestDataGenerator {
 		clinicianDAO.insert(new ClinicianBean(3, "Kevin"));
 		clinicianDAO.insert(new ClinicianBean(4, "Denise"));
 		clinicianDAO.insert(new ClinicianBean(5, "Yusheng"));
+		clinicianDAO.insert(new ClinicianBean(6, "A"));
+		clinicianDAO.insert(new ClinicianBean(7, "B"));
+		clinicianDAO.insert(new ClinicianBean(8, "C"));
+		clinicianDAO.insert(new ClinicianBean(9, "D"));
+		clinicianDAO.insert(new ClinicianBean(10, "E"));
+		clinicianDAO.insert(new ClinicianBean(11, "F"));
+		clinicianDAO.insert(new ClinicianBean(12, "G"));
+		clinicianDAO.insert(new ClinicianBean(13, "H"));
+		clinicianDAO.insert(new ClinicianBean(14, "I"));
+		clinicianDAO.insert(new ClinicianBean(15, "J"));
+		clinicianDAO.insert(new ClinicianBean(16, "K"));
+		clinicianDAO.insert(new ClinicianBean(17, "L"));
+		clinicianDAO.insert(new ClinicianBean(18, "M"));
+		clinicianDAO.insert(new ClinicianBean(19, "N"));
+		clinicianDAO.insert(new ClinicianBean(20, "O"));
+		clinicianDAO.insert(new ClinicianBean(21, "P"));
+		clinicianDAO.insert(new ClinicianBean(22, "Q"));
+		clinicianDAO.insert(new ClinicianBean(23, "R"));
 	}
 	
 	private void generateStandardClinicianPreferencesData() throws SQLException {
@@ -125,7 +143,25 @@ public class TestDataGenerator {
 		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(2, 3, 2, 1));
 		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(3, 1, 2, 3));
 		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(4, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(5, 1, 3, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(5, 1, 3, 2));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(6, 2, 3, 1));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(7, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(8, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(9, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(10, 2, 3, 1));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(11, 1, 3, 2));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(12, 1, 3, 2));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(13, 3, 2, 1));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(14, 3, 2, 1));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(15, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(16, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(17, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(18, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(19, 1, 3, 2));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(20, 3, 2, 1));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(21, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(22, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(23, 1, 2, 3));
 	}
 	
 	private void generateStandardCommitmentsData() throws SQLException {
