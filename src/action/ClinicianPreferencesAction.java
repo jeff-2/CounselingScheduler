@@ -4,12 +4,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-import db.ClinicianPreferencesDao;
-import db.CommitmentsDao;
-import db.TimeAwayDao;
-import forms.ClinicianPreferences;
-import forms.Commitment;
-import forms.TimeAway;
+import bean.ClinicianPreferencesBean;
+import bean.CommitmentBean;
+import bean.TimeAwayBean;
+import dao.ClinicianPreferencesDAO;
+import dao.CommitmentsDAO;
+import dao.TimeAwayDAO;
 
 /**
  * The Class ClinicianPreferencesAction which handles the validation and interaction with the daos.
@@ -19,22 +19,22 @@ import forms.TimeAway;
 public class ClinicianPreferencesAction {
 	
 	/** The preferences. */
-	private ClinicianPreferences preferences;
+	private ClinicianPreferencesBean preferences;
 	
 	/** The commitments. */
-	private List<Commitment> commitments;
+	private List<CommitmentBean> commitments;
 	
 	/** The times away. */
-	private List<TimeAway> timesAway;
+	private List<TimeAwayBean> timesAway;
 	
 	/** The clinician preferences dao. */
-	private ClinicianPreferencesDao clinicianPreferencesDao;
+	private ClinicianPreferencesDAO clinicianPreferencesDao;
 	
 	/** The time away dao. */
-	private TimeAwayDao timeAwayDao;
+	private TimeAwayDAO timeAwayDao;
 	
 	/** The commitment dao. */
-	private CommitmentsDao commitmentDao;
+	private CommitmentsDAO commitmentDao;
 	
 	/**
 	 * Instantiates a new clinician preferences action.
@@ -43,13 +43,13 @@ public class ClinicianPreferencesAction {
 	 * @param cmts the cmts
 	 * @param tsAway the ts away
 	 */
-	public ClinicianPreferencesAction(ClinicianPreferences prefs, List<Commitment> cmts, List<TimeAway> tsAway, Connection conn) {
+	public ClinicianPreferencesAction(ClinicianPreferencesBean prefs, List<CommitmentBean> cmts, List<TimeAwayBean> tsAway, Connection conn) {
 		preferences = prefs;
 		commitments = cmts;
 		timesAway = tsAway;
-		clinicianPreferencesDao = new ClinicianPreferencesDao(conn);
-		timeAwayDao = new TimeAwayDao(conn);
-		commitmentDao = new CommitmentsDao(conn);
+		clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
+		timeAwayDao = new TimeAwayDAO(conn);
+		commitmentDao = new CommitmentsDAO(conn);
 	}
 	
 	/**
@@ -64,14 +64,14 @@ public class ClinicianPreferencesAction {
 		
 		commitmentDao.delete(clinicianID);
 		
-		for (Commitment commitment : commitments) {
+		for (CommitmentBean commitment : commitments) {
 			commitment.setClinicianID(clinicianID);
 			commitmentDao.insert(commitment);
 		}
 		
 		timeAwayDao.delete(clinicianID);
 
-		for (TimeAway timeAway : timesAway) {
+		for (TimeAwayBean timeAway : timesAway) {
 			timeAway.setClinicianID(clinicianID);
 			timeAwayDao.insert(timeAway);
 		}
@@ -87,12 +87,12 @@ public class ClinicianPreferencesAction {
 		clinicianPreferencesDao.insert(preferences);
 		int clinicianID = preferences.getClinicianID();
 		
-		for (Commitment commitment : commitments) {
+		for (CommitmentBean commitment : commitments) {
 			commitment.setClinicianID(clinicianID);
 			commitmentDao.insert(commitment);
 		}
 		
-		for (TimeAway timeAway : timesAway) {
+		for (TimeAwayBean timeAway : timesAway) {
 			timeAway.setClinicianID(clinicianID);
 			timeAwayDao.insert(timeAway);
 		}
