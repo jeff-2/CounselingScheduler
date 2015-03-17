@@ -49,7 +49,7 @@ CREATE TABLE Sessions (
 	startTime int NOT NULL,
 	duration int NOT NULL,
 	weekday varchar(9) NOT NULL,
-	sDate bigint NOT NULL,
+	sDate date NOT NULL,
 	sType int NOT NULL,
 	semester int,
 	weektype int,
