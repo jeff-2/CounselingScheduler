@@ -23,7 +23,7 @@ import dao.ConnectionFactory;
  * 
  * @author jmfoste2, lim92
  *
- */
+ */ 
 public class ClinicianDAOTest {
 	
 	private ClinicianDAO clinicianDAO;

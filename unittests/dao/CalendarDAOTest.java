@@ -19,7 +19,7 @@ import generator.TestDataGenerator;
 /**
  * @author nbeltr2
  * @author dtli2
- */
+ */ 
 public class CalendarDAOTest {
 	private CalendarDAO calendarDAO;
 	private SimpleDateFormat format;

@@ -22,7 +22,7 @@ import generator.TestDataGenerator;
  * 
  * @author jmfoste2, lim92
  *
- */
+ */ 
 public class CommitmentsDAOTest {
 
 	private CommitmentsDAO commitmentsDAO;

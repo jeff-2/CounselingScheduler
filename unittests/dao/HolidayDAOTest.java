@@ -23,7 +23,7 @@ import generator.TestDataGenerator;
  * @author dtli2
  */
 public class HolidayDAOTest {
-	
+	 
 	private HolidayDAO holidayDAO;
 	private SimpleDateFormat format;
 	private Connection con;

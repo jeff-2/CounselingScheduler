@@ -23,7 +23,7 @@ import generator.TestDataGenerator;
  * 
  * @author jmfoste2, lim92
  *
- */
+ */ 
 public class TimeAwayDAOTest {
 	
 	private TimeAwayDAO timeAwayDAO;
