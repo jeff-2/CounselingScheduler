@@ -16,6 +16,7 @@ import dao.HolidayDAO;
 import dao.SessionsDAO;
 import bean.CalendarBean;
 import bean.HolidayBean;
+import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
@@ -49,16 +50,22 @@ public class GenerateUnfilledScheduleAction {
 			int[] iaSlots = new int[]{11, 13, 14, 15};
 			int ecClinicianMin = 1;
 			int iaClinicianMin = 3;
+			int weektype = 0;
 			for(Date d : workDays) {
 				Weekday day = Weekday.getWeekday(d);
+				// TODO figure out the semester
 				for(int e : ecSlots) {
-					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>());
+					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), Semester.FALL, weektype);
 					sessionsDAO.insertSession(session);
 				}
 				for(int i : iaSlots) {
-					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>());
+					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), Semester.FALL, weektype);
 					sessionsDAO.insertSession(session);
 				}
+				
+				//TODO figure out better way to check when a week has passed
+				if (day.equals(day.Friday))
+					weektype = 1 - weektype;
 			}
 		}
 		catch(IllegalArgumentException e) {

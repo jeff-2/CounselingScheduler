@@ -37,13 +37,15 @@ public class SessionsDAO extends DAO {
 	 */
 	public void insertSession(SessionBean session) throws SQLException {
 		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType) VALUES (?, ?, ?, ?, ?, ?)");
+		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType, semester, weektype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		stmt.setInt(1, session.getID());
 		stmt.setInt(2, session.getStartTime());
 		stmt.setInt(3, session.getDuration());
 		stmt.setString(4, session.getDayOfWeek().toString());
 		stmt.setDate(5, new java.sql.Date(session.getDate().getTime()));
 		stmt.setInt(6, session.getType().ordinal());
+		stmt.setInt(7, session.getSemester());
+		stmt.setInt(8, session.getWeekType());
 		stmt.execute();
 		stmt.close();
 		
@@ -59,7 +61,7 @@ public class SessionsDAO extends DAO {
 	public List<SessionBean> loadSessions() throws SQLException {
 		Connection conn = getConnection();
 		Statement stmt = conn.createStatement();
-		stmt.execute("SELECT id, startTime, duration, weekday, sDate, sType FROM Sessions");
+		stmt.execute("SELECT id, startTime, duration, weekday, sDate, sType, semester, weektype FROM Sessions");
 		ResultSet results = stmt.getResultSet();
 		List<SessionBean> sessions = new ArrayList<SessionBean>();
 		while (results.next()) {
@@ -101,10 +103,12 @@ public class SessionsDAO extends DAO {
 		String dayOfWeek = results.getString("weekday");
 		Date date = results.getDate("sDate");
 		int type = results.getInt("sType");
+		int semester = results.getInt("semester"); 
+		int weekType = results.getInt("weekType");
 	
 		List<Integer> clinicians = loadSessionClinicians(id);
 		
-		return new SessionBean(id, startTime, duration, Weekday.valueOf(dayOfWeek), date, SessionType.values()[type], clinicians);
+		return new SessionBean(id, startTime, duration, Weekday.valueOf(dayOfWeek), date, SessionType.values()[type], clinicians, semester, weekType);
 	}
 	
 	/**
@@ -164,4 +168,64 @@ public class SessionsDAO extends DAO {
 		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Clinicians");
 		stmt.execute();
 	}
+	
+	/**
+	 * Finds EC sessions for the current semester whose session does not start at 8am, 12pm, or 4pm
+	 * 
+	 * @param semester 
+	 * @param year
+	 * @return List of EC sessions with invalid hours
+	 * @throws SQLException
+	 */
+	public List<SessionBean> getECSessionsWithInvalidHours(int semester, int year) throws SQLException {
+		Connection conn = getConnection();
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE (startTime != ? AND startTime != ? AND startTime != ?)"
+				+ "AND sType = ? AND semester = ? AND YEAR(sDate) = ?");
+		stmt.setInt(1, 8);
+		stmt.setInt(2, 12);
+		stmt.setInt(3, 16);
+		stmt.setInt(4, SessionType.EC.ordinal());
+		stmt.setInt(5, semester);
+		stmt.setInt(6, year);
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		List<SessionBean> sessions = new ArrayList<SessionBean>();
+		while (results.next()) {
+			sessions.add(loadSession(results));
+		}
+		stmt.close();
+		return sessions;
+	}
+	
+	/**
+	 * Finds IA sessions for the current semester whose session does not start at 
+	 * 11am, 1pm, 2pm, or 3pm
+	 * 
+	 * @param semester 
+	 * @param year
+	 * @return List of IA sessions with invalid hours
+	 * @throws SQLException
+	 */
+	public List<SessionBean> getICSessionsWithInvalidHours(int semester, int year) throws SQLException {
+		Connection conn = getConnection();
+		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE "
+				+ "(startTime != ? AND startTime != ? AND startTime != ? AND startTime != ?)"
+				+ "AND sType = ? AND semester = ? AND YEAR(sDate) = ?");
+		stmt.setInt(1, 11);
+		stmt.setInt(2, 13);
+		stmt.setInt(3, 14);
+		stmt.setInt(4, 15);
+		stmt.setInt(5, SessionType.IA.ordinal());
+		stmt.setInt(6, semester);
+		stmt.setInt(7, year);
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		List<SessionBean> sessions = new ArrayList<SessionBean>();
+		while (results.next()) {
+			sessions.add(loadSession(results));
+		}
+		stmt.close();
+		return sessions;
+	}
+	
 }

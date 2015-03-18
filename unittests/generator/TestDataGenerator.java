@@ -1,23 +1,30 @@
 package generator;
 
+import java.awt.List;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 
 import bean.CalendarBean;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.HolidayBean;
+import bean.Semester;
+import bean.SessionBean;
+import bean.SessionType;
 import bean.TimeAwayBean;
+import bean.Weekday;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import dao.HolidayDAO;
+import dao.SessionsDAO;
 import dao.TimeAwayDAO;
 
 public class TestDataGenerator {
@@ -105,6 +112,7 @@ public class TestDataGenerator {
 		this.generatedStandardTimeAwayData();
 		this.generateStandardCalendarData();
 		this.generateStandardHolidayData();
+		this.generateInvalidSessionData();
 		// Add other methods here
 	}
 	
@@ -232,5 +240,12 @@ public class TestDataGenerator {
 		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
 		gen.clearTables();
 		gen.generateStandardDataset();		
+	}
+	
+	public void generateInvalidSessionData() throws ParseException, SQLException {
+		SessionsDAO sessionsDAO = new SessionsDAO(conn);
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		sessionsDAO.insertSession(new SessionBean(0, 20, 1, Weekday.Monday, format.parse("03/17/2015"), SessionType.EC, new ArrayList<Integer>(), Semester.FALL, 0)); 
+		sessionsDAO.insertSession(new SessionBean(1, 16, 1, Weekday.Monday, format.parse("03/17/2015"), SessionType.IA, new ArrayList<Integer>(), Semester.FALL, 0)); 
 	}
 }

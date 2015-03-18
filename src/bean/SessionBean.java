@@ -3,6 +3,7 @@ package bean;
 import java.util.Date;
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SessionBean.
  * 
@@ -31,6 +32,12 @@ public class SessionBean {
 	/** The clinicians. */
 	private List<Integer> clinicians;
 	
+	/** The semester. */
+	private int semester;
+	
+	/**  The type of week A/B. */
+	private int weekType;
+	
 	/**
 	 * Instantiates a new session bean.
 	 *
@@ -42,7 +49,7 @@ public class SessionBean {
 	 * @param sType the s type
 	 * @param sClinicians the s clinicians
 	 */
-	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians) {
+	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians, int sSemester, int sWeekType) {
 		id = sID;
 		startTime = sTime;
 		duration = sDur;
@@ -50,6 +57,9 @@ public class SessionBean {
 		date = sDate;
 		type = sType;
 		clinicians = sClinicians;
+		semester = sSemester;
+		weekType = sWeekType;
+		
 	}
 	
 	/**
@@ -178,6 +188,42 @@ public class SessionBean {
 		this.clinicians = clinicians;
 	}
 	
+	/**
+	 * Gets the semester.
+	 *
+	 * @return the semester
+	 */
+	public int getSemester() {
+		return semester;
+	}
+
+	/**
+	 * Sets the semester.
+	 *
+	 * @param semester the new semester
+	 */
+	public void setSemester(int semester) {
+		this.semester = semester;
+	}
+
+	/**
+	 * Gets the week type.
+	 *
+	 * @return the week type
+	 */
+	public int getWeekType() {
+		return weekType;
+	}
+
+	/**
+	 * Sets the week type.
+	 *
+	 * @param weekType the new week type
+	 */
+	public void setWeekType(int weekType) {
+		this.weekType = weekType;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */

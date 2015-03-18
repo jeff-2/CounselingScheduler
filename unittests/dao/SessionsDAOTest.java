@@ -1,11 +1,13 @@
 package dao;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,6 +17,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
@@ -58,7 +61,7 @@ public class SessionsDAOTest {
 	@Test
 	public void testInsertValidSession() throws Exception {
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("2/15/2015"), SessionType.IA, clinicians);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("2/15/2015"), SessionType.IA, clinicians, 0, 0);
 		sessionsDAO.insertSession(session);
 		
 		List<Integer> actualClinicians = new ArrayList<Integer>();
@@ -85,7 +88,7 @@ public class SessionsDAOTest {
 		actualClinicians.add(results.getInt("clinicianID"));
 		stmt.close();
 		
-		SessionBean actualSession = new SessionBean(id, startTime, duration, Weekday.valueOf(weekday), date, SessionType.values()[type], actualClinicians);
+		SessionBean actualSession = new SessionBean(id, startTime, duration, Weekday.valueOf(weekday), date, SessionType.values()[type], actualClinicians, 0, 0);
 		assertEquals(session, actualSession);
 	}
 	
@@ -124,11 +127,11 @@ public class SessionsDAOTest {
 		stmt.execute();
 		stmt.close();
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians, 0, 0);
 		
 		List<Integer> otherClinicians = new ArrayList<Integer>();
 		otherClinicians.add(1);
-		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians);
+		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians, 0, 0);
 		
 		List<SessionBean> sessions = new ArrayList<SessionBean>();
 		sessions.add(session);
@@ -166,11 +169,11 @@ public class SessionsDAOTest {
 		stmt.execute();
 		stmt.close();
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians, 0, 0);
 		
 		List<Integer> otherClinicians = new ArrayList<Integer>();
 		otherClinicians.add(1);
-		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians);
+		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians, 0, 0);
 		
 		sessionsDAO.deleteSession(session);
 		
@@ -196,7 +199,26 @@ public class SessionsDAOTest {
 		actualClinicians.add(results.getInt("clinicianID"));
 		stmt.close();
 		
-		SessionBean actualSession = new SessionBean(id, startTime, duration, Weekday.valueOf(weekday), date, SessionType.values()[type], actualClinicians);
+		SessionBean actualSession = new SessionBean(id, startTime, duration, Weekday.valueOf(weekday), date, SessionType.values()[type], actualClinicians, 0, 0);
 		assertEquals(otherSession, actualSession);
 	}
+	
+	@Test
+	public void testInvalidECHours() throws ParseException, SQLException{
+		gen.generateInvalidSessionData();
+		List<SessionBean> invalidSessions = sessionsDAO.getECSessionsWithInvalidHours(Semester.FALL, 2015);
+		assertNotEquals(0, invalidSessions.size());
+	}
+	
+	@Test
+	public void testInvalidIAHours() throws ParseException, SQLException{
+		gen.generateInvalidSessionData();
+		List<SessionBean> invalidSessions = sessionsDAO.getECSessionsWithInvalidHours(Semester.FALL, 2015);
+		assertNotEquals(0, invalidSessions.size());
+	}
+	
+	
+	
+	
+	
 }
