@@ -9,7 +9,8 @@ import java.util.Date;
  * @author dtli2
  */
 public class HolidayBean {
-	int id;
+	
+	private int id;
 	private String name;
 	private Date startDate;
 	private Date endDate;

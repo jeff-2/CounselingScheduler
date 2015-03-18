@@ -46,7 +46,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private JLabel IALabel, ECLabel, IAHoursLabel, ECHoursLabel;
 	private JTextField holidayNameText, startHolidayText, endHolidayText, startDateText, endDateText, IAHoursText, ECHoursText;
 	private JButton submitButton, addHolidayButton, removeHolidayButton;
-	private JComboBox<String> semesterSeasonBox;
+	private JComboBox<Semester> semesterSeasonBox;
 	private JScrollPane listScrollPane;
 	private JList<String> holidayStringList;
 	private List<HolidayBean> holidayList = new ArrayList<HolidayBean>();
@@ -124,12 +124,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	 * Initialize season box.
 	 */
 	private void initializeSeasonBox() {
-		int[] seasons = Semester.getValues();
-		String[] seasonNames = new String[seasons.length];
-		for (int i = 0; i < seasons.length; i++) {
-			seasonNames[i] = Semester.asString(seasons[i]);
-		}
-		semesterSeasonBox = new JComboBox<String>(seasonNames);
+		semesterSeasonBox = new JComboBox<Semester>(Semester.values());
 	}
 
 	/**
