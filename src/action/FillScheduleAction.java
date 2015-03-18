@@ -48,7 +48,7 @@ public class FillScheduleAction {
 			ArrayList<Integer> noonClinicianIDs = new ArrayList<Integer>();
 			ArrayList<Integer> afternoonClinicianIDs = new ArrayList<Integer>();
 			int lastDayOfWeek = 5; //Friday is 4
-
+			
 			// Looping through EC sessions
 			for (SessionBean sb : sessions) {
 				if (sb.getType().equals(SessionType.IA)) {

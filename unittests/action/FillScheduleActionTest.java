@@ -57,12 +57,16 @@ public class FillScheduleActionTest {
 		
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
 		List<SessionBean> allSessions = sessionsDAO.loadSessions();
+		int numOfNotThreeOrFive = 0;
 		for (SessionBean sb : allSessions) {
 			if (sb.getType().equals(SessionType.IA)) {
 				int numClinicians = sessionsDAO.loadSessionClinicians(sb.getID()).size();
-				assertEquals(true, numClinicians == 3 || numClinicians == 5);
+				if (!(numClinicians == 3 || numClinicians == 5)) {
+					numOfNotThreeOrFive++;
+				}
 			}
 		}
+		assertEquals(0, numOfNotThreeOrFive);
 	}
 	
 	@Test
