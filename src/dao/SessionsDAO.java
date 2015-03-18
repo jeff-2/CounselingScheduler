@@ -165,7 +165,7 @@ public class SessionsDAO extends DAO {
 	 */
 	public void clearSessions() throws SQLException {
 		// TODO: could depend on (what is currently) TestDataGenerator.java
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Clinicians");
+		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Sessions");
 		stmt.execute();
 	}
 	
