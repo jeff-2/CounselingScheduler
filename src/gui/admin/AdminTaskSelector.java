@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import javax.swing.ButtonGroup;
@@ -16,6 +17,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import dao.ConnectionFactory;
+import action.FillScheduleAction;
+import action.GenerateUnfilledScheduleAction;
+import action.ValidateScheduleAction;
 import utils.Logger;
 import net.miginfocom.swing.MigLayout;
 
@@ -179,15 +184,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 				this.editMeetings();
 			}
 			else if(cur == this.generateScheduleButton.getModel()) {
-				try {
-					this.generateSchedule();
-				}
-				catch(SQLException ex) {
-					JOptionPane.showMessageDialog(this,
-							"Failed to connect to the remote SQL database; please contact the network administrator.",
-							"Database connection error",
-							JOptionPane.ERROR_MESSAGE);
-				}
+				this.generateSchedule();
 			}
 			this.runButton.setEnabled(false);
 			this.choicesGroup.clearSelection();
@@ -219,16 +216,23 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	}
 
 
-	private void generateSchedule() throws SQLException {
-		// Fill empty slots in Sessions table
-		// TODO: run TestDataGenerator.generateStandardDataset before demoing this part
-		//GenerateUnfilledScheduleAction genAction = new GenerateUnfilledScheduleAction(ConnectionFactory.getInstance());
-		//genAction.generateUnfilledSchedule();
-		// TODO Implement the rest of me!
-		Logger.logln("Tried to start generate schedule task.");
-		JOptionPane.showMessageDialog(this,
-				"TODO: Implement generate schedule task",
-				"TODO: Implement generate schedule task",
-				JOptionPane.WARNING_MESSAGE);
+	private void generateSchedule() {
+		try {
+			Connection conn = ConnectionFactory.getInstance();
+			GenerateUnfilledScheduleAction genAction = new GenerateUnfilledScheduleAction(conn);
+			Logger.logln("Generated unfilled schedule");
+			genAction.generateUnfilledSchedule();
+			FillScheduleAction fillAction = new FillScheduleAction(conn);
+			fillAction.fillSchedule();
+			Logger.logln("Assigned clinicians to schedule");
+			ValidateScheduleAction validateAction = new ValidateScheduleAction(conn);
+			validateAction.validateSchedule();
+			Logger.logln("Validated the generated schedule");
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this,
+					"SQLException when generating schedule",
+					"Error when generating schedule",
+					JOptionPane.WARNING_MESSAGE);
+		}
 	}
 }

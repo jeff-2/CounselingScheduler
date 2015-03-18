@@ -22,6 +22,7 @@ import org.uispec4j.interception.WindowInterceptor;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.TimeAwayBean;
+import bean.Weekday;
 import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
@@ -66,8 +67,8 @@ public class ClinicianFormTest extends UISpecTestCase {
 		
 		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
 		commitments = new ArrayList<CommitmentBean>();
-		commitments.add(new CommitmentBean(0, 8, "Wednesday", "desc"));
-		commitments.add(new CommitmentBean(0, 10, "Monday", "other desc"));
+		commitments.add(new CommitmentBean(0, 8, Weekday.Wednesday, "desc"));
+		commitments.add(new CommitmentBean(0, 10, Weekday.Monday, "other desc"));
 		
 		timeAway = new ArrayList<TimeAwayBean>();
 		timeAway.add(new TimeAwayBean(0, "some desc", DateRangeValidator.parseDate("1/3/1970"), DateRangeValidator.parseDate("1/12/1970")));
@@ -206,7 +207,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		
 		ClinicianPreferencesBean otherPreferences = new ClinicianPreferencesBean(0, 3, 1, 2);
 		List<CommitmentBean> otherCommitments = new ArrayList<CommitmentBean>();
-		otherCommitments.add(new CommitmentBean(0, 15, "Wednesday", "pear"));
+		otherCommitments.add(new CommitmentBean(0, 15, Weekday.Wednesday, "pear"));
 		List<TimeAwayBean> otherTimeAway = new ArrayList<TimeAwayBean>();
 		otherTimeAway.add(new TimeAwayBean(0, "a desc", DateRangeValidator.parseDate("1/3/2000"), DateRangeValidator.parseDate("1/12/2000")));
 		

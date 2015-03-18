@@ -14,7 +14,7 @@ public class CommitmentBean {
 	private int hourOfDay;
 	
 	/** The day of week. */
-	private String dayOfWeek;
+	private Weekday dayOfWeek;
 	
 	/** The description. */
 	private String description;
@@ -27,7 +27,7 @@ public class CommitmentBean {
 	 * @param day of week, use Calendar constants
 	 * @param desc the desc
 	 */
-	public CommitmentBean(int id, int hour, String day, String desc) {
+	public CommitmentBean(int id, int hour, Weekday day, String desc) {
 		clinicianID = id;
 		hourOfDay = hour;
 		dayOfWeek = day;
@@ -75,7 +75,7 @@ public class CommitmentBean {
 	 *
 	 * @return the day of week
 	 */
-	public String getDayOfWeek() {
+	public Weekday getDayOfWeek() {
 		return dayOfWeek;
 	}
 	
@@ -84,7 +84,7 @@ public class CommitmentBean {
 	 *
 	 * @param day the new day of week
 	 */
-	public void setDayOfWeek(String day) {
+	public void setDayOfWeek(Weekday day) {
 		dayOfWeek = day;
 	}
 	

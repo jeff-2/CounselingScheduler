@@ -437,7 +437,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		
 		DefaultListModel<CommitmentBean> model = (DefaultListModel<CommitmentBean>) commitments.getModel();
 
-		model.add(model.size(), new CommitmentBean(-1, OperatingHours.toInt(hourOfDay), dayOfWeek, description));
+		model.add(model.size(), new CommitmentBean(-1, OperatingHours.toInt(hourOfDay), Weekday.valueOf(dayOfWeek), description));
 	}
 	
 	/**
