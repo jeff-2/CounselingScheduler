@@ -16,6 +16,7 @@ import org.junit.Test;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.TimeAwayBean;
+import bean.Weekday;
 import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
@@ -60,8 +61,8 @@ public class ClinicianPreferencesActionTest {
 		
 		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
 		commitments = new ArrayList<CommitmentBean>();
-		commitments.add(new CommitmentBean(0, 8, "Wednesday", "desc"));
-		commitments.add(new CommitmentBean(0, 10, "Monday", "other desc"));
+		commitments.add(new CommitmentBean(0, 8, Weekday.Wednesday, "desc"));
+		commitments.add(new CommitmentBean(0, 10, Weekday.Monday, "other desc"));
 		
 		timeAway = new ArrayList<TimeAwayBean>();
 		timeAway.add(new TimeAwayBean(0, "some desc", format.parse("1/5/2015"), format.parse("2/7/2015")));
@@ -82,8 +83,8 @@ public class ClinicianPreferencesActionTest {
 		
 		ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2, 1);
 		List<CommitmentBean> cmts = new ArrayList<CommitmentBean>();
-		cmts.add(new CommitmentBean(0, 11, "Tuesday", "apple"));
-		cmts.add(new CommitmentBean(0, 14, "Thursday", "pear"));
+		cmts.add(new CommitmentBean(0, 11, Weekday.Tuesday, "apple"));
+		cmts.add(new CommitmentBean(0, 14, Weekday.Thursday, "pear"));
 		
 		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
 		tsAway.add(new TimeAwayBean(0, "orange", format.parse("2/2/2015"), format.parse("2/17/2015")));

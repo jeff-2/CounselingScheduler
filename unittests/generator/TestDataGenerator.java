@@ -12,6 +12,7 @@ import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.HolidayBean;
 import bean.TimeAwayBean;
+import bean.Weekday;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
@@ -166,14 +167,14 @@ public class TestDataGenerator {
 	
 	private void generateStandardCommitmentsData() throws SQLException {
 		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
-		commitmentsDAO.insert(new CommitmentBean(0, 8, "Wednesday", "Doctor's appointment"));
-		commitmentsDAO.insert(new CommitmentBean(0, 11, "Friday", "Staff meeting"));
-		commitmentsDAO.insert(new CommitmentBean(1, 14, "Monday", "Staff meeting"));
-		commitmentsDAO.insert(new CommitmentBean(2, 10, "Monday", "Dropping off child at school"));
-		commitmentsDAO.insert(new CommitmentBean(2, 11, "Wednesday", "Doctor's appointment"));
-		commitmentsDAO.insert(new CommitmentBean(3, 10, "Friday", "Senior staff meeting"));
-		commitmentsDAO.insert(new CommitmentBean(4, 11, "Thursday", "Some commitment"));
-		commitmentsDAO.insert(new CommitmentBean(5, 15, "Tuesday", "Manager meeting"));
+		commitmentsDAO.insert(new CommitmentBean(0, 8, Weekday.Wednesday, "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(0, 11, Weekday.Friday, "Staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(1, 14, Weekday.Monday, "Staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(2, 10, Weekday.Monday, "Dropping off child at school"));
+		commitmentsDAO.insert(new CommitmentBean(2, 11, Weekday.Wednesday, "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(3, 10, Weekday.Friday, "Senior staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(4, 11, Weekday.Thursday, "Some commitment"));
+		commitmentsDAO.insert(new CommitmentBean(5, 15, Weekday.Tuesday, "Manager meeting"));
 	}
 	
 	private void generatedStandardTimeAwayData() throws SQLException, ParseException {

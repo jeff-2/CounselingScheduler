@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import bean.CommitmentBean;
+import bean.Weekday;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import generator.TestDataGenerator;
@@ -45,7 +46,7 @@ public class CommitmentsDAOTest {
 	@Test
 	public void testInsertValidCommitment() throws Exception {
 		int clinicianID = 1;
-		CommitmentBean expected = new CommitmentBean(clinicianID, 4, "Wednesday", "Description");
+		CommitmentBean expected = new CommitmentBean(clinicianID, 4, Weekday.Wednesday, "Description");
 		commitmentsDAO.insert(expected);
 		
 		PreparedStatement stmt = conn.prepareStatement("SELECT hour, day, description FROM Commitments WHERE id = ?");
@@ -58,7 +59,7 @@ public class CommitmentsDAOTest {
 		String description = results.getString("description");
 		
 		
-		assertEquals(expected, new CommitmentBean(clinicianID, hour, day, description));
+		assertEquals(expected, new CommitmentBean(clinicianID, hour, Weekday.valueOf(day), description));
 		stmt.close();
 	}
 	
@@ -79,8 +80,8 @@ public class CommitmentsDAOTest {
 		
 		List<CommitmentBean> actual = commitmentsDAO.loadCommitments(clinicianID);
 		List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
-		expected.add(new CommitmentBean(clinicianID, 8, "Friday", "desc"));
-		expected.add(new CommitmentBean(clinicianID, 9, "Wednesday", "other desc"));
+		expected.add(new CommitmentBean(clinicianID, 8, Weekday.Friday, "desc"));
+		expected.add(new CommitmentBean(clinicianID, 9, Weekday.Wednesday, "other desc"));
 		assertEquals(actual, expected);
 	}
 	

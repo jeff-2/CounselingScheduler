@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bean.CommitmentBean;
+import bean.Weekday;
 
 /**
  * The Class CommitmentsDao handles the interaction with the database dealing with the table Commitments.
@@ -35,7 +36,7 @@ public class CommitmentsDAO extends DAO {
 		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO Commitments (id, hour, day, description) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, commitment.getClinicianID());
 		stmt.setInt(2, commitment.getHourOfDay());
-		stmt.setString(3, commitment.getDayOfWeek());
+		stmt.setString(3, commitment.getDayOfWeek().toString());
 		stmt.setString(4, commitment.getDescription());
 		stmt.execute();
 		stmt.close();
@@ -75,7 +76,7 @@ public class CommitmentsDAO extends DAO {
 		int hour = results.getInt("hour");
 		String day = results.getString("day");
 		String description = results.getString("description");
-		return new CommitmentBean(clinicianID, hour, day, description);
+		return new CommitmentBean(clinicianID, hour, Weekday.valueOf(day), description);
 	}
 	
 	/**
