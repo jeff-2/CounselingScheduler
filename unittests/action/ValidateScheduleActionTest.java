@@ -1,5 +1,6 @@
 package action;
-//
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import generator.TestDataGenerator;
 
@@ -17,10 +18,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utils.Logger;
+import bean.ClinicianBean;
+import bean.ClinicianPreferencesBean;
 import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
+import dao.ClinicianDAO;
+import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
 import dao.SessionsDAO;
 
@@ -66,12 +71,14 @@ public class ValidateScheduleActionTest {
 	
 	@Test
 	public void testValidSchedule() throws SQLException, ParseException {
+		gen.clearTables();
+		generateValidSchedule();
 		
 		FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
 		fillScheduleAction.fillSchedule();
 		
 		validateAction.validateSchedule();
-		assertNotEquals("", outContent.toString());
+		assertEquals("", outContent.toString());
 	}
 	
 	@Test
@@ -89,7 +96,20 @@ public class ValidateScheduleActionTest {
 		sessionsDAO.insertSession(new SessionBean(101000, 13, 1, Weekday.Monday, format.parse("03/14/2015"), 
 				SessionType.IA, Arrays.asList(0), Semester.Fall.ordinal(), 1)); 
 	}
-
+	
+	private void generateValidSchedule() throws ParseException, SQLException {
+		gen.generateEmptySemesterDataset();
+		
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
+		clinicianDAO.insert(new ClinicianBean(1, "Ryan"));
+		
+		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(0, 2, 1, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(1, 1, 2, 3));
+		
+		FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
+		fillScheduleAction.fillSchedule();
+	}
 
 }
-
