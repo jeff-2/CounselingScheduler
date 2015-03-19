@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import bean.CalendarBean;
+import bean.Semester;
 import dao.CalendarDAO;
 import dao.ConnectionFactory;
 import generator.TestDataGenerator;
@@ -72,12 +73,24 @@ public class CalendarDAOTest {
 
 	}
 	
+	@Test
+	public void testGetCurrentYear() throws SQLException {
+		generateCalendarData();
+		assertEquals(calendarDAO.getCurrentYear(), 2000);
+	}
+	
+	@Test
+	public void testGetCurrentSemester() throws SQLException {
+		generateCalendarData();
+		assertEquals(calendarDAO.getCurrentSemester(), Semester.Spring);
+	}
+	
 	private void generateCalendarData() throws SQLException {
 		Statement stmt = con.createStatement();
 		
 		stmt.execute("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
 				+ "ecMinHours, term) VALUES(0, '2000-01-02', '2000-01-03', 5, 6, 0),"
-				+ "(1, '2000-02-02', '2000-02-03', 7, 8, 1)");
+				+ "(1, '2000-02-02', '2000-02-03', 7, 8, 0)");
 		
 	}
 }

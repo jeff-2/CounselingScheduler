@@ -178,7 +178,7 @@ public class SessionsDAO extends DAO {
 	 * @return List of EC sessions with invalid hours
 	 * @throws SQLException
 	 */
-	public List<SessionBean> getECSessionsWithInvalidHours(int semester, int year) throws SQLException {
+	public List<SessionBean> getInvalidECSessions(int semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE (startTime != ? AND startTime != ? AND startTime != ?)"
 				+ "AND sType = ? AND semester = ? AND YEAR(sDate) = ?");
@@ -199,15 +199,14 @@ public class SessionsDAO extends DAO {
 	}
 	
 	/**
-	 * Finds IA sessions for the current semester whose session does not start at 
-	 * 11am, 1pm, 2pm, or 3pm
+	 * Finds IA sessions for the current semester whose session does not start at 11am, 1pm, 2pm, or 3pm
 	 * 
 	 * @param semester 
 	 * @param year
 	 * @return List of IA sessions with invalid hours
 	 * @throws SQLException
 	 */
-	public List<SessionBean> getIASessionsWithInvalidHours(Semester semester, int year) throws SQLException {
+	public List<SessionBean> getInvalidIASessions(Semester semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE "
 				+ "(startTime != ? AND startTime != ? AND startTime != ? AND startTime != ?)"
@@ -229,7 +228,15 @@ public class SessionsDAO extends DAO {
 		return sessions;
 	}
 	
-	public List<String> getClinicianViolateWeeklyECSessionConstraint(Semester semester, int year) throws SQLException {
+	/**
+	 * Checks the constraint that no clinician can be scheduled for more than 1 EC session per week
+	 * 
+	 * @param semester
+	 * @param year
+	 * @return List of error messages of clinicians that violate the constraint and when it was violated
+	 * @throws SQLException
+	 */
+	public List<String> getWeeklyECSessionConstraintViolation(Semester semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(""
 				+ "SELECT weektype, C.id id "
@@ -252,7 +259,15 @@ public class SessionsDAO extends DAO {
 		return errors;
 	}
 	
-	public List<String> getClinicianViolateDailyIASessionConstraint(Semester semester, int year) throws SQLException {
+	/**
+	 * Checks the constraint that no clinician can be scheduled for more than 1 IA session per day
+	 * 
+	 * @param semester
+	 * @param year
+	 * @return List of error messages of clinicians that violate the constraint and when it was violated
+	 * @throws SQLException
+	 */
+	public List<String> getDailyIASessionConstraintViolation(Semester semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(""
 				+ "SELECT weektype, weekday, C.id id "
@@ -275,7 +290,16 @@ public class SessionsDAO extends DAO {
 		return errors;
 	}
 	
-	public List<String> checkAlternatingIAFridaySessions(Semester semester, int year) throws SQLException {
+	/**
+	 * Checks the schedule constraint that clinicians who receive a 3pm Friday IA 
+	 * session in the Fall do not receive one in the Spring, and vice versa
+	 * 
+	 * @param semester
+	 * @param year
+	 * @return List of error messages of clinicians that violate the constraint and when it was violated
+	 * @throws SQLException
+	 */
+	public List<String> getAlternatingIAFridayConstraintViolation(Semester semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(""
 				+ "SELECT SC1.clinicianID id "
@@ -289,20 +313,17 @@ public class SessionsDAO extends DAO {
 		stmt.setInt(1, semester.ordinal());
 		stmt.setInt(2, year);
 		stmt.setInt(3, SessionType.IA.ordinal());
-		if (semester.equals(Semester.Fall))
-		{
-			stmt.setInt(4, semester.Spring.ordinal());
+		if (semester.equals(Semester.Fall)) {
+			stmt.setInt(4, Semester.Spring.ordinal());
 			stmt.setInt(5, year);
 			stmt.setInt(6, SessionType.IA.ordinal());
 		}
-		else if (semester.equals(Semester.Spring))
-		{
-			stmt.setInt(4, semester.Fall.ordinal());
+		else if (semester.equals(Semester.Spring)) {
+			stmt.setInt(4, Semester.Fall.ordinal());
 			stmt.setInt(5, year - 1);
 			stmt.setInt(6, SessionType.IA.ordinal());
 		}
-		else
-		{
+		else {
 			stmt.close();
 			new ArrayList<String>();
 		}
@@ -317,7 +338,16 @@ public class SessionsDAO extends DAO {
 		return errors;
 	}
 	
-	public List<String> checkNoonECUnavailable1IAPreviousDay(Semester semester, int year) throws SQLException {
+	/**
+	 * Checks the schedule constraint that if a clinician is scheduled for a noon EC session,
+	 * they are unavailable for a 1pm IA session that same day 
+	 * 
+	 * @param semester
+	 * @param year
+	 * @return List of error messages of clinicians that violate the constraint and when it was violated
+	 * @throws SQLException
+	 */
+	public List<String> getNoonECConstraintViolation(Semester semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(""
 				+ "SELECT SC1.clinicianID id, S1.sDate as sDate "

@@ -1,12 +1,14 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import bean.CalendarBean;
+import bean.Semester;
 
 /**
  * Handles interactions with the database to access the Calendar table.
@@ -73,5 +75,26 @@ public class CalendarDAO extends DAO {
 	 */
 	public int getNextAvailableId() throws SQLException {
 		return DAO.getNextID("Calendar");		
+	}
+
+	public Semester getCurrentSemester() throws SQLException {
+		Connection conn = getConnection();
+		Statement stmt = conn.createStatement();
+		stmt.execute("Select term From Calendar");
+		
+		ResultSet res = stmt.getResultSet();
+		res.next();
+		int semester = res.getInt("term");
+		return Semester.values()[semester];
+	}
+
+	public int getCurrentYear() throws SQLException {
+		Connection conn = getConnection();
+		Statement stmt = conn.createStatement();
+		stmt.execute("Select YEAR(startDate) AS year From Calendar");
+		
+		ResultSet res = stmt.getResultSet();
+		res.next();
+		return res.getInt("year");
 	}
 }
