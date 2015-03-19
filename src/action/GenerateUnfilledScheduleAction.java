@@ -64,7 +64,7 @@ public class GenerateUnfilledScheduleAction {
 				}
 				
 				//TODO figure out better way to check when a week has passed
-				if (day.equals(day.Friday))
+				if (day.equals(Weekday.Friday))
 					weektype = 1 - weektype;
 			}
 		}

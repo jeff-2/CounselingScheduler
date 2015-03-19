@@ -7,15 +7,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import bean.ClinicianBean;
 import bean.ClinicianPref;
 import bean.ClinicianPreferencesBean;
 import bean.SessionBean;
 import bean.SessionType;
-import bean.Weekday;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.SessionsDAO;
-import bean.ClinicianBean;
 
 /**
  * Automates assigning clinicians to each session  

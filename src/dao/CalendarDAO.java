@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -77,6 +76,12 @@ public class CalendarDAO extends DAO {
 		return DAO.getNextID("Calendar");		
 	}
 
+	/**
+	 * Gets the current semester. Assumes only one entry in Calendar table every semester. 
+	 * 
+	 * @return Semester
+	 * @throws SQLException
+	 */
 	public Semester getCurrentSemester() throws SQLException {
 		Connection conn = getConnection();
 		Statement stmt = conn.createStatement();
@@ -88,6 +93,12 @@ public class CalendarDAO extends DAO {
 		return Semester.values()[semester];
 	}
 
+	/**
+	 * Gets the current year. Assumes only one entry in the Calendar table every semester. 
+	 * 
+	 * @return int representing the year
+	 * @throws SQLException
+	 */
 	public int getCurrentYear() throws SQLException {
 		Connection conn = getConnection();
 		Statement stmt = conn.createStatement();
