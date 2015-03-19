@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
@@ -206,7 +207,7 @@ public class SessionsDAO extends DAO {
 	 * @return List of IA sessions with invalid hours
 	 * @throws SQLException
 	 */
-	public List<SessionBean> getICSessionsWithInvalidHours(int semester, int year) throws SQLException {
+	public List<SessionBean> getIASessionsWithInvalidHours(Semester semester, int year) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE "
 				+ "(startTime != ? AND startTime != ? AND startTime != ? AND startTime != ?)"
@@ -216,7 +217,7 @@ public class SessionsDAO extends DAO {
 		stmt.setInt(3, 14);
 		stmt.setInt(4, 15);
 		stmt.setInt(5, SessionType.IA.ordinal());
-		stmt.setInt(6, semester);
+		stmt.setInt(6, semester.ordinal());
 		stmt.setInt(7, year);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -227,5 +228,52 @@ public class SessionsDAO extends DAO {
 		stmt.close();
 		return sessions;
 	}
+	
+	public List<String> getClinicianViolateWeeklyECSessionConstraint(Semester semester, int year) throws SQLException {
+		Connection conn = getConnection();
+		PreparedStatement stmt = conn.prepareStatement(""
+				+ "SELECT weektype, C.id id "
+				+ "FROM Sessions S INNER JOIN SessionClinicians SC "
+				+ "ON S.id = SC.sessionID INNER JOIN Clinicians C "
+				+ "ON SC.clinicianID = C.id "
+				+ "WHERE semester = ? AND year(sDate) = ? AND sType = ? "
+				+ "GROUP BY weektype, C.id "
+				+ "HAVING COUNT(C.id) > 1 ");
+		stmt.setInt(1, semester.ordinal());
+		stmt.setInt(2, year);
+		stmt.setInt(3, SessionType.EC.ordinal());
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		List<String> errors = new ArrayList<>();
+		while (results.next()) {
+			errors.add("Clinician number " + results.getInt("id") + " is assigned more than 1 EC session in week " + results.getInt("weektype"));
+		}
+		stmt.close();
+		return errors;
+	}
+	
+	public List<String> getClinicianViolateDailyIASessionConstraint(Semester semester, int year) throws SQLException {
+		Connection conn = getConnection();
+		PreparedStatement stmt = conn.prepareStatement(""
+				+ "SELECT weektype, weekday, C.id id "
+				+ "FROM Sessions S INNER JOIN SessionClinicians SC "
+				+ "ON S.id = SC.sessionID INNER JOIN Clinicians C "
+				+ "ON SC.clinicianID = C.id "
+				+ "WHERE semester = ? AND year(sDate) = ? AND sType = ? "
+				+ "GROUP BY weektype, weekday, C.id "
+				+ "HAVING COUNT(C.id) > 1 ");
+		stmt.setInt(1, semester.ordinal());
+		stmt.setInt(2, year);
+		stmt.setInt(3, SessionType.IA.ordinal());
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		List<String> errors = new ArrayList<>();
+		while (results.next()) {
+			errors.add("Clinician number " + results.getInt("id") + " is assigned more than 1 IA session on " + results.getString("weekday") + " of week " + results.getInt("weektype"));
+		}
+		stmt.close();
+		return errors;
+	}
+	
 	
 }

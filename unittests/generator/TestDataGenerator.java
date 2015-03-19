@@ -112,7 +112,6 @@ public class TestDataGenerator {
 		this.generatedStandardTimeAwayData();
 		this.generateStandardCalendarData();
 		this.generateStandardHolidayData();
-		this.generateInvalidSessionData();
 		// Add other methods here
 	}
 	
@@ -242,10 +241,4 @@ public class TestDataGenerator {
 		gen.generateStandardDataset();		
 	}
 	
-	public void generateInvalidSessionData() throws ParseException, SQLException {
-		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		sessionsDAO.insertSession(new SessionBean(0, 20, 1, Weekday.Monday, format.parse("03/17/2015"), SessionType.EC, new ArrayList<Integer>(), Semester.FALL, 0)); 
-		sessionsDAO.insertSession(new SessionBean(1, 16, 1, Weekday.Monday, format.parse("03/17/2015"), SessionType.IA, new ArrayList<Integer>(), Semester.FALL, 0)); 
-	}
 }

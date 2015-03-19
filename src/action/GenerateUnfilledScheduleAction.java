@@ -55,11 +55,11 @@ public class GenerateUnfilledScheduleAction {
 				Weekday day = Weekday.getWeekday(d);
 				// TODO figure out the semester
 				for(int e : ecSlots) {
-					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), Semester.FALL, weektype);
+					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), Semester.Fall.ordinal(), weektype);
 					sessionsDAO.insertSession(session);
 				}
 				for(int i : iaSlots) {
-					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), Semester.FALL, weektype);
+					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), Semester.Fall.ordinal(), weektype);
 					sessionsDAO.insertSession(session);
 				}
 				
