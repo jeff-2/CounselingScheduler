@@ -252,6 +252,32 @@ public class SessionsDAOTest {
 		assertEquals(1, invalidSessions.size());
 	}
 	
+	@Test
+	public void testCheckAlternatingIAFridaySessions() throws SQLException, ParseException {
+		SessionsDAO sessionsDAO = new SessionsDAO(conn);
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		sessionsDAO.insertSession(new SessionBean(0, 15, 1, Weekday.Friday, format.parse("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Fall.ordinal(), 1)); 
+		sessionsDAO.insertSession(new SessionBean(1, 15, 1, Weekday.Friday, format.parse("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Spring.ordinal(), 1)); 
+		
+		List<String> invalidSessions = sessionsDAO.checkAlternatingIAFridaySessions(Semester.Fall, 2015);
+		assertEquals(1, invalidSessions.size());
+	}
+	
+	@Test
+	public void checkNoonECUnavailable1IAPreviousDay() throws SQLException, ParseException {
+		SessionsDAO sessionsDAO = new SessionsDAO(conn);
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		sessionsDAO.insertSession(new SessionBean(0, 12, 1, Weekday.Friday, format.parse("03/16/2015"), 
+				SessionType.EC, Arrays.asList(0), Semester.Fall.ordinal(), 1)); 
+		sessionsDAO.insertSession(new SessionBean(1, 13, 1, Weekday.Friday, format.parse("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Fall.ordinal(), 1)); 
+		
+		List<String> invalidSessions = sessionsDAO.checkNoonECUnavailable1IAPreviousDay(Semester.Fall, 2015);
+		assertEquals(1, invalidSessions.size());
+	}
+	
 	
 	
 	

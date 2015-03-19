@@ -275,5 +275,75 @@ public class SessionsDAO extends DAO {
 		return errors;
 	}
 	
+	public List<String> checkAlternatingIAFridaySessions(Semester semester, int year) throws SQLException {
+		Connection conn = getConnection();
+		PreparedStatement stmt = conn.prepareStatement(""
+				+ "SELECT SC1.clinicianID id "
+				+ "FROM Sessions S1 INNER JOIN SessionClinicians SC1 ON S1.id = SC1.sessionID "
+				+ "INNER JOIN SessionClinicians SC2 ON SC1.clinicianID = SC2.clinicianID "
+				+ "INNER JOIN Sessions S2 ON SC2.sessionID = S2.id "
+				+ "WHERE S1.semester = ? AND year(S1.sDate) = ? AND S1.sType = ? "
+				+ "AND S2.semester = ? AND year(S2.sDate) = ? AND S2.sType = ? "
+				+ "AND S1.weekday = 'Friday' AND S2.weekday = 'Friday' "
+				+ "AND S1.startTime = 15 AND S2.startTime = 15 ");
+		stmt.setInt(1, semester.ordinal());
+		stmt.setInt(2, year);
+		stmt.setInt(3, SessionType.IA.ordinal());
+		if (semester.equals(Semester.Fall))
+		{
+			stmt.setInt(4, semester.Spring.ordinal());
+			stmt.setInt(5, year);
+			stmt.setInt(6, SessionType.IA.ordinal());
+		}
+		else if (semester.equals(Semester.Spring))
+		{
+			stmt.setInt(4, semester.Fall.ordinal());
+			stmt.setInt(5, year - 1);
+			stmt.setInt(6, SessionType.IA.ordinal());
+		}
+		else
+		{
+			stmt.close();
+			new ArrayList<String>();
+		}
+		
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		List<String> errors = new ArrayList<>();
+		while (results.next()) {
+			errors.add("Clinician number " + results.getInt("id") + " is assigned to a 3 PM Friday IA session in both this semester and last semester.");
+		}
+		stmt.close();
+		return errors;
+	}
+	
+	public List<String> checkNoonECUnavailable1IAPreviousDay(Semester semester, int year) throws SQLException {
+		Connection conn = getConnection();
+		PreparedStatement stmt = conn.prepareStatement(""
+				+ "SELECT SC1.clinicianID id, S1.sDate as sDate "
+				+ "FROM Sessions S1 INNER JOIN SessionClinicians SC1 ON S1.id = SC1.sessionID "
+				+ "INNER JOIN SessionClinicians SC2 ON SC1.clinicianID = SC2.clinicianID "
+				+ "INNER JOIN Sessions S2 ON SC2.sessionID = S2.id "
+				+ "WHERE S1.semester = ? AND year(S1.sDate) = ? AND S1.sType = ? "
+				+ "AND S2.semester = ? AND year(S2.sDate) = ? AND S2.sType = ? "
+				+ "AND S1.startTime = 12 AND S2.startTime = 13 "
+				+ "AND S1.weektype % 2 = S2.weektype % 2 "
+				+ "AND S1.weekday = S2.weekday ");
+		stmt.setInt(1, semester.ordinal());
+		stmt.setInt(2, year);
+		stmt.setInt(3, SessionType.EC.ordinal());
+		stmt.setInt(4, semester.ordinal());
+		stmt.setInt(5, year);
+		stmt.setInt(6, SessionType.IA.ordinal());
+		
+		stmt.execute();
+		ResultSet results = stmt.getResultSet();
+		List<String> errors = new ArrayList<>();
+		while (results.next()) {
+			errors.add("Clinician number " + results.getInt("id") + " is assigned to a 12 PM EC session and a 1 PM IA session on " + results.getDate("sDate")+ '.');
+		}
+		stmt.close();
+		return errors;
+	}
 	
 }
