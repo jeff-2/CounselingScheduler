@@ -4,27 +4,16 @@ import static org.junit.Assert.assertEquals;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import bean.ClinicianBean;
-import bean.ClinicianPref;
-import bean.ClinicianPreferencesBean;
-import bean.CommitmentBean;
 import bean.SessionBean;
 import bean.SessionType;
-import bean.TimeAwayBean;
-import dao.ClinicianDAO;
-import dao.ClinicianPreferencesDAO;
-import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import dao.SessionsDAO;
-import dao.TimeAwayDAO;
 
 /**
  * 
@@ -33,11 +22,7 @@ import dao.TimeAwayDAO;
  */
 public class FillScheduleActionTest {
 	
-	private ClinicianPreferencesAction action;
 	private Connection conn;
-	private List<SessionBean> sessions;
-	private ClinicianPreferencesBean preferences;
-	private ClinicianPreferencesDAO clinicianPreferencesDAO;
 	private TestDataGenerator gen;
 	
 	@Before

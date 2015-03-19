@@ -1,21 +1,16 @@
 package generator;
 
-import java.awt.List;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import bean.CalendarBean;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.HolidayBean;
-import bean.Semester;
-import bean.SessionBean;
-import bean.SessionType;
 import bean.TimeAwayBean;
 import bean.Weekday;
 import dao.CalendarDAO;
@@ -24,7 +19,6 @@ import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import dao.HolidayDAO;
-import dao.SessionsDAO;
 import dao.TimeAwayDAO;
 
 public class TestDataGenerator {
