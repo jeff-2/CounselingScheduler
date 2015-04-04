@@ -135,8 +135,7 @@ public class CommitmentBean {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return clinicianID + " " + OperatingHours.toString(startHour) + "-" + OperatingHours.toString(endHour) + " " +  date + " " + description;
-		//return OperatingHours.toString(startHour) + " " + Weekday.dayName(date) + " " + description;
+		return OperatingHours.toString(startHour) + " " + Weekday.dayName(date) + " " + description;
 	}
 	
 	/* (non-Javadoc)
