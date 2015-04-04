@@ -3,6 +3,7 @@ package gui.admin;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -13,6 +14,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -50,6 +52,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private JScrollPane listScrollPane;
 	private JList<String> holidayStringList;
 	private List<HolidayBean> holidayList = new ArrayList<HolidayBean>();
+	private JButton importMeetingsButton;
+	private JFileChooser fileChooser;
 
 
 	/**
@@ -59,6 +63,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		super("Create New Semester Settings");
 		panel = new JPanel();
 		panel.setLayout(new MigLayout("gap rel", "grow"));
+		fileChooser = new JFileChooser();
 		initializeComponents();
 		initializeFrame();
 	}
@@ -109,6 +114,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		removeHolidayButton.setName("removeHolidayButton");
 		submitButton = new JButton("create");
 		submitButton.setName("submitButton");
+		importMeetingsButton = new JButton("Import Meetings");
+		importMeetingsButton.setName("importMeetingsButton");
 	}
 
 	/**
@@ -212,7 +219,12 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 				}
 			}
 		});
-		panel.add(submitButton, "right");
+		panel.add(submitButton, "right, wrap");
+	}
+	
+	private void addMeetingComponents() {
+		panel.add(importMeetingsButton, "wrap");
+		importMeetingsButton.addActionListener(this);
 	}
 
 	/**
@@ -224,6 +236,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		addSemesterDateComponents();
 		addHolidayComponents();
 		addClinicianComponents();
+		addMeetingComponents();
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().add(panel);
@@ -245,6 +258,13 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 			}			
 		} else if (e.getSource() == removeHolidayButton) {
 			removeHoliday();
+		} else if (e.getSource() == importMeetingsButton) {
+			int choice = fileChooser.showOpenDialog(this);
+			if (choice == JFileChooser.APPROVE_OPTION) {
+				// load file
+				File selected = fileChooser.getSelectedFile();
+				System.out.println(selected.getPath());
+			}
 		}
 	}
 

@@ -18,16 +18,16 @@ public class OperatingHours {
 	
 	static {
 		Map<String, Integer> strToInt = new LinkedHashMap<String, Integer>();
-		strToInt.put("8 am", 8);
-		strToInt.put("9 am", 9);
-		strToInt.put("10 am", 10);
-		strToInt.put("11 am", 11);
-		strToInt.put("12 pm", 12);
-		strToInt.put("1 pm", 13);
-		strToInt.put("2 pm", 14);
-		strToInt.put("3 pm", 15);
-		strToInt.put("4 pm", 16);
-		strToInt.put("5 pm", 17);
+		strToInt.put("8:00 am", 8);
+		strToInt.put("9:00 am", 9);
+		strToInt.put("10:00 am", 10);
+		strToInt.put("11:00 am", 11);
+		strToInt.put("12:00 pm", 12);
+		strToInt.put("1:00 pm", 13);
+		strToInt.put("2:00 pm", 14);
+		strToInt.put("3:00 pm", 15);
+		strToInt.put("4:00 pm", 16);
+		strToInt.put("5:00 pm", 17);
 		
 		stringToInteger = Collections.unmodifiableMap(strToInt);
 		
@@ -43,7 +43,11 @@ public class OperatingHours {
 	}
 	
 	public static int toInt(String operatingHour) {
-		return stringToInteger.get(operatingHour);
+		Integer value = stringToInteger.get(operatingHour);
+		if (value == null) {
+			return -1;
+		}
+		return value.intValue();
 	}
 	
 	public static String toString(int operatingHour) {

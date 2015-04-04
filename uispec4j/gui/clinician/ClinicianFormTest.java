@@ -130,7 +130,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		commitmentDescription.setText("desc");
 		
 		ComboBox operatingHoursBox = window.getComboBox("operatingHoursBox");
-		operatingHoursBox.select("8 am");
+		operatingHoursBox.select("8:00 am");
 		
 		ComboBox daysOfWeekBox = window.getComboBox("daysOfWeekBox");
 		daysOfWeekBox.select("Wednesday");
@@ -139,7 +139,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		addCommitmentButton.click();
 		
 		commitmentDescription.setText("other desc");
-		operatingHoursBox.select("10 am");
+		operatingHoursBox.select("10:00 am");
 		daysOfWeekBox.select("Monday");
 		addCommitmentButton.click();
 		
@@ -237,7 +237,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		commitmentDescription.setText("pear");
 		
 		ComboBox operatingHoursBox = window.getComboBox("operatingHoursBox");
-		operatingHoursBox.select("3 pm");
+		operatingHoursBox.select("3:00 pm");
 		
 		ComboBox daysOfWeekBox = window.getComboBox("daysOfWeekBox");
 		daysOfWeekBox.select("Wednesday");
