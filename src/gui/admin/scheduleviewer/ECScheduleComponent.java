@@ -125,10 +125,7 @@ public class ECScheduleComponent extends JComponent implements Printable {
 			throws PrinterException {
 		Graphics2D g2d = (Graphics2D)g;      
 		g2d.translate(pf.getImageableX(), pf.getImageableY());
-		//double yscale = pf.getImageableHeight()/this.getHeight();
 		double scale = pf.getImageableWidth()/this.getWidth();
-		//double scale = Math.min(xscale, yscale);
-		//System.out.println(scale);
 		((Graphics2D)g).scale(scale, scale);
 
 		/* Now print the window and its visible contents */

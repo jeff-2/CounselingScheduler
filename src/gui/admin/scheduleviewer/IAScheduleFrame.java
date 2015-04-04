@@ -118,8 +118,6 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		// Draw stuff
 		//this.add(panel);
 		//this.getContentPane().add(scheduleComponent);
-		// Set exit behavior
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// Finish
 		//this.getContentPane().add(panel);
 		this.pack();

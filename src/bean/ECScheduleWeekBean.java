@@ -134,11 +134,9 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 				type = "A";
 			}
 			curDate = incrementDateByDays(curDate, 7);
-			System.out.println("Adding week");
 		}
 		// Add holidays
 		addHolidays(weekMap, dao);
-		System.out.println("Added holidays");
 		
 		// Clinician sessions
 		List<SessionNameBean> sessions = dao.loadScheduleType(2); // loads EC sessions
@@ -146,13 +144,11 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 			Date date = bean.getDate();
 			getWeek(date, weekMap).addClinician(date, bean.getStartTime(), bean.getClinicianName());
 		}		
-		System.out.println("Added sessions");
 
 		// Sort weeks
 		ArrayList<ECScheduleWeekBean> weeks = new ArrayList<ECScheduleWeekBean>();
 		weeks.addAll(weekMap.values());
 		Collections.sort(weeks);	
-		System.out.println("Sorted weeks");	
 		
 		return weeks;		
 	}

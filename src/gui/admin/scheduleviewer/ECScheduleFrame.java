@@ -84,91 +84,31 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		this.scrollPanel = new JScrollPane();
 
 		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));
-		//JPanel p = new JPanel(); 
-		//p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBackground(Color.WHITE);
-		//p.setMinimumSize(new Dimension(700, 800));
-		//p.setPreferredSize(new Dimension(700, 800));
 
 		// Initialize menu
 		this.initializeMenu();
-		// Set preferred size
-		//this.getContentPane().setPreferredSize( new Dimension(700, 800) );
-		//this.panel.setPreferredSize( new Dimension(700, 800) );
+
 		// Add schedule pages
 		this.pages = getECSchedulePages(dao);
 		
 		
 		for(ECScheduleComponent ecComp : this.pages) {
-			//p.setPreferredSize(new Dimension(p.getWidth(), p.getHeight()+ecComp.getHeight()));
-			//p.setMaximumSize(new Dimension(700, 999999));
 			p.add(ecComp, "span, grow, wrap 15px");
-			//p.revalidate();
-			//p.repaint();
 		}		
-		
-		//p.add(this.pages.get(0));
-		//p.add(this.pages.get(1));
-		//p.add(this.pages.get(2));
 		p.validate();
 		this.scrollPanel = new JScrollPane(p);
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
+		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		//this.scrollPanel.
 		this.scrollPanel.setViewportView(p);
 		
-		
-		// Set exit behavior
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	
 		// Finish
-		//scrollPanel.setVisible(true);
 		this.getContentPane().add(scrollPanel);
-		//this.getContentPane().add(p);
-		//this.panel.revalidate();
 		this.pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-		
-		
-		
-		//this.panel = new JPanel();
-		//this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
-		//this.scrollPanel = new JScrollPane(this.panel);
-		//this.tabbedPanel = new JTabbedPane();
-		//this.setContentPane(this.tabbedPanel);
-		//this.panel.setLayout(new ScrollPaneLayout());
-		//this.panel.setBackground(Color.WHITE);
-		//this.tabbedPanel.setLayout(new BoxLayout(this.tabbedPanel));
-		//this.tabbedPanel.setBackground(Color.WHITE);
-		//this.pages = new ArrayList<ECScheduleComponent>();
-		//this.initializeFrame();
-	}
-
-	/**
-	 * Set up the components of this JFrame, pack, and make it visible
-	 * @throws SQLException 
-	 */
-	private void initializeFrame() throws SQLException {
-		// Initialize menu
-		this.initializeMenu();
-		// Set preferred size
-		this.getContentPane().setPreferredSize( new Dimension(700, 800) );
-		//this.panel.setPreferredSize( new Dimension(700, 800) );
-		// Add schedule pages
-		this.pages = getECSchedulePages(dao);
-		for(ECScheduleComponent ecComp : this.pages) {
-			ecComp.setVisible(true);
-			this.panel.add(ecComp);
-		}		
-		// Set exit behavior
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// Finish
-		//scrollPanel.setVisible(true);
-		//this.getContentPane().add(scrollPanel);
-		this.getContentPane().add(panel);
-		//this.panel.revalidate();
-		this.pack();
-		this.setVisible(true);
 	}
 
 	/**
@@ -225,7 +165,6 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 */
 	public static void main(String[] args) throws SQLException {
 		ECScheduleFrame frame = new ECScheduleFrame();
-		System.out.println("");
 	}
 
 	@Override

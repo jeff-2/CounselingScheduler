@@ -1,5 +1,8 @@
 package gui.admin;
 
+import gui.admin.scheduleviewer.ECScheduleFrame;
+import gui.admin.scheduleviewer.IAScheduleFrame;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -81,6 +84,19 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	 */
 	private JRadioButton generateScheduleButton;
 	private String generateScheduleString = "Generate schedule";
+	
+
+	/**
+	 * JRadioButton for selecting "view IA schedule"
+	 */
+	private JRadioButton viewIAButton;
+	private String viewIAString = "View IA schedule";
+
+	/**
+	 * JRadioButton for selecting "generate schedule"
+	 */
+	private JRadioButton viewECButton;
+	private String viewECString = "View EC schedule";
 
 	/**
 	 * JButton for running the currently-selected item
@@ -104,9 +120,9 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	 */
 	private void initializeFrame() {
 		// Set preferred size
-		this.panel.setPreferredSize( new Dimension( 300, 180 ) );
+		this.panel.setPreferredSize( new Dimension( 300, 230 ) );
 		// Set exit behavior
-		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		// Add radio buttons for each task
 		this.instrLabel = new JLabel("Choose a task below:");
@@ -117,6 +133,8 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 		this.editCliniciansButton = this.addRadioButton(this.editCliniciansString);
 		this.editMeetingsButton = this.addRadioButton(this.editMeetingsString);
 		this.generateScheduleButton = this.addRadioButton(this.generateScheduleString);
+		this.viewIAButton = this.addRadioButton(this.viewIAString);
+		this.viewECButton = this.addRadioButton(this.viewECString);
 
 		this.panel.add(new JLabel(" "), "span");
 		this.runButton = new JButton("Run task");
@@ -172,6 +190,12 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 		else if(e.getSource() == this.generateScheduleButton) {
 			this.runButton.setEnabled(true);
 		}
+		else if(e.getSource() == this.viewIAButton) {
+			this.runButton.setEnabled(true);
+		}
+		else if(e.getSource() == this.viewECButton) {
+			this.runButton.setEnabled(true);
+		}
 		else if(e.getSource() == this.runButton) {
 			ButtonModel cur = this.choicesGroup.getSelection();
 			if(cur == this.setSemParamsButton.getModel()) {
@@ -185,6 +209,12 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 			}
 			else if(cur == this.generateScheduleButton.getModel()) {
 				this.generateSchedule();
+			}
+			else if(cur == this.viewIAButton.getModel()) {
+				this.viewIASchedule();
+			}
+			else if(cur == this.viewECButton.getModel()) {
+				this.viewECSchedule();
 			}
 			this.runButton.setEnabled(false);
 			this.choicesGroup.clearSelection();
@@ -232,6 +262,30 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 			JOptionPane.showMessageDialog(this,
 					"SQLException when generating schedule",
 					"Error when generating schedule",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+
+	private void viewIASchedule() {
+		try {
+			IAScheduleFrame frame = new IAScheduleFrame();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this,
+					"SQLException when attempting to view schedule",
+					"Error when viewing schedule",
+					JOptionPane.WARNING_MESSAGE);
+		}
+	}
+
+
+	private void viewECSchedule() {
+		try {
+			ECScheduleFrame frame = new ECScheduleFrame();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(this,
+					"SQLException when attempting to view schedule",
+					"Error when viewing schedule",
 					JOptionPane.WARNING_MESSAGE);
 		}
 	}

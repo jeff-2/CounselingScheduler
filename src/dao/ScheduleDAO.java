@@ -182,7 +182,6 @@ public class ScheduleDAO extends DAO{
 		}
 		else if(scheduleType == 2) { //All weeks of EC sessions
 			schedule = loadAllECSessions();
-			System.out.println("\n\nNumber of EC Sessions: " + schedule.size());
 		}
 		return schedule;
 	}
