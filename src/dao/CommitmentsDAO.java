@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bean.CommitmentBean;
-import bean.Weekday;
 
 /**
  * The Class CommitmentsDao handles the interaction with the database dealing with the table Commitments.
@@ -33,11 +33,12 @@ public class CommitmentsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insert(CommitmentBean commitment) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO Commitments (id, hour, day, description) VALUES (?, ?, ?, ?)");
+		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO Commitments (id, startHour, endHour, commitmentDate, description) VALUES (?, ?, ?, ?, ?)");
 		stmt.setInt(1, commitment.getClinicianID());
-		stmt.setInt(2, commitment.getHourOfDay());
-		stmt.setString(3, commitment.getDayOfWeek().toString());
-		stmt.setString(4, commitment.getDescription());
+		stmt.setInt(2, commitment.getStartHour());
+		stmt.setInt(3, commitment.getEndHour());
+		stmt.setDate(4, new java.sql.Date(commitment.getDate().getTime()));
+		stmt.setString(5, commitment.getDescription());
 		stmt.execute();
 		stmt.close();
 	}
@@ -50,7 +51,7 @@ public class CommitmentsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<CommitmentBean> loadCommitments(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT hour, day, description FROM Commitments WHERE id = ?");
+		PreparedStatement stmt = getConnection().prepareStatement("SELECT startHour, endHour, commitmentDate, description FROM Commitments WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -73,10 +74,11 @@ public class CommitmentsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	private CommitmentBean loadCommitment(int clinicianID, ResultSet results) throws SQLException {
-		int hour = results.getInt("hour");
-		String day = results.getString("day");
+		int startHour = results.getInt("startHour");
+		int endHour = results.getInt("endHour");
+		Date date = results.getDate("commitmentDate");
 		String description = results.getString("description");
-		return new CommitmentBean(clinicianID, hour, Weekday.valueOf(day), description);
+		return new CommitmentBean(clinicianID, startHour, endHour, date, description);
 	}
 	
 	/**

@@ -1,5 +1,7 @@
 package bean;
 
+import java.util.Date;
+
 /**
  * The Class Commitment handles the storage of data for a particular clinician's commitment.
  * 
@@ -10,11 +12,14 @@ public class CommitmentBean {
 	/** The clinician id. */
 	private int clinicianID;
 	
-	/** The hour of day. */
-	private int hourOfDay;
+	/** The start hour. */
+	private int startHour;
 	
-	/** The day of week. */
-	private Weekday dayOfWeek;
+	/** The end hour. */
+	private int endHour;
+	
+	/** The date. */
+	private Date date;
 	
 	/** The description. */
 	private String description;
@@ -23,14 +28,16 @@ public class CommitmentBean {
 	 * Creates a weekly event when a clinician is unavailable.
 	 *
 	 * @param id the id
-	 * @param hour in 24-hour format
-	 * @param day of week, use Calendar constants
+	 * @param sHour the s hour
+	 * @param eHour the e hour
+	 * @param d the d
 	 * @param desc the desc
 	 */
-	public CommitmentBean(int id, int hour, Weekday day, String desc) {
+	public CommitmentBean(int id, int sHour, int eHour, Date d, String desc) {
 		clinicianID = id;
-		hourOfDay = hour;
-		dayOfWeek = day;
+		startHour = sHour;
+		endHour = eHour;
+		date = d;
 		description = desc;
 	}
 	
@@ -53,39 +60,57 @@ public class CommitmentBean {
 	}
 	
 	/**
-	 * Gets the hour of day.
+	 * Gets the start hour.
 	 *
-	 * @return the hour of day
+	 * @return the start hour
 	 */
-	public int getHourOfDay() {
-		return hourOfDay;
+	public int getStartHour() {
+		return startHour;
 	}
 	
 	/**
-	 * Sets the hour of day.
+	 * Sets the start hour.
 	 *
-	 * @param hour the new hour of day
+	 * @param hour the new start hour
 	 */
-	public void setHourOfDay(int hour) {
-		hourOfDay = hour;
+	public void setStartHour(int hour) {
+		startHour = hour;
 	}
 	
 	/**
-	 * Gets the day of week.
+	 * Gets the end hour.
 	 *
-	 * @return the day of week
+	 * @return the end hour
 	 */
-	public Weekday getDayOfWeek() {
-		return dayOfWeek;
+	public int getEndHour() {
+		return endHour;
 	}
 	
 	/**
-	 * Sets the day of week.
+	 * Sets the end hour.
 	 *
-	 * @param day the new day of week
+	 * @param hour the new end hour
 	 */
-	public void setDayOfWeek(Weekday day) {
-		dayOfWeek = day;
+	public void setEndHour(int hour) {
+		endHour = hour;
+	}
+	
+	/**
+	 * Gets the date.
+	 *
+	 * @return the date
+	 */
+	public Date getDate() {
+		return date;
+	}
+	
+	/**
+	 * Sets the date.
+	 *
+	 * @param d the new date
+	 */
+	public void setDate(Date d) {
+		date = d;
 	}
 	
 	/**
@@ -110,8 +135,8 @@ public class CommitmentBean {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-
-		return OperatingHours.toString(hourOfDay) + " " + dayOfWeek + " " + description;
+		return clinicianID + " " + OperatingHours.toString(startHour) + "-" + OperatingHours.toString(endHour) + " " +  date + " " + description;
+		//return OperatingHours.toString(startHour) + " " + Weekday.dayName(date) + " " + description;
 	}
 	
 	/* (non-Javadoc)
@@ -128,7 +153,8 @@ public class CommitmentBean {
 			return false;
 		}
 		CommitmentBean commitment = (CommitmentBean)other;
-		return clinicianID == commitment.clinicianID && hourOfDay == commitment.hourOfDay 
-				&& dayOfWeek.equals(commitment.dayOfWeek) && description.equals(commitment.description);
+		return clinicianID == commitment.clinicianID && startHour == commitment.startHour
+				&& endHour == commitment.endHour && date.equals(commitment.date)
+				&& description.equals(commitment.description);
 	}
 }

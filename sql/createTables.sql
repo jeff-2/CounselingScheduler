@@ -24,8 +24,9 @@ CREATE TABLE Clinicians (
 
 CREATE TABLE Commitments (
 	id int NOT NULL,
-	hour int NOT NULL,
-	day varchar(9) NOT NULL,
+	startHour int NOT NULL,
+	endHour int NOT NULL,
+	commitmentDate date NOT NULL,
 	description varchar(50) NOT NULL,
 );
 

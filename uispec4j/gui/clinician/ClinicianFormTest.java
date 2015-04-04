@@ -4,6 +4,7 @@ import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,10 +20,11 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
+import bean.CalendarBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.TimeAwayBean;
-import bean.Weekday;
+import dao.CalendarDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
@@ -55,6 +57,17 @@ public class ClinicianFormTest extends UISpecTestCase {
 		
 		gen.clearTables();
 		
+		CalendarDAO calendarDAO = new CalendarDAO(conn);
+		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
+		CalendarBean calendar = new CalendarBean();
+		calendar.setId(0);
+		calendar.setSemester(2);
+		calendar.setStartDate(format.parse("3/25/2015"));
+		calendar.setEndDate(format.parse("4/27/2015"));
+		calendar.setIaMinHours(35);
+		calendar.setEcMinHours(44);
+		calendarDAO.insertCalendar(calendar);
+		
 		clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
 		commitmentsDao = new CommitmentsDAO(conn);
 		timeAwayDao = new TimeAwayDAO(conn);
@@ -67,8 +80,16 @@ public class ClinicianFormTest extends UISpecTestCase {
 		
 		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
 		commitments = new ArrayList<CommitmentBean>();
-		commitments.add(new CommitmentBean(0, 8, Weekday.Wednesday, "desc"));
-		commitments.add(new CommitmentBean(0, 10, Weekday.Monday, "other desc"));
+		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("3/25/2015"), "desc"));
+		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/1/2015"), "desc"));
+		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/8/2015"), "desc"));
+		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/15/2015"), "desc"));
+		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/22/2015"), "desc"));
+		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("3/30/2015"), "other desc"));
+		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/6/2015"), "other desc"));
+		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/13/2015"), "other desc"));
+		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/20/2015"), "other desc"));
+		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/27/2015"), "other desc"));
 		
 		timeAway = new ArrayList<TimeAwayBean>();
 		timeAway.add(new TimeAwayBean(0, "some desc", DateRangeValidator.parseDate("1/3/1970"), DateRangeValidator.parseDate("1/12/1970")));
@@ -207,7 +228,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 		
 		ClinicianPreferencesBean otherPreferences = new ClinicianPreferencesBean(0, 3, 1, 2);
 		List<CommitmentBean> otherCommitments = new ArrayList<CommitmentBean>();
-		otherCommitments.add(new CommitmentBean(0, 15, Weekday.Wednesday, "pear"));
+		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("3/25/2015"), "pear"));
+		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("4/1/2015"), "pear"));
+		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("4/8/2015"), "pear"));
+		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("4/15/2015"), "pear"));
+		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("4/22/2015"), "pear"));
 		List<TimeAwayBean> otherTimeAway = new ArrayList<TimeAwayBean>();
 		otherTimeAway.add(new TimeAwayBean(0, "a desc", DateRangeValidator.parseDate("1/3/2000"), DateRangeValidator.parseDate("1/12/2000")));
 		

@@ -6,13 +6,13 @@ import java.sql.Statement;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import validator.DateRangeValidator;
 import bean.CalendarBean;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.HolidayBean;
 import bean.TimeAwayBean;
-import bean.Weekday;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
@@ -165,16 +165,16 @@ public class TestDataGenerator {
 		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(23, 1, 2, 3));
 	}
 	
-	private void generateStandardCommitmentsData() throws SQLException {
+	private void generateStandardCommitmentsData() throws SQLException, ParseException {
 		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
-		commitmentsDAO.insert(new CommitmentBean(0, 8, Weekday.Wednesday, "Doctor's appointment"));
-		commitmentsDAO.insert(new CommitmentBean(0, 11, Weekday.Friday, "Staff meeting"));
-		commitmentsDAO.insert(new CommitmentBean(1, 14, Weekday.Monday, "Staff meeting"));
-		commitmentsDAO.insert(new CommitmentBean(2, 10, Weekday.Monday, "Dropping off child at school"));
-		commitmentsDAO.insert(new CommitmentBean(2, 11, Weekday.Wednesday, "Doctor's appointment"));
-		commitmentsDAO.insert(new CommitmentBean(3, 10, Weekday.Friday, "Senior staff meeting"));
-		commitmentsDAO.insert(new CommitmentBean(4, 11, Weekday.Thursday, "Some commitment"));
-		commitmentsDAO.insert(new CommitmentBean(5, 15, Weekday.Tuesday, "Manager meeting"));
+		commitmentsDAO.insert(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/1/2015"), "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(0, 11, 12, DateRangeValidator.parseDate("4/3/2015"), "Staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(1, 14, 15, DateRangeValidator.parseDate("3/30/2015"), "Staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(2, 10, 11, DateRangeValidator.parseDate("3/30/2015"), "Dropping off child at school"));
+		commitmentsDAO.insert(new CommitmentBean(2, 11, 12, DateRangeValidator.parseDate("4/15/2015"), "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(3, 10, 11, DateRangeValidator.parseDate("4/10/2015"), "Senior staff meeting"));
+		commitmentsDAO.insert(new CommitmentBean(4, 11, 12, DateRangeValidator.parseDate("4/9/2015"), "Some commitment"));
+		commitmentsDAO.insert(new CommitmentBean(5, 15, 16, DateRangeValidator.parseDate("4/7/2015"), "Manager meeting"));
 	}
 	
 	private void generatedStandardTimeAwayData() throws SQLException, ParseException {

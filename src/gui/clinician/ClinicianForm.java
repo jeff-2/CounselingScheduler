@@ -6,7 +6,10 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -19,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import bean.CalendarBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.OperatingHours;
@@ -26,6 +30,7 @@ import bean.TimeAwayBean;
 import bean.Utility;
 import bean.Weekday;
 import action.ClinicianPreferencesAction;
+import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
@@ -350,10 +355,37 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		ClinicianPreferencesDAO clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
 		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank,afternoonRank);
 		ClinicianPreferencesBean existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);
+		
 
+		CalendarDAO calendarDAO = new CalendarDAO(conn);
+		CalendarBean calendar = calendarDAO.loadCalendar();
+
+		List<CommitmentBean> cmts = Utility.toCommitmentList(commitments.getModel());
+		List<CommitmentBean> allCommitments = new ArrayList<CommitmentBean>();
+
+		for (CommitmentBean commitment: cmts) {
+			
+			Calendar calStart = Calendar.getInstance();
+			calStart.setTime(calendar.getStartDate());
+			Calendar calEnd = Calendar.getInstance();
+			calEnd.setTime(calendar.getEndDate());
+			
+			int dayOfWeek = Weekday.valueOf(Weekday.dayName(commitment.getDate())).ordinal() + 2;
+			calStart.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+			if (calStart.getTime().before(calendar.getStartDate())) {
+				calStart.add(Calendar.DATE, 7);
+			}
+			
+			while (!calStart.after(calEnd)) {
+			    Date currentDate = calStart.getTime();
+			    allCommitments.add(new CommitmentBean(commitment.getClinicianID(), commitment.getStartHour(), commitment.getEndHour(), currentDate, commitment.getDescription()));
+			    calStart.add(Calendar.DATE, 7);
+			}
+		}
+		
 		
 		ClinicianPreferencesAction action = new ClinicianPreferencesAction(preferences, 
-				Utility.toCommitmentList(commitments.getModel()), Utility.toTimeAwayList(timeAway.getModel()), conn);
+				allCommitments, Utility.toTimeAwayList(timeAway.getModel()), conn);
 		if (existing == null) {
 			action.insertPreferences();
 		} else {
@@ -437,7 +469,11 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		
 		DefaultListModel<CommitmentBean> model = (DefaultListModel<CommitmentBean>) commitments.getModel();
 
-		model.add(model.size(), new CommitmentBean(-1, OperatingHours.toInt(hourOfDay), Weekday.valueOf(dayOfWeek), description));
+		Calendar cal = Calendar.getInstance();
+		int weekDay = Weekday.valueOf(dayOfWeek).ordinal();
+		cal.set(Calendar.DAY_OF_WEEK, weekDay + 2);
+		Date date = cal.getTime();
+		model.add(model.size(), new CommitmentBean(-1, OperatingHours.toInt(hourOfDay), OperatingHours.toInt(hourOfDay) + 1, date, description));
 	}
 	
 	/**

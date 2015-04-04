@@ -25,6 +25,7 @@ import javax.swing.JTextField;
 
 import validator.DateRangeValidator;
 import validator.InvalidDateRangeException;
+import action.ImportClinicianMeetingsAction;
 import bean.CalendarBean;
 import bean.HolidayBean;
 import bean.Semester;
@@ -54,6 +55,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private List<HolidayBean> holidayList = new ArrayList<HolidayBean>();
 	private JButton importMeetingsButton;
 	private JFileChooser fileChooser;
+	private File excelFile;
 
 
 	/**
@@ -213,6 +215,10 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 							HolidayBean holiday = holidayList.get(i);
 							holidayDao.insertHoliday(holiday, calendarId, i);
 						}
+						if (excelFile != null) {
+							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, excelFile);
+							action.insertImportedMeetings(calendar.getEndDate());
+						}
 					} catch (SQLException e1) {
 						e1.printStackTrace();
 					}
@@ -261,9 +267,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		} else if (e.getSource() == importMeetingsButton) {
 			int choice = fileChooser.showOpenDialog(this);
 			if (choice == JFileChooser.APPROVE_OPTION) {
-				// load file
-				File selected = fileChooser.getSelectedFile();
-				System.out.println(selected.getPath());
+				excelFile = fileChooser.getSelectedFile();
 			}
 		}
 	}
