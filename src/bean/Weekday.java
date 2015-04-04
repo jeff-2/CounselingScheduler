@@ -24,4 +24,8 @@ public enum Weekday {
 		String day =  format.format(d).trim();
 		return !(day.equals("Saturday") || day.equals("Sunday"));
 	}
+	
+	public static String dayName(Date d) {
+		return format.format(d);
+	}
 }

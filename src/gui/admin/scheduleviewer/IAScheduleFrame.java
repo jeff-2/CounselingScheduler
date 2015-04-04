@@ -11,6 +11,7 @@ import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.sql.SQLException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -22,6 +23,9 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
+import dao.ConnectionFactory;
+import dao.ScheduleDAO;
+
 /**
  * A GUI window for displaying the IA appointment for weeks A and B
  * 
@@ -31,6 +35,11 @@ import javax.swing.JTabbedPane;
 public class IAScheduleFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -4271567771784608985L;
+	
+	/**
+	 * DAO to get schedule information from DB
+	 */
+	private ScheduleDAO dao;
 	
 	/**
 	 * The tabbed content pane for weeks A & B
@@ -74,9 +83,11 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 
 	/**
 	 * Create an empty client ID list
+	 * @throws SQLException 
 	 */
-	public IAScheduleFrame() {
+	public IAScheduleFrame() throws SQLException {
 		super("View IA Schedule");
+		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		this.panel = new JTabbedPane();
 		this.setContentPane(this.panel);
 		this.weekA = this.getWeekPanel("A");
@@ -87,11 +98,12 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
 	}
 
-	private JPanel getWeekPanel(String aOrB) {
+	private JPanel getWeekPanel(String aOrB) throws SQLException {
 		JPanel p = new JPanel(); 
 		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 		p.setBackground(Color.WHITE);
-		p.add(new IAScheduleComponent(aOrB));
+		int type = aOrB.equals("A") ? 0 : 1;
+		p.add(new IAScheduleComponent(aOrB, dao.loadScheduleType(type)));
 		return p;
 	}
 
@@ -133,8 +145,9 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 
 	/**
 	 * Main tester
+	 * @throws SQLException 
 	 */
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		IAScheduleFrame frame = new IAScheduleFrame();
 	}
 

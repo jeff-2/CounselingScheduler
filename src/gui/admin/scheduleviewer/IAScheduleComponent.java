@@ -3,12 +3,16 @@ package gui.admin.scheduleviewer;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JComponent;
+
+import bean.SessionNameBean;
 
 /**
  * Swing component for rendering one week's IA schedule
@@ -17,13 +21,16 @@ import javax.swing.JComponent;
  */
 public class IAScheduleComponent extends JComponent implements Printable {
 	private static final long serialVersionUID = -7813470335774759257L;
-	
-	private final String week;
-	
-	private JComponent grid;
 
-	public IAScheduleComponent(String weekLetter) {
+	private static final String[] weekdays = new String[]{"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"};
+
+	private final String week;
+
+	private final List<SessionNameBean> sessions;
+
+	public IAScheduleComponent(String weekLetter, List<SessionNameBean> sessionList) {
 		week = weekLetter;
+		sessions = sessionList;
 	}
 
 	public void paint (Graphics g1) {
@@ -38,15 +45,15 @@ public class IAScheduleComponent extends JComponent implements Printable {
 		int xoffset = 50;
 		int yoffset =100;
 		int[] cols = new int[]{25, 75, 175, 275, 375, 475, 575};
-		String[] colLabels = new String[]{"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"};
 		String[] rowLabels = new String[]{"", "11:00", "NOON", "1:00", "2:00", "3:00"};
+
+		ArrayList<ArrayList<ArrayList<String>>> cells = getCells();
 		for(int i=0; i<rowLabels.length; i++) {
 			if(i==0) {
-				yoffset = this.drawHeader(g, xoffset, yoffset, rowLabels[i], colLabels, cols);
+				yoffset = this.drawHeader(g, xoffset, yoffset, rowLabels[i], weekdays, cols);
 			}
 			else {
-				ArrayList<ArrayList<String>> entries = getRowEntries(i==2);
-				yoffset = this.drawRow(g, xoffset, yoffset, rowLabels[i], entries, cols);
+				yoffset = this.drawRow(g, xoffset, yoffset, rowLabels[i], cells.get(i-1), cols);
 			}
 		}
 	}
@@ -70,30 +77,36 @@ public class IAScheduleComponent extends JComponent implements Printable {
 		return y+height;
 	}
 
-	private ArrayList<ArrayList<String>> getRowEntries(boolean noon) {
-		// TODO: actually read this information from schedule, instead of generating fake names
-		ArrayList<ArrayList<String>> entries = new ArrayList<ArrayList<String>>();
-		String[] fakeNames = new String[]{"Amanda", "Bert", "Carl", "Devan", "Eric"};
-		for(int i=0; i<5; i++) {
-			if(noon) {
-				// NOON
-				ArrayList<String> names = new ArrayList<String>();
-				int n = (int) (Math.random()+0.5);
-				for(int j=0; j<n; j++) {
-					names.add(fakeNames[j]);
-				}
-				entries.add(names);
+	private ArrayList<ArrayList<ArrayList<String>>> getCells() {
+		ArrayList<ArrayList<ArrayList<String>>> entries = new ArrayList<ArrayList<ArrayList<String>>>();
+		for(int timeslot = 11; timeslot <=15; timeslot++) {
+			ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
+			for(int day = 0; day < weekdays.length; day++) {
+				temp.add(new ArrayList<String>());
 			}
-			else {
-				ArrayList<String> names = new ArrayList<String>();
-				int n = (int) (Math.random()*4) + 1;
-				for(int j=0; j<n; j++) {
-					names.add(fakeNames[j]);
-				}
-				entries.add(names);
+			entries.add(temp);
+		}
+		
+		for(SessionNameBean bean : sessions) {
+			if(checkWeekType(bean)) {
+				entries.get(bean.getStartTime()-11).get(getDayIndex(bean)).add(bean.getClinicianName());
 			}
 		}
 		return entries;
+	}
+
+	private boolean checkWeekType(SessionNameBean bean) {
+		String beanWeek = (bean.getWeekType()==0) ? "A" : "B";
+		return beanWeek.equalsIgnoreCase(this.week);
+	}
+
+	private int getDayIndex(SessionNameBean bean) {
+		for(int d=0; d<weekdays.length; d++) {
+			if(weekdays[d].equalsIgnoreCase(bean.getDayOfWeek())) {
+				return d;
+			}
+		}
+		return -1;
 	}
 
 	private int drawRow(Graphics2D g, int x, int y, String rowLabel,
@@ -114,9 +127,9 @@ public class IAScheduleComponent extends JComponent implements Printable {
 			else {
 				ArrayList<String> names = entries.get(i-1);
 				if(names.isEmpty()) {
-					g.setColor(Color.GRAY);
-					g.drawRect(x0, y, x1-x0, height);
-					g.setColor(Color.BLACK);
+					g.setPaint(Color.LIGHT_GRAY);
+					g.fill(new Rectangle2D.Double(x0, y, x1-x0, height));
+					g.setPaint(Color.BLACK);
 				}
 				else {
 					int ydeltaTemp = ydelta;
@@ -133,20 +146,20 @@ public class IAScheduleComponent extends JComponent implements Printable {
 
 
 	@Override
-    public int print(Graphics g, PageFormat pf, int page) throws
-                                                        PrinterException {
-        Graphics2D g2d = (Graphics2D)g;      
-        g2d.translate(pf.getImageableX(), pf.getImageableY());
-        //double yscale = pf.getImageableHeight()/this.getHeight();
-        double scale = pf.getImageableWidth()/this.getWidth();
-        //double scale = Math.min(xscale, yscale);
-        //System.out.println(scale);
-        //((Graphics2D)g).scale(scale, scale);
+	public int print(Graphics g, PageFormat pf, int page) throws
+	PrinterException {
+		Graphics2D g2d = (Graphics2D)g;      
+		g2d.translate(pf.getImageableX(), pf.getImageableY());
+		//double yscale = pf.getImageableHeight()/this.getHeight();
+		double scale = pf.getImageableWidth()/this.getWidth();
+		//double scale = Math.min(xscale, yscale);
+		//System.out.println(scale);
+		((Graphics2D)g).scale(scale, scale);
 
-        /* Now print the window and its visible contents */
-        this.printAll(g);
-        ((Graphics2D)g).scale(1/scale, 1/scale);
-        return PAGE_EXISTS;
-    }
+		/* Now print the window and its visible contents */
+		this.printAll(g);
+		((Graphics2D)g).scale(1/scale, 1/scale);
+		return PAGE_EXISTS;
+	}
 
 }

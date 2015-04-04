@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import bean.CalendarBean;
 import bean.HolidayBean;
 import bean.ScheduleBean;
 import bean.SessionBean;
@@ -81,10 +82,10 @@ public class ScheduleDAO extends DAO{
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(
 				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name"
-				+ " FROM CounselingScheduler.admin.SessionClinicians SessionClinicians"
-				+ " INNER JOIN CounselingScheduler.admin.Sessions Sessions"
+				+ " FROM SessionClinicians SessionClinicians"
+				+ " INNER JOIN Sessions Sessions"
 				+ " ON SessionClinicians.sessionID=Sessions.id"
-				+ " INNER JOIN CounselingScheduler.admin.Clinicians Clinicians"
+				+ " INNER JOIN Clinicians Clinicians"
 				+ " ON SessionClinicians.clinicianID=Clinicians.id"
 				+ " WHERE sType=1");
 		stmt.execute();
@@ -113,10 +114,10 @@ public class ScheduleDAO extends DAO{
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(
 				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name"
-				+ " FROM CounselingScheduler.admin.SessionClinicians SessionClinicians"
-				+ " INNER JOIN CounselingScheduler.admin.Sessions Sessions"
+				+ " FROM SessionClinicians SessionClinicians"
+				+ " INNER JOIN Sessions Sessions"
 				+ " ON SessionClinicians.sessionID=Sessions.id"
-				+ " INNER JOIN CounselingScheduler.admin.Clinicians Clinicians"
+				+ " INNER JOIN Clinicians Clinicians"
 				+ " ON SessionClinicians.clinicianID=Clinicians.id"
 				+ " WHERE sType=0 AND weekType=?"
 				+ " ORDER BY sDate ASC");
@@ -184,5 +185,9 @@ public class ScheduleDAO extends DAO{
 			System.out.println("\n\nNumber of EC Sessions: " + schedule.size());
 		}
 		return schedule;
+	}
+	
+	public CalendarBean getCalendarBean() throws SQLException {
+		return calDAO.loadCalendar();
 	}
 }
