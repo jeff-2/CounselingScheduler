@@ -60,7 +60,7 @@ public class ImportClinicianMeetingsActionTest {
 	@Test
 	public void testImportMonthlyDays() throws Exception {
 		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
-				{"Admin Team Meeting", "90 minutes", "8:30am", "10:00am", "[Jeff], (Ryan), John", startDate, "Monthly", "1st Friday, 3rd Tuesday", null, "Room 212"}};
+				{"Admin Team Meeting", "90 minutes", "8:30am", "10:00am", "[Jeff], (Ryan), John", startDate, "Monthly", "1st Friday,    3rd Tuesday", null, "Room 212"}};
 		action = new ImportClinicianMeetingsAction(conn, generateExcelFile());
 		action.insertImportedMeetings(endDate);
 		List<CommitmentBean> commitments = new ArrayList<CommitmentBean>();

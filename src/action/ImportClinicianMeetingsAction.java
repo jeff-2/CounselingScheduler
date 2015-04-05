@@ -123,6 +123,7 @@ public class ImportClinicianMeetingsAction {
 					workbook.close();
 					return;
 				}
+				staffMembers = staffMembers.replaceAll(" ", "");
 				if (staffMembers.equalsIgnoreCase("ALL")) {
 					List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
 					for (Date meetingDate : meetingDates) {
@@ -134,7 +135,7 @@ public class ImportClinicianMeetingsAction {
 					}
 				} else {
 					staffMembers = staffMembers.replaceAll("[\\[()\\]]", "");
-					String [] staff = staffMembers.split(", ");
+					String [] staff = staffMembers.split(",");
 					for (Date meetingDate : meetingDates) {
 						for (String staffMember : staff) {
 							int clinicianID = clinicianDAO.getClinicianID(staffMember);
@@ -287,7 +288,8 @@ public class ImportClinicianMeetingsAction {
 		if (dates != null && !dates.isEmpty()) {
 			// ensure all specified dates are valid
 			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd");
-			String []  datesSpecified = dates.split(", ");
+			dates = dates.replaceAll(" ", "");
+			String []  datesSpecified = dates.split(",");
 			for (String dateSpecified : datesSpecified) {
 				try {
 					Calendar cal = Calendar.getInstance();
@@ -330,7 +332,8 @@ public class ImportClinicianMeetingsAction {
 			handleInvalidExcelCell(days, "Days");
 			return null;
 		}
-		String[] daysSpecified = days.split(", ");
+		days = days.replaceAll(" ", "");
+		String[] daysSpecified = days.split(",");
 		
 		for (String daySpecified : daysSpecified) {
 			if (!(daySpecified.contains(Weekday.Monday.name()) || daySpecified.contains(Weekday.Tuesday.name()) || daySpecified.contains(Weekday.Wednesday.name()) || 
@@ -342,10 +345,10 @@ public class ImportClinicianMeetingsAction {
 					daySpecified.equals(Weekday.Thursday.name()) || daySpecified.equals(Weekday.Friday.name()))) {
 				
 				// must be of the format {1st|2nd|3rd|4th} Weekday
-				int firstIndex = daySpecified.indexOf("1st ");
-				int secondIndex = daySpecified.indexOf("2nd ");
-				int thirdIndex = daySpecified.indexOf("3rd ");
-				int fourthIndex = daySpecified.indexOf("4th ");
+				int firstIndex = daySpecified.indexOf("1st");
+				int secondIndex = daySpecified.indexOf("2nd");
+				int thirdIndex = daySpecified.indexOf("3rd");
+				int fourthIndex = daySpecified.indexOf("4th");
 				if (firstIndex != -1 && (secondIndex != -1 || thirdIndex != -1 || fourthIndex != -1)) {
 					handleInvalidExcelCell(daySpecified, "Days");
 					return null;
@@ -363,11 +366,11 @@ public class ImportClinicianMeetingsAction {
 					return null;
 				} else {
 					// only one is set
-					if (daySpecified.length() <= 4) {
+					if (daySpecified.length() <= 3) {
 						handleInvalidExcelCell(daySpecified, "Days");
 						return null;
 					} else {
-						String day = daySpecified.substring(4);
+						String day = daySpecified.substring(3);
 						if (!(day.equals(Weekday.Monday.name()) || day.equals(Weekday.Tuesday.name()) || day.equals(Weekday.Wednesday.name()) || 
 								day.equals(Weekday.Thursday.name()) || day.equals(Weekday.Friday.name()))) {
 							handleInvalidExcelCell(daySpecified, "Days");
