@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import bean.ClinicianBean;
 
@@ -57,6 +58,22 @@ public class ClinicianDAO extends DAO {
 		stmt.close();
 		
 		return clinicians;
+	}
+	
+	/**
+	 * Loads the list of clinician names
+	 * @return list of clinician names
+	 * @throws SQLException
+	 */
+	public Vector<String> loadClinicianNames() throws SQLException {
+		List<ClinicianBean> clinicians = loadClinicians();
+		Vector<String> names = new Vector<>(clinicians.size());
+
+		for (ClinicianBean cb: clinicians) {
+			names.add(cb.getName());
+		}
+		
+		return names;
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package gui.admin.scheduleviewer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.Book;
@@ -12,9 +13,11 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -27,6 +30,7 @@ import javax.swing.ScrollPaneLayout;
 
 import net.miginfocom.swing.MigLayout;
 import bean.ECScheduleWeekBean;
+import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
 
@@ -81,6 +85,7 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	public ECScheduleFrame() throws SQLException {
 		super("View EC Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
+		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.scrollPanel = new JScrollPane();
 
 		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));
@@ -97,11 +102,14 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 			p.add(ecComp, "span, grow, wrap 15px");
 		}		
 		p.validate();
-		this.scrollPanel = new JScrollPane(p);
+		
+		JPanel editableSchedule = getEditableSchedule(dao, cDao);
+		
+		this.scrollPanel = new JScrollPane(editableSchedule);
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
 		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		this.scrollPanel.setViewportView(p);
+		this.scrollPanel.setViewportView(editableSchedule);
 		
 	
 		// Finish
@@ -141,6 +149,28 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		}
 		return comps;
 	}
+	
+	/**
+	 * Creates a JPanel that displays an editable EC schedule from the database
+	 * @param schDAO
+	 * @param cDAO
+	 * @return
+	 * @throws SQLException 
+	 */
+	private JPanel getEditableSchedule(ScheduleDAO schDAO, ClinicianDAO cDAO) throws SQLException {
+		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
+		Vector<String> clinicianNames = cDAO.loadClinicianNames();
+		
+		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1, 1, 0, 50));
+		editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
+		for (ECScheduleWeekBean week: weeks) {
+			editableSchedule.add(new ECWeeklyComponent(week, clinicianNames));
+		}
+		
+		editableSchedule.setBackground(Color.white);
+		
+		return editableSchedule;
+	}
 
 	/**
 	 * Set up the dropdown menu
@@ -164,7 +194,7 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 * @throws SQLException 
 	 */
 	public static void main(String[] args) throws SQLException {
-		ECScheduleFrame frame = new ECScheduleFrame();
+		new ECScheduleFrame();
 	}
 
 	@Override
