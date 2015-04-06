@@ -24,7 +24,7 @@ public class ScheduleDAOTest {
 	private Connection conn;
 	private TestDataGenerator gen;
 	
-	@Before
+	/*@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		gen = new TestDataGenerator(conn);
@@ -69,5 +69,5 @@ public class ScheduleDAOTest {
 		for(SessionNameBean b : ECSessions) {
 			System.out.println(b.getClinicianName() + " " + b.getDate());
 		}
-	}
+	}*/
 }
