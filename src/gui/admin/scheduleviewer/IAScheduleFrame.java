@@ -12,6 +12,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -23,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
+import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
 
@@ -88,10 +90,14 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	public IAScheduleFrame() throws SQLException {
 		super("View IA Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
+		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
+		List<String> clinicianNames = cDao.loadClinicianNames();
 		this.panel = new JTabbedPane();
 		this.setContentPane(this.panel);
-		this.weekA = this.getWeekPanel("A");
-		this.weekB = this.getWeekPanel("B");
+//		this.weekA = this.getWeekPanel("A");
+//		this.weekB = this.getWeekPanel("B");
+		this.weekA = new IAWeeklyComponent(dao.loadScheduleType(0), clinicianNames, "A");
+		this.weekB = new IAWeeklyComponent(dao.loadScheduleType(1), clinicianNames, "B");
 		this.panel.addTab("Week A", weekA);
 		this.panel.addTab("Week B", weekB);
 		this.initializeFrame();
