@@ -12,7 +12,6 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -24,7 +23,6 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
-import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
 
@@ -34,7 +32,7 @@ import dao.ScheduleDAO;
  * @author ramusa2, lim92
  *
  */
-public class IAScheduleFrame extends JFrame implements ActionListener {
+public class IAScheduleViewFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
@@ -87,17 +85,13 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 * Create an empty client ID list
 	 * @throws SQLException 
 	 */
-	public IAScheduleFrame() throws SQLException {
+	public IAScheduleViewFrame() throws SQLException {
 		super("View IA Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
-		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
-		List<String> clinicianNames = cDao.loadClinicianNames();
 		this.panel = new JTabbedPane();
 		this.setContentPane(this.panel);
-//		this.weekA = this.getWeekPanel("A");
-//		this.weekB = this.getWeekPanel("B");
-		this.weekA = new IAWeeklyComponent(dao.loadScheduleType(0), clinicianNames, "A");
-		this.weekB = new IAWeeklyComponent(dao.loadScheduleType(1), clinicianNames, "B");
+		this.weekA = this.getWeekPanel("A");
+		this.weekB = this.getWeekPanel("B");
 		this.panel.addTab("Week A", weekA);
 		this.panel.addTab("Week B", weekB);
 		this.initializeFrame();
@@ -118,7 +112,7 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void initializeFrame() {
 		// Initialize menu
-		this.initializeMenu();
+		//this.initializeMenu();
 		// Set preferred size
 		this.getContentPane().setPreferredSize( new Dimension(700, 800) );
 		// Draw stuff
@@ -135,12 +129,10 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void initializeMenu() {
 		this.menu = new JMenu("Options");
-		/*
 		this.edit = new JMenuItem("Edit schedule");
 		this.edit.setEnabled(false);
 		this.menu.add(this.edit);
 		this.menu.add(new JSeparator());
-		*/
 		this.print = new JMenuItem("Print");
 		this.print.addActionListener(this);
 		this.menu.add(this.print);
@@ -157,18 +149,37 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		IAScheduleFrame frame = new IAScheduleFrame();
 	}
 
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.print) {
-			IAScheduleViewFrame frame;
-			try {
-				frame = new IAScheduleViewFrame();
-				frame.printSchedule();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			
+			
+			this.openPrintDialog();
 		}
+	}
+
+	private void openPrintDialog() {
+        PrinterJob job = PrinterJob.getPrinterJob();
+        IAScheduleComponent a = (IAScheduleComponent) weekA.getComponent(0);
+        IAScheduleComponent b = (IAScheduleComponent) weekB.getComponent(0);
+        Book book = new Book();
+        PageFormat pf = new PageFormat();
+        //pf.setPaper(new Paper());
+        book.append((Printable) a, pf);
+        book.append((Printable) b, pf);
+        job.setPageable(book);
+        //job.setPrintable(new IASchedulePrinter(a, b));
+        boolean ok = job.printDialog();
+        if (ok) {
+            try {
+                 job.print();
+            } catch (PrinterException ex) {
+             /* The job did not successfully complete */
+            }
+        }
+	}
+	
+	public void printSchedule() {
+		this.openPrintDialog();
 	}
 }

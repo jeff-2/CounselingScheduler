@@ -90,13 +90,13 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	 * JRadioButton for selecting "view IA schedule"
 	 */
 	private JRadioButton viewIAButton;
-	private String viewIAString = "View IA schedule";
+	private String viewIAString = "Edit/print IA schedule";
 
 	/**
 	 * JRadioButton for selecting "generate schedule"
 	 */
 	private JRadioButton viewECButton;
-	private String viewECString = "View EC schedule";
+	private String viewECString = "Edit/print EC schedule";
 
 	/**
 	 * JButton for running the currently-selected item

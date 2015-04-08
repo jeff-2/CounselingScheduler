@@ -139,7 +139,6 @@ public class IAWeeklyComponent extends JPanel implements MouseListener {
 			msgContent.add(cb);
 		}
 		int n = JOptionPane.showConfirmDialog(null, msgContent.toArray(), "Select Clinicians", JOptionPane.YES_NO_OPTION);
-		System.out.println(n);
 		if (n == JOptionPane.YES_OPTION) {
 			String names = "";
 			for (int i = 0; i < boxes.size(); i++) {

@@ -3,7 +3,6 @@ package gui.admin.scheduleviewer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.Book;
@@ -13,11 +12,9 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -30,7 +27,6 @@ import javax.swing.ScrollPaneLayout;
 
 import net.miginfocom.swing.MigLayout;
 import bean.ECScheduleWeekBean;
-import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
 
@@ -40,7 +36,7 @@ import dao.ScheduleDAO;
  * @author ramusa2, lim92
  *
  */
-public class ECScheduleFrame extends JFrame implements ActionListener {
+public class ECScheduleViewFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
@@ -82,17 +78,16 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 * Create an empty client ID list
 	 * @throws SQLException 
 	 */
-	public ECScheduleFrame() throws SQLException {
+	public ECScheduleViewFrame() throws SQLException {
 		super("View EC Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
-		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.scrollPanel = new JScrollPane();
 
 		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));
 		p.setBackground(Color.WHITE);
 
 		// Initialize menu
-		this.initializeMenu();
+		//this.initializeMenu();
 
 		// Add schedule pages
 		this.pages = getECSchedulePages(dao);
@@ -102,14 +97,11 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 			p.add(ecComp, "span, grow, wrap 15px");
 		}		
 		p.validate();
-		
-		JPanel editableSchedule = getEditableSchedule(dao, cDao);
-		
-		this.scrollPanel = new JScrollPane(editableSchedule);
+		this.scrollPanel = new JScrollPane(p);
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
 		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		this.scrollPanel.setViewportView(editableSchedule);
+		this.scrollPanel.setViewportView(p);
 		
 	
 		// Finish
@@ -149,40 +141,16 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		}
 		return comps;
 	}
-	
-	/**
-	 * Creates a JPanel that displays an editable EC schedule from the database
-	 * @param schDAO
-	 * @param cDAO
-	 * @return
-	 * @throws SQLException 
-	 */
-	private JPanel getEditableSchedule(ScheduleDAO schDAO, ClinicianDAO cDAO) throws SQLException {
-		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
-		Vector<String> clinicianNames = cDAO.loadClinicianNames();
-		
-		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1, 1, 0, 50));
-		editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
-		for (ECScheduleWeekBean week: weeks) {
-			editableSchedule.add(new ECWeeklyComponent(week, clinicianNames));
-		}
-		
-		editableSchedule.setBackground(Color.white);
-		
-		return editableSchedule;
-	}
 
 	/**
 	 * Set up the dropdown menu
 	 */
 	private void initializeMenu() {
 		this.menu = new JMenu("Options");
-		/*
 		this.edit = new JMenuItem("Edit schedule");
 		this.edit.setEnabled(false);
 		this.menu.add(this.edit);
 		this.menu.add(new JSeparator());
-		*/
 		this.print = new JMenuItem("Print");
 		this.print.addActionListener(this);
 		this.menu.add(this.print);
@@ -196,20 +164,39 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 * @throws SQLException 
 	 */
 	public static void main(String[] args) throws SQLException {
-		new ECScheduleFrame();
+		ECScheduleFrame frame = new ECScheduleFrame();
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.print) {
-			ECScheduleViewFrame frame;
-			try {
-				frame = new ECScheduleViewFrame();
-				frame.printSchedule();
-			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+			this.openPrintDialog();
 		}
+	}
+
+	private void openPrintDialog() {
+        PrinterJob job = PrinterJob.getPrinterJob();
+        Book book = new Book();
+        PageFormat pf = new PageFormat();
+        //Paper paper = new Paper();
+        //paper.setImageableArea(); // TODO: widen the margins here
+        //pf.setPaper(paper);
+        for(ECScheduleComponent ecPage : this.pages) {
+            book.append((Printable) ecPage, pf);
+        }
+        job.setPageable(book);
+        //job.setPrintable(new IASchedulePrinter(a, b));
+        boolean ok = job.printDialog();
+        if (ok) {
+            try {
+                 job.print();
+            } catch (PrinterException ex) {
+             /* The job did not successfully complete */
+            }
+        }
+	}
+	
+	public void printSchedule() {
+		this.openPrintDialog();
 	}
 }
