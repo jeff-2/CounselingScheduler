@@ -117,24 +117,24 @@ public class TestDataGenerator {
 		clinicianDAO.insert(new ClinicianBean(3, "Kevin"));
 		clinicianDAO.insert(new ClinicianBean(4, "Denise"));
 		clinicianDAO.insert(new ClinicianBean(5, "Yusheng"));
-		clinicianDAO.insert(new ClinicianBean(6, "A"));
-		clinicianDAO.insert(new ClinicianBean(7, "B"));
-		clinicianDAO.insert(new ClinicianBean(8, "C"));
-		clinicianDAO.insert(new ClinicianBean(9, "D"));
-		clinicianDAO.insert(new ClinicianBean(10, "E"));
-		clinicianDAO.insert(new ClinicianBean(11, "F"));
-		clinicianDAO.insert(new ClinicianBean(12, "G"));
-		clinicianDAO.insert(new ClinicianBean(13, "H"));
-		clinicianDAO.insert(new ClinicianBean(14, "I"));
-		clinicianDAO.insert(new ClinicianBean(15, "J"));
-		clinicianDAO.insert(new ClinicianBean(16, "K"));
-		clinicianDAO.insert(new ClinicianBean(17, "L"));
-		clinicianDAO.insert(new ClinicianBean(18, "M"));
-		clinicianDAO.insert(new ClinicianBean(19, "N"));
-		clinicianDAO.insert(new ClinicianBean(20, "O"));
-		clinicianDAO.insert(new ClinicianBean(21, "P"));
-		clinicianDAO.insert(new ClinicianBean(22, "Q"));
-		clinicianDAO.insert(new ClinicianBean(23, "R"));
+		clinicianDAO.insert(new ClinicianBean(6, "Alice"));
+		clinicianDAO.insert(new ClinicianBean(7, "Bob"));
+		clinicianDAO.insert(new ClinicianBean(8, "Charlie"));
+		clinicianDAO.insert(new ClinicianBean(9, "Dennis"));
+		clinicianDAO.insert(new ClinicianBean(10, "Eric"));
+		clinicianDAO.insert(new ClinicianBean(11, "Frank"));
+		clinicianDAO.insert(new ClinicianBean(12, "Gary"));
+		clinicianDAO.insert(new ClinicianBean(13, "Horatio"));
+		clinicianDAO.insert(new ClinicianBean(14, "Igor"));
+		clinicianDAO.insert(new ClinicianBean(15, "James"));
+		clinicianDAO.insert(new ClinicianBean(16, "Kong"));
+		clinicianDAO.insert(new ClinicianBean(17, "Linda"));
+		clinicianDAO.insert(new ClinicianBean(18, "Maurice"));
+		clinicianDAO.insert(new ClinicianBean(19, "Nymphadora"));
+		clinicianDAO.insert(new ClinicianBean(20, "Olivia"));
+		clinicianDAO.insert(new ClinicianBean(21, "Pam"));
+		clinicianDAO.insert(new ClinicianBean(22, "Quincy"));
+		clinicianDAO.insert(new ClinicianBean(23, "Rachel"));
 	}
 	
 	private void generateStandardClinicianPreferencesData() throws SQLException {
