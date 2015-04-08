@@ -219,7 +219,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 							HolidayBean holiday = holidayList.get(i);
 							holidayDao.insertHoliday(holiday, calendarId, i);
 						}
-						if (!excelFilenameLabel.equals("No File Selected")) {
+						if (!excelFilenameLabel.getText().equals("No File Selected")) {
 							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, new File(excelFilenameLabel.getText()));
 							action.insertImportedMeetings(calendar.getEndDate());
 						}
@@ -279,7 +279,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 				removeMeetingsButton.setEnabled(true);
 			}
 		} else if (e.getSource() == removeMeetingsButton) {
-			if (!excelFilenameLabel.equals("No File Selected")) {
+			if (!excelFilenameLabel.getText().equals("No File Selected")) {
 				excelFilenameLabel.setText("No File Selected");
 				fileChooser.setSelectedFile(null);
 				removeMeetingsButton.setEnabled(false);
