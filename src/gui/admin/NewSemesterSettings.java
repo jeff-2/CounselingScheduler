@@ -48,14 +48,14 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	private JLabel holidayNameLabel, holidayStartDateLabel, holidayEndDateLabel;
 	private JLabel IALabel, ECLabel, IAHoursLabel, ECHoursLabel;
 	private JTextField holidayNameText, startHolidayText, endHolidayText, startDateText, endDateText, IAHoursText, ECHoursText;
-	private JButton submitButton, addHolidayButton, removeHolidayButton;
+	private JButton submitButton, addHolidayButton, removeHolidayButton, removeMeetingsButton;
 	private JComboBox<Semester> semesterSeasonBox;
 	private JScrollPane listScrollPane;
 	private JList<String> holidayStringList;
 	private List<HolidayBean> holidayList = new ArrayList<HolidayBean>();
 	private JButton importMeetingsButton;
 	private JFileChooser fileChooser;
-	private File excelFile;
+	private JLabel excelFilenameLabel;
 
 
 	/**
@@ -64,7 +64,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	public NewSemesterSettings() {
 		super("Create New Semester Settings");
 		panel = new JPanel();
-		panel.setLayout(new MigLayout("gap rel", "grow"));
+		panel.setLayout(new MigLayout("gap rel, fill"));
 		fileChooser = new JFileChooser();
 		initializeComponents();
 		initializeFrame();
@@ -84,6 +84,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		ECLabel = new JLabel("EC");
 		IAHoursLabel = new JLabel("hours/week");
 		ECHoursLabel = new JLabel("hours/week");
+		excelFilenameLabel = new JLabel("No File Selected");
 	}
 
 	/**
@@ -118,6 +119,9 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		submitButton.setName("submitButton");
 		importMeetingsButton = new JButton("Import Meetings");
 		importMeetingsButton.setName("importMeetingsButton");
+		removeMeetingsButton = new JButton("Remove Meetings");
+		removeMeetingsButton.setName("removeMeetingsButton");
+		
 	}
 
 	/**
@@ -215,8 +219,8 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 							HolidayBean holiday = holidayList.get(i);
 							holidayDao.insertHoliday(holiday, calendarId, i);
 						}
-						if (excelFile != null) {
-							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, excelFile);
+						if (!excelFilenameLabel.equals("No File Selected")) {
+							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, new File(excelFilenameLabel.getText()));
 							action.insertImportedMeetings(calendar.getEndDate());
 						}
 					} catch (SQLException e1) {
@@ -229,15 +233,19 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	}
 	
 	private void addMeetingComponents() {
-		panel.add(importMeetingsButton, "wrap");
+		panel.add(importMeetingsButton);
+		panel.add(excelFilenameLabel, "span 2");
+		removeMeetingsButton.setEnabled(false);
+		panel.add(removeMeetingsButton, "wrap");
 		importMeetingsButton.addActionListener(this);
+		removeMeetingsButton.addActionListener(this);
 	}
 
 	/**
 	 * Initialize frame.
 	 */
 	private void initializeFrame() {
-		panel.setPreferredSize(new Dimension(500, 500));
+		panel.setPreferredSize(new Dimension(600, 500));
 
 		addSemesterDateComponents();
 		addHolidayComponents();
@@ -267,7 +275,14 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		} else if (e.getSource() == importMeetingsButton) {
 			int choice = fileChooser.showOpenDialog(this);
 			if (choice == JFileChooser.APPROVE_OPTION) {
-				excelFile = fileChooser.getSelectedFile();
+				excelFilenameLabel.setText(fileChooser.getSelectedFile().getAbsolutePath());
+				removeMeetingsButton.setEnabled(true);
+			}
+		} else if (e.getSource() == removeMeetingsButton) {
+			if (!excelFilenameLabel.equals("No File Selected")) {
+				excelFilenameLabel.setText("No File Selected");
+				fileChooser.setSelectedFile(null);
+				removeMeetingsButton.setEnabled(false);
 			}
 		}
 	}
