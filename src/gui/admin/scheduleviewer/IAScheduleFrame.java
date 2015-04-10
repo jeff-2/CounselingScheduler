@@ -1,28 +1,17 @@
 package gui.admin.scheduleviewer;
 
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Paper;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
+import javax.swing.JSplitPane;
 
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
@@ -43,10 +32,7 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private ScheduleDAO dao;
 	
-	/**
-	 * The tabbed content pane for weeks A & B
-	 */
-	private JTabbedPane panel;
+	private JSplitPane panel;
 	
 	/**
 	 * JPanel for week A
@@ -92,25 +78,17 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		List<String> clinicianNames = cDao.loadClinicianNames();
-		this.panel = new JTabbedPane();
+		this.panel = new JSplitPane();
+		this.panel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		this.panel.setResizeWeight(0.5);
+		this.panel.setDividerSize(25);
 		this.setContentPane(this.panel);
-//		this.weekA = this.getWeekPanel("A");
-//		this.weekB = this.getWeekPanel("B");
 		this.weekA = new IAWeeklyComponent(dao.loadScheduleType(0), clinicianNames, "A");
 		this.weekB = new IAWeeklyComponent(dao.loadScheduleType(1), clinicianNames, "B");
-		this.panel.addTab("Week A", weekA);
-		this.panel.addTab("Week B", weekB);
+		this.panel.setLeftComponent(weekA);
+		this.panel.setRightComponent(weekB);
 		this.initializeFrame();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-	}
-
-	private JPanel getWeekPanel(String aOrB) throws SQLException {
-		JPanel p = new JPanel(); 
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.setBackground(Color.WHITE);
-		int type = aOrB.equals("A") ? 0 : 1;
-		p.add(new IAScheduleComponent(aOrB, dao.loadScheduleType(type)));
-		return p;
 	}
 
 	/**
@@ -120,7 +98,7 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		// Initialize menu
 		this.initializeMenu();
 		// Set preferred size
-		this.getContentPane().setPreferredSize(new Dimension(800, 800));
+		this.getContentPane().setPreferredSize(new Dimension(1200, 800));
 		// Draw stuff
 		//this.add(panel);
 		//this.getContentPane().add(scheduleComponent);
