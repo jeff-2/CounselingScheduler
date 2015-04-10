@@ -69,5 +69,7 @@ public class SessionNameBean {
 		this.weekType = weekType;
 	}
 	
-	
+	public String toString() {
+		return "Clinician: " + clinicianName + " startTime: " + startTime + " startDay: " + dayOfWeek + " startDate: " + date + " weekType: " + weekType;
+	}
 }

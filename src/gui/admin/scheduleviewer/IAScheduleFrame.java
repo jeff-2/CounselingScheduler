@@ -120,7 +120,7 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		// Initialize menu
 		this.initializeMenu();
 		// Set preferred size
-		this.getContentPane().setPreferredSize( new Dimension(700, 800) );
+		this.getContentPane().setPreferredSize(new Dimension(800, 800));
 		// Draw stuff
 		//this.add(panel);
 		//this.getContentPane().add(scheduleComponent);

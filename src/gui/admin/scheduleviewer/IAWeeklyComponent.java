@@ -1,177 +1,175 @@
 package gui.admin.scheduleviewer;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.Rectangle;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JCheckBox;
+import javax.swing.DefaultListModel;
+import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextPane;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 
 import bean.SessionNameBean;
+import bean.Weekday;
 
-/**
- * Editable component displaying the clinicians assigned to IA sessions for one week. 
- * @author Yusheng and Denise
- *
- */
-public class IAWeeklyComponent extends JPanel implements MouseListener {
 
-	private static final String[] weekdays = new String[]{"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"};
-	private List<String> clinicianNames;
-	
-	/**
-	 * Creates a component that displays the clinicians assigned to IA sessions for a particular week.
-	 * @param sessionNames
-	 * @param weekType type of IA session week
-	 */
+public class IAWeeklyComponent extends JPanel {
+
+	private static final long serialVersionUID = -2863270676214624155L;
+	private Component[][] pane;
+	private String[] weekdayLabels;
+	private static final int [] rowLabels = {11, 13, 14, 15};
+
 	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, String weekType) {
-		this.setLayout(new GridLayout(5,6, 10, 10));
-		this.setBorder(BorderFactory.createLineBorder(Color.black));
-		this.clinicianNames = clinicianNames;
-		JComponent comp;
-		ArrayList<ArrayList<ArrayList<String>>> cells = getCells(sessionNames, weekType);
 
-		comp = new JLabel("Week " + weekType);
-		add(comp);
-		comp.setBorder(BorderFactory.createLineBorder(Color.black));
-		
-		for (String weekday: weekdays) {
-			comp = new JLabel(weekday);
-			add(comp);
-			comp.setBorder(BorderFactory.createLineBorder(Color.black));
+		weekdayLabels = new String[5];
+		for (int i = 0; i < weekdayLabels.length; i++) {
+			weekdayLabels[i] = Weekday.values()[i].name();
 		}
-		
-		for (int i = 11; i <= 15; i++) {
-			if (i != 12) {
-				comp = new JLabel("" + i + ":00");
-				add(comp);
-				comp.setBorder(BorderFactory.createLineBorder(Color.black));
 
-				for (ArrayList<String> names: cells.get(i-11)) {
-					String labelStr = "";
-					for (String name: names) {
-						labelStr += name + "\n";
+		setLayout(new GridLayout(5, 6, 10, 10));
+		pane = new Component[5][6];
+		for (int row = 0; row < pane.length; row++) {
+			for (int col = 0; col < pane[0].length; col++) {
+				if (row == 0 || col == 0) {
+					if (row == 0 && col == 0) {
+						pane[row][col] = new JLabel("Week " + weekType);
+					} else if (row == 0) {
+						pane[row][col] = new JLabel(weekdayLabels[col - 1]);
+					} else {
+						pane[row][col] = new JLabel(rowLabels[row - 1] + ":00");
 					}
-					JTextArea text = new JTextArea(labelStr); 
-					text.setEditable(false);
-					add(text);
-					text.setBorder(BorderFactory.createLineBorder(Color.black));
-					text.addMouseListener(this);
+					add(pane[row][col]);
+					((JLabel) pane[row][col]).setHorizontalAlignment(JLabel.CENTER);
+					((JLabel) pane[row][col]).setBorder(BorderFactory.createLineBorder(Color.gray));
+				} else {
+					JList<String> currentList = new JList<String>();
+					DefaultListModel<String> currentModel = new DefaultListModel<String>();
+					for (String name : getClinicians(sessionNames, weekdayLabels[col - 1], rowLabels[row - 1])) {
+						currentModel.addElement(name);
+					}
+					currentList.setModel(currentModel);
+					currentList.setTransferHandler(new ToTransferHandler(TransferHandler.MOVE, row, col));
+					currentList.setDragEnabled(true);
+					currentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+					currentList.setDropMode(DropMode.INSERT);
+					pane[row][col] = new JScrollPane(currentList);
+					add(pane[row][col]);
 				}
 			}
 		}
 	}
 	
-	/**
-	 * Create a vector of check boxes labeled with the list of names
-	 * @param names list of names
-	 */
-	private Vector<JCheckBox> createNameCheckBoxes(List<String> names) {
-		Vector<JCheckBox> checkBoxes = new Vector<>(names.size());
-		for (String name: names) {
-			checkBoxes.add(new JCheckBox(name));
-		}
-		
-		return checkBoxes;
-	}
-	
-	private ArrayList<ArrayList<ArrayList<String>>> getCells(List<SessionNameBean> sessionNames, String weekType) {
-		ArrayList<ArrayList<ArrayList<String>>> entries = new ArrayList<ArrayList<ArrayList<String>>>();
-		for(int timeslot = 11; timeslot <=15; timeslot++) {
-			ArrayList<ArrayList<String>> temp = new ArrayList<ArrayList<String>>();
-			for(int day = 0; day < weekdays.length; day++) {
-				temp.add(new ArrayList<String>());
-			}
-			entries.add(temp);
-		}
-		
-		for(SessionNameBean sessionName : sessionNames) {
-			if(checkWeekType(sessionName, weekType)) {
-				entries.get(sessionName.getStartTime()-11).get(getDayIndex(sessionName)).add(sessionName.getClinicianName());
+	private List<String> getClinicians(List<SessionNameBean> sessions, String day, int time) {
+		ArrayList<String> clinicianNames = new ArrayList<String>();
+		for (SessionNameBean b : sessions) {
+			if (b.getStartTime() == time && day.equalsIgnoreCase(b.getDayOfWeek())) {
+				clinicianNames.add(b.getClinicianName());
 			}
 		}
-		return entries;
+		return clinicianNames;
 	}
 
-	private boolean checkWeekType(SessionNameBean bean, String weekType) {
-		String beanWeek = (bean.getWeekType()==0) ? "A" : "B";
-		return beanWeek.equalsIgnoreCase(weekType);
-	}
+	private class ToTransferHandler extends TransferHandler {
 
-	private int getDayIndex(SessionNameBean bean) {
-		for(int d=0; d<weekdays.length; d++) {
-			if(weekdays[d].equalsIgnoreCase(bean.getDayOfWeek())) {
-				return d;
+		private static final long serialVersionUID = 1157878033666829034L;
+		private int action;
+		private int row, column;
+
+		public ToTransferHandler(int action, int row, int col) {
+			this.action = action;
+			this.row = row;
+			this.column = col;
+		}
+
+		public boolean canImport(TransferHandler.TransferSupport support) {
+			if (!support.isDrop()) {
+				return false;
 			}
-		}
-		return -1;
-	}
-
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		JTextArea source = (JTextArea)e.getSource();
-		List<JCheckBox> boxes = new ArrayList<JCheckBox>();
-		List<String> listedNames = Arrays.asList(source.getText().split("\n"));
-		for (String name: this.clinicianNames) {
-			JCheckBox box = new JCheckBox(name);
-			if (listedNames.contains(name)) {
-				box.setSelected(true);
+			
+			if (!support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+				return false;
 			}
-			boxes.add(box);
-		}
-		String msg = "Check the clinicians assigned to this session: ";
-		ArrayList<Object> msgContent = new ArrayList<>();
-		msgContent.add(msg);
-		for (JCheckBox cb : boxes) {
-			msgContent.add(cb);
-		}
-		int n = JOptionPane.showConfirmDialog(null, msgContent.toArray(), "Select Clinicians", JOptionPane.YES_NO_OPTION);
-		if (n == JOptionPane.YES_OPTION) {
-			String names = "";
-			for (int i = 0; i < boxes.size(); i++) {
-				if (boxes.get(i).isSelected()) {
-					names += this.clinicianNames.get(i) + "\n";
-				}
+
+			if ((action & support.getSourceDropActions()) == action) {
+				support.setDropAction(action);
+				return true;
 			}
-			source.setText(names);
+
+			return false;
+		}
+
+		public boolean importData(TransferHandler.TransferSupport support) {
+			if (!canImport(support)) {
+				return false;
+			}
+
+			JList.DropLocation dl = (JList.DropLocation) support.getDropLocation();
+
+			int index = dl.getIndex();
+
+			String data;
+			try {
+				data = (String) support.getTransferable().getTransferData(DataFlavor.stringFlavor);
+			} catch (UnsupportedFlavorException e) {
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
+
+			@SuppressWarnings("unchecked")
+			JList<String> list = ((JList<String>) support.getComponent());
+			DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+			model.insertElementAt(data, index);
+
+			Rectangle rect = list.getCellBounds(index, index);
+			list.scrollRectToVisible(rect);
+			list.setSelectedIndex(index);
+			list.requestFocusInWindow();
+
+			return true;
+		}
+
+		public int getSourceActions(JComponent comp) {
+			return MOVE;
+		}
+
+		private int index = 0;
+
+		public Transferable createTransferable(JComponent comp) {
+
+			@SuppressWarnings("unchecked")
+			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column]).getViewport().getView();
+			index = l.getSelectedIndex();
+			if (index < 0 || index >= l.getModel().getSize()) {
+				return null;
+			}
+
+			return new StringSelection((String) l.getSelectedValue());
+		}
+
+		public void exportDone(JComponent comp, Transferable trans, int action) {
+			if (action != MOVE) {
+				return;
+			}
+
+			@SuppressWarnings("unchecked")
+			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column]).getViewport().getView();
+			((DefaultListModel<String>) l.getModel()).removeElementAt(index);
 		}
 	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
