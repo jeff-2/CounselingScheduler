@@ -52,4 +52,26 @@ public class HolidayBean {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+	
+	public String toString() {
+		return "id: " + id + " name: " + name + " startDate: " + startDate + " endDate: " + endDate;
+	}
+	
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		
+		if (other == null) {
+			return false;
+		}
+		
+		if (!(other instanceof HolidayBean)) {
+			return false;
+		}
+		
+		HolidayBean holiday = (HolidayBean)other;
+		return id == holiday.id && startDate.equals(holiday.startDate) 
+				&& endDate.equals(holiday.endDate) && name.equals(holiday.name);
+	}
 }

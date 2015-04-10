@@ -2,7 +2,9 @@ package action;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -12,9 +14,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -64,8 +63,10 @@ public class ImportClinicianMeetingsAction {
 	 * Insert imported meetings into the commitments table for each clinician specified for a meeting.
 	 *
 	 * @param endDate the end date
+	 * @throws SQLException 
+	 * @throws InvalidExcelFormatException 
 	 */
-	public void insertImportedMeetings(Date endDate) {
+	public void insertImportedMeetings(Date endDate) throws SQLException, InvalidExcelFormatException {
 		try {
 			FileInputStream file = new FileInputStream(excelFile);
 			XSSFWorkbook workbook = new XSSFWorkbook(file);
@@ -81,7 +82,7 @@ public class ImportClinicianMeetingsAction {
 				}
 			} else {
 				workbook.close();
-				return;
+				throw new InvalidExcelFormatException("Excel document contains no data");
 			}
 			for (int i = sheet.getFirstRowNum() + 1; i <= sheet.getLastRowNum(); i++) {
 				Map<String, Object> excelRow = new HashMap<String, Object>();
@@ -100,28 +101,24 @@ public class ImportClinicianMeetingsAction {
 				String startTime = (String)excelRow.get("Start Time");
 				int sTime = parseTime(startTime, false);
 				if (sTime == -1) {
-					handleInvalidExcelCell(startTime, "Start Time");
 					workbook.close();
-					return;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(startTime, "Start Time"));
 				}
 				String endTime = (String)excelRow.get("End Time");
 				int eTime = parseTime(endTime, true);
 				if (eTime == -1) {
-					handleInvalidExcelCell(endTime, "End Time");
 					workbook.close();
-					return;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(endTime, "End Time"));
 				}
 				String meetingName = (String)excelRow.get("Meeting");
 				if (meetingName == null || meetingName.isEmpty()) {
-					handleInvalidExcelCell(meetingName, "Meeting");
 					workbook.close();
-					return;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(meetingName, "Meeting"));
 				}
 				String staffMembers = (String)excelRow.get("Staff Members");
 				if (staffMembers == null || staffMembers.isEmpty()) {
-					handleInvalidExcelCell(staffMembers, "Staff Members");
 					workbook.close();
-					return;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(staffMembers, "Staff Members"));
 				}
 				staffMembers = staffMembers.replaceAll(" ", "");
 				if (staffMembers.equalsIgnoreCase("ALL")) {
@@ -149,8 +146,8 @@ public class ImportClinicianMeetingsAction {
 			}
 			workbook.close();
 			file.close();
-		} catch (Exception e){
-			
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 	
@@ -182,16 +179,17 @@ public class ImportClinicianMeetingsAction {
 	}
 	
 	/**
-	 * Handle invalid excel cell by providing error dialog.
+	 * Create formatted string to display error formatting of particular cell
 	 *
 	 * @param cellData the cell data
 	 * @param cellTitle the cell title
 	 */
-	private void handleInvalidExcelCell(String cellData, String cellTitle) {
-		JOptionPane.showMessageDialog(new JPanel(),
-				"Data under column " + cellTitle + " is of an invalid format:" + cellData,
-				"Invalid Format",
-				JOptionPane.ERROR_MESSAGE);
+	private String formatInvalidExcelFormatString(String cellData, String cellTitle) {
+		if (cellData == null || cellData.isEmpty()) {
+			return "Data under column '" + cellTitle + "' is of an invalid format 'Entry was not specified'";
+		} else {
+			return "Data under column '" + cellTitle + "' is of an invalid format '" + cellData + "'";
+		}
 	}
 	
 	/**
@@ -272,15 +270,15 @@ public class ImportClinicianMeetingsAction {
 	 * @param excelRow the excel row
 	 * @param endDate the end date
 	 * @return the meeting dates
+	 * @throws InvalidExcelFormatException 
 	 */
-	private List<Date> getMeetingDates(Map<String, Object> excelRow, Date endDate) {
+	private List<Date> getMeetingDates(Map<String, Object> excelRow, Date endDate) throws InvalidExcelFormatException {
 		
 		List<Date> meetingDates = new ArrayList<Date>();
 		
 		Date startDate = (Date)excelRow.get("Start Date");
 		if (startDate == null) {
-			handleInvalidExcelCell(null, "Start Date");
-			return null;
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(null, "Start Date"));
 		}
 		
 		// Check if dates specified for us...
@@ -298,13 +296,12 @@ public class ImportClinicianMeetingsAction {
 					cal.setTime(formatter.parse(dateSpecified));
 					cal.set(Calendar.YEAR, endCal.get(Calendar.YEAR));
 					if (cal.getTime().after(endDate) || cal.getTime().before(startDate)) {
-						handleInvalidExcelCell(dates, "Dates");
+						throw new InvalidExcelFormatException(formatInvalidExcelFormatString(dates, "Dates"));
 					} else {
 						meetingDates.add(cal.getTime());
 					}
 				} catch (ParseException e) {
-					handleInvalidExcelCell(dates, "Dates");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(dates, "Dates"));
 				}
 			}
 			return meetingDates;
@@ -312,12 +309,10 @@ public class ImportClinicianMeetingsAction {
 		
 		String frequency = (String)excelRow.get("Frequency");
 		if (frequency == null || frequency.isEmpty()) {
-			handleInvalidExcelCell(frequency, "Frequency");
-			return null;
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(frequency, "Frequency"));
 		}
 		if (!(frequency.equals("Weekly") || frequency.equals("Biweekly") || frequency.equals("Monthly"))) {
-			handleInvalidExcelCell(frequency, "Frequency");
-			return null;
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(frequency, "Frequency"));
 		}
 		
 		int daysBetweenMeetings = -1;
@@ -329,8 +324,7 @@ public class ImportClinicianMeetingsAction {
 		
 		String days = (String)excelRow.get("Days");
 		if (days == null || days.isEmpty()) {
-			handleInvalidExcelCell(days, "Days");
-			return null;
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(days, "Days"));
 		}
 		days = days.replaceAll(" ", "");
 		String[] daysSpecified = days.split(",");
@@ -338,8 +332,7 @@ public class ImportClinicianMeetingsAction {
 		for (String daySpecified : daysSpecified) {
 			if (!(daySpecified.contains(Weekday.Monday.name()) || daySpecified.contains(Weekday.Tuesday.name()) || daySpecified.contains(Weekday.Wednesday.name()) || 
 					daySpecified.contains(Weekday.Thursday.name()) || daySpecified.contains(Weekday.Friday.name()))) {
-				handleInvalidExcelCell(daySpecified, "Days");
-				return null;
+				throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 			}
 			if (!(daySpecified.equals(Weekday.Monday.name()) || daySpecified.equals(Weekday.Tuesday.name()) || daySpecified.equals(Weekday.Wednesday.name()) || 
 					daySpecified.equals(Weekday.Thursday.name()) || daySpecified.equals(Weekday.Friday.name()))) {
@@ -350,35 +343,27 @@ public class ImportClinicianMeetingsAction {
 				int thirdIndex = daySpecified.indexOf("3rd");
 				int fourthIndex = daySpecified.indexOf("4th");
 				if (firstIndex != -1 && (secondIndex != -1 || thirdIndex != -1 || fourthIndex != -1)) {
-					handleInvalidExcelCell(daySpecified, "Days");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 				} else if (secondIndex != -1 && (firstIndex != -1 || thirdIndex != -1 || fourthIndex != -1)) {
-					handleInvalidExcelCell(daySpecified, "Days");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 				} else if (thirdIndex != -1 && (firstIndex != -1 || secondIndex != -1 || fourthIndex != -1)) {
-					handleInvalidExcelCell(daySpecified, "Days");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 				} else if (fourthIndex != -1 && (firstIndex != -1 || secondIndex != -1 || thirdIndex != -1)) {
-					handleInvalidExcelCell(daySpecified, "Days");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 				} else if (firstIndex == -1 && secondIndex == -1 && thirdIndex == -1 && fourthIndex == -1) {
-					handleInvalidExcelCell(daySpecified, "Days");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 				} else {
 					// only one is set
 					if (daySpecified.length() <= 3) {
-						handleInvalidExcelCell(daySpecified, "Days");
-						return null;
+						throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 					} else {
 						String day = daySpecified.substring(3);
 						if (!(day.equals(Weekday.Monday.name()) || day.equals(Weekday.Tuesday.name()) || day.equals(Weekday.Wednesday.name()) || 
 								day.equals(Weekday.Thursday.name()) || day.equals(Weekday.Friday.name()))) {
-							handleInvalidExcelCell(daySpecified, "Days");
-							return null;
+							throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 						} else {
 							if (!frequency.equals("Monthly")) {
-								handleInvalidExcelCell(frequency + " and " + daySpecified, "Frequency and Days");
-								return null;
+								throw new InvalidExcelFormatException(formatInvalidExcelFormatString(frequency + " and " + daySpecified, "Frequency and Days"));
 							}
 							int dayOfMonth = -1;
 							if (firstIndex != -1) {
@@ -400,8 +385,7 @@ public class ImportClinicianMeetingsAction {
 				
 			} else {
 				if (frequency.equals("Monthly")) {
-					handleInvalidExcelCell(frequency + " and " + daySpecified, "Frequency and Days");
-					return null;
+					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(frequency + " and " + daySpecified, "Frequency and Days"));
 				}
 				List<Date> weeklyDates = getMeetingDatesWeekly(startDate, endDate, daysBetweenMeetings, daySpecified);
 				for (Date date : weeklyDates) {

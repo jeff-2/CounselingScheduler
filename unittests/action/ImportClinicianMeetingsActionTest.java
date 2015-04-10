@@ -1,11 +1,14 @@
 package action;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import generator.TestDataGenerator;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -58,10 +61,100 @@ public class ImportClinicianMeetingsActionTest {
 	}
 	
 	@Test
+	public void testImportEmptyFile() throws SQLException, IOException {
+		testData = new Object[0][0];
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Excel document contains no data", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testCatchInvalidStartTime() throws SQLException, IOException {
+		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
+				{"Admin Team Meeting", "90 minutes", "8:00", "10:00am", "[Jeff], (Ryan), John", startDate, "Monthly", "1st Friday,    3rd Tuesday", null, "Room 212"}};
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Data under column 'Start Time' is of an invalid format '8:00'", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testCatchInvalidEndTime() throws SQLException, IOException {
+		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
+				{"Admin Team Meeting", "90 minutes", "8:30am", "10", "[Jeff], (Ryan), John", startDate, "Monthly", "1st Friday,    3rd Tuesday", null, "Room 212"}};
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Data under column 'End Time' is of an invalid format '10'", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testCatchInvalidMeetingName() throws SQLException, IOException {
+		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
+				{null, "90 minutes", "8:30am", "10:00am", "[Jeff], (Ryan), John", startDate, "Monthly", "1st Friday,    3rd Tuesday", null, "Room 212"}};
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Data under column 'Meeting' is of an invalid format 'Entry was not specified'", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testCatchInvalidStaffMembers() throws SQLException, IOException {
+		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
+				{"Admin Team Meeting", "90 minutes", "8:30am", "10:00am", null, startDate, "Monthly", "1st Friday,    3rd Tuesday", null, "Room 212"}};
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Data under column 'Staff Members' is of an invalid format 'Entry was not specified'", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testCatchInvalidFrequency() throws SQLException, IOException {
+		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
+				{"Admin Team Meeting", "90 minutes", "8:30am", "10:00am", "[Jeff], (Ryan), John", startDate, "Daily", "1st Friday,    3rd Tuesday", null, "Room 212"}};
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Data under column 'Frequency' is of an invalid format 'Daily'", e.getMessage());
+		}
+	}
+	
+	@Test
+	public void testCatchInvalidDays() throws SQLException, IOException {
+		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
+				{"Admin Team Meeting", "90 minutes", "8:30am", "10:00am", "[Jeff], (Ryan), John", startDate, "Monthly", "Last Friday", null, "Room 212"}};
+		try {
+			action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
+			action.insertImportedMeetings(endDate);
+			fail();
+		} catch (InvalidExcelFormatException e) {
+			assertEquals("Data under column 'Days' is of an invalid format 'LastFriday'", e.getMessage());
+		}
+	}
+	
+	@Test
 	public void testImportMonthlyDays() throws Exception {
 		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
 				{"Admin Team Meeting", "90 minutes", "8:30am", "10:00am", "[Jeff], (Ryan), John", startDate, "Monthly", "1st Friday,    3rd Tuesday", null, "Room 212"}};
-		action = new ImportClinicianMeetingsAction(conn, generateExcelFile());
+		action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
 		action.insertImportedMeetings(endDate);
 		List<CommitmentBean> commitments = new ArrayList<CommitmentBean>();
 		List<CommitmentBean> tmp = commitmentsDAO.loadCommitments(jeffID);
@@ -87,7 +180,7 @@ public class ImportClinicianMeetingsActionTest {
 	public void testImportBiweekly() throws Exception {
 		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
 				{"Meeting", "60 minutes", "11:00am", "12:00pm", "[Nathan], [Ryan]", startDate, "Biweekly", "Thursday", null, "Room 1404"}};
-		action = new ImportClinicianMeetingsAction(conn, generateExcelFile());
+		action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
 		action.insertImportedMeetings(endDate);
 		List<CommitmentBean> commitments = new ArrayList<CommitmentBean>();
 		List<CommitmentBean> tmp = commitmentsDAO.loadCommitments(jeffID);
@@ -114,7 +207,7 @@ public class ImportClinicianMeetingsActionTest {
 	public void testImportMonthlyDates() throws Exception {
 		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
 				{"Staff Meeting", "120 minutes", "10:00am", "11:00am", "ALL", startDate, "Monthly", "Wednesday", "2/4, 3/4, 4/1, 5/9", "Room 0207"}};
-		action = new ImportClinicianMeetingsAction(conn, generateExcelFile());
+		action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
 		action.insertImportedMeetings(DateRangeValidator.parseDate("5/20/2015"));
 		List<CommitmentBean> commitments = new ArrayList<CommitmentBean>();
 		List<CommitmentBean> tmp = commitmentsDAO.loadCommitments(jeffID);
@@ -150,7 +243,7 @@ public class ImportClinicianMeetingsActionTest {
 	public void testImportWeekly() throws Exception {
 		testData = new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
 				{"Other Meeting", "60 minutes", "10:30am", "11:30am", "Jeff, [Nathan], Bill", startDate, "Weekly", "Monday", null, "Room C"}};
-		action = new ImportClinicianMeetingsAction(conn, generateExcelFile());
+		action = new ImportClinicianMeetingsAction(conn, generateExcelFile(testData));
 		action.insertImportedMeetings(endDate);
 		List<CommitmentBean> commitments = new ArrayList<CommitmentBean>();
 		List<CommitmentBean> tmp = commitmentsDAO.loadCommitments(jeffID);
@@ -189,7 +282,7 @@ public class ImportClinicianMeetingsActionTest {
 		gen.clearTables();
 	}
 	
-	private File generateExcelFile() throws Exception {
+	public static File generateExcelFile(Object [][] testData) throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 		XSSFSheet sheet = workbook.createSheet("tmpFile");
 		
