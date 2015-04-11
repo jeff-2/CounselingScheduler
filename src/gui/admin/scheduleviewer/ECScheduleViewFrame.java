@@ -1,32 +1,20 @@
 package gui.admin.scheduleviewer;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.ScrollPaneLayout;
 
 import net.miginfocom.swing.MigLayout;
-import bean.ECScheduleWeekBean;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
 
@@ -36,7 +24,7 @@ import dao.ScheduleDAO;
  * @author ramusa2, lim92
  *
  */
-public class ECScheduleViewFrame extends JFrame implements ActionListener {
+public class ECScheduleViewFrame extends JFrame {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
@@ -49,53 +37,21 @@ public class ECScheduleViewFrame extends JFrame implements ActionListener {
 	 * The scrollable content pane for weeks A & B
 	 */
 	private JScrollPane scrollPanel;
-	/**
-	 * The scrollable content pane for weeks A & B
-	 */
-	private JPanel panel;
-	
-	/**
-	 * JPanel for week A
-	 */
-	private ArrayList<ECScheduleComponent> pages;
 
-	/**
-	 * Dropdown menu for printing (and eventually saving/loading?) the schedule
-	 */
-	private JMenu menu;
-
-	/**
-	 * JMenuItem for printing
-	 */
-	private JMenuItem print;
-
-	/**
-	 * JMenuItem for editing
-	 */
-	private JMenuItem edit;
+	private ECScheduleComponent ecComponent;
 	
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
 	 */
-	public ECScheduleViewFrame() throws SQLException {
+	public ECScheduleViewFrame(ECScheduleComponent ecComponent) throws SQLException {
 		super("View EC Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		this.scrollPanel = new JScrollPane();
 
 		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));
 		p.setBackground(Color.WHITE);
-
-		// Initialize menu
-		//this.initializeMenu();
-
-		// Add schedule pages
-		this.pages = getECSchedulePages(dao);
 		
-		
-		for(ECScheduleComponent ecComp : this.pages) {
-			p.add(ecComp, "span, grow, wrap 15px");
-		}		
 		p.validate();
 		this.scrollPanel = new JScrollPane(p);
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
@@ -103,6 +59,8 @@ public class ECScheduleViewFrame extends JFrame implements ActionListener {
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		this.scrollPanel.setViewportView(p);
 		
+		this.ecComponent = ecComponent;
+		p.add(ecComponent);
 	
 		// Finish
 		this.getContentPane().add(scrollPanel);
@@ -110,82 +68,13 @@ public class ECScheduleViewFrame extends JFrame implements ActionListener {
 		this.setVisible(true);
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
 	}
-
-	/**
-	 * Fills the schedule from the database and renders each week
-	 * @throws SQLException 
-	 */
-	private ArrayList<ECScheduleComponent> getECSchedulePages(ScheduleDAO dao) throws SQLException {
-		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
-		// Build components
-		ArrayList<ECScheduleComponent> comps = new ArrayList<ECScheduleComponent>();
-		int numOnFirstPage = 4;
-		int numOnOtherPages = 5;
-		int w = 0;
-		// First page
-		String title = "Spring 2015 - EC Schedule";
-		ArrayList<ECScheduleWeekBean> firstWeeks = new ArrayList<ECScheduleWeekBean>();
-		for(; w<numOnFirstPage && w < weeks.size(); w++) {
-			firstWeeks.add(weeks.get(w));
-		}
-		comps.add(new ECScheduleComponent(firstWeeks, title));
-		// Other pages
-		while(w < weeks.size()) {
-			int curW = 0;
-			ArrayList<ECScheduleWeekBean> curWeeks = new ArrayList<ECScheduleWeekBean>();
-			for(; curW<numOnOtherPages && w < weeks.size(); curW++) {
-				curWeeks.add(weeks.get(w));
-				w++;
-			}
-			comps.add(new ECScheduleComponent(curWeeks));
-		}
-		return comps;
-	}
-
-	/**
-	 * Set up the dropdown menu
-	 */
-	private void initializeMenu() {
-		this.menu = new JMenu("Options");
-		this.edit = new JMenuItem("Edit schedule");
-		this.edit.setEnabled(false);
-		this.menu.add(this.edit);
-		this.menu.add(new JSeparator());
-		this.print = new JMenuItem("Print");
-		this.print.addActionListener(this);
-		this.menu.add(this.print);
-		JMenuBar mb = new JMenuBar();
-		mb.add(menu);
-		this.setJMenuBar(mb);
-	}
-
-	/**
-	 * Main tester
-	 * @throws SQLException 
-	 */
-	public static void main(String[] args) throws SQLException {
-		ECScheduleFrame frame = new ECScheduleFrame();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.print) {
-			this.openPrintDialog();
-		}
-	}
-
+	
 	private void openPrintDialog() {
         PrinterJob job = PrinterJob.getPrinterJob();
         Book book = new Book();
         PageFormat pf = new PageFormat();
-        //Paper paper = new Paper();
-        //paper.setImageableArea(); // TODO: widen the margins here
-        //pf.setPaper(paper);
-        for(ECScheduleComponent ecPage : this.pages) {
-            book.append((Printable) ecPage, pf);
-        }
+        book.append((Printable) ecComponent, pf);
         job.setPageable(book);
-        //job.setPrintable(new IASchedulePrinter(a, b));
         boolean ok = job.printDialog();
         if (ok) {
             try {

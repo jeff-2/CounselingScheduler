@@ -2,8 +2,6 @@ package gui.admin.scheduleviewer;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.print.Book;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -13,16 +11,9 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
-
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
 

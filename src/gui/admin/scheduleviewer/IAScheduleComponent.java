@@ -112,7 +112,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 		return PAGE_EXISTS;
 	}
 	
-	public BufferedImage getImageFromPanel(Component component) {
+	private BufferedImage getImageFromPanel(Component component) {
         BufferedImage image = new BufferedImage(800, 1400, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);

@@ -1,32 +1,28 @@
 package gui.admin.scheduleviewer;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.print.Book;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
-import javax.swing.BoxLayout;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.ScrollPaneLayout;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import net.miginfocom.swing.MigLayout;
 import bean.ECScheduleWeekBean;
@@ -56,12 +52,7 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	/**
 	 * The scrollable content pane for weeks A & B
 	 */
-	private JPanel panel;
-	
-	/**
-	 * JPanel for week A
-	 */
-	private ArrayList<ECScheduleComponent> pages;
+	private JPanel editableSchedule;
 
 	/**
 	 * Dropdown menu for printing (and eventually saving/loading?) the schedule
@@ -72,11 +63,10 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 * JMenuItem for printing
 	 */
 	private JMenuItem print;
-
-	/**
-	 * JMenuItem for editing
-	 */
-	private JMenuItem edit;
+	
+	private JMenuItem save;
+	
+	private List<ECWeeklyComponent> ecComponents;
 	
 	/**
 	 * Create an empty client ID list
@@ -93,17 +83,9 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 
 		// Initialize menu
 		this.initializeMenu();
-
-		// Add schedule pages
-		this.pages = getECSchedulePages(dao);
 		
-		
-		for(ECScheduleComponent ecComp : this.pages) {
-			p.add(ecComp, "span, grow, wrap 15px");
-		}		
-		p.validate();
-		
-		JPanel editableSchedule = getEditableSchedule(dao, cDao);
+		ecComponents = new ArrayList<ECWeeklyComponent>();
+		editableSchedule = getEditableSchedule(dao, cDao);
 		
 		this.scrollPanel = new JScrollPane(editableSchedule);
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
@@ -120,37 +102,6 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	}
 
 	/**
-	 * Fills the schedule from the database and renders each week
-	 * @throws SQLException 
-	 */
-	private ArrayList<ECScheduleComponent> getECSchedulePages(ScheduleDAO dao) throws SQLException {
-		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
-		// Build components
-		ArrayList<ECScheduleComponent> comps = new ArrayList<ECScheduleComponent>();
-		int numOnFirstPage = 4;
-		int numOnOtherPages = 5;
-		int w = 0;
-		// First page
-		String title = "Spring 2015 - EC Schedule";
-		ArrayList<ECScheduleWeekBean> firstWeeks = new ArrayList<ECScheduleWeekBean>();
-		for(; w<numOnFirstPage && w < weeks.size(); w++) {
-			firstWeeks.add(weeks.get(w));
-		}
-		comps.add(new ECScheduleComponent(firstWeeks, title));
-		// Other pages
-		while(w < weeks.size()) {
-			int curW = 0;
-			ArrayList<ECScheduleWeekBean> curWeeks = new ArrayList<ECScheduleWeekBean>();
-			for(; curW<numOnOtherPages && w < weeks.size(); curW++) {
-				curWeeks.add(weeks.get(w));
-				w++;
-			}
-			comps.add(new ECScheduleComponent(curWeeks));
-		}
-		return comps;
-	}
-	
-	/**
 	 * Creates a JPanel that displays an editable EC schedule from the database
 	 * @param schDAO
 	 * @param cDAO
@@ -164,7 +115,9 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1, 1, 0, 50));
 		editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
 		for (ECScheduleWeekBean week: weeks) {
-			editableSchedule.add(new ECWeeklyComponent(week, clinicianNames));
+			ECWeeklyComponent curr = new ECWeeklyComponent(week, clinicianNames);
+			editableSchedule.add(curr);
+			ecComponents.add(curr);
 		}
 		
 		editableSchedule.setBackground(Color.white);
@@ -177,38 +130,49 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void initializeMenu() {
 		this.menu = new JMenu("Options");
-		/*
-		this.edit = new JMenuItem("Edit schedule");
-		this.edit.setEnabled(false);
-		this.menu.add(this.edit);
-		this.menu.add(new JSeparator());
-		*/
 		this.print = new JMenuItem("Print");
 		this.print.addActionListener(this);
+		this.save = new JMenuItem("Save");
+		this.save.addActionListener(this);
+		this.menu.add(this.save);
 		this.menu.add(this.print);
 		JMenuBar mb = new JMenuBar();
 		mb.add(menu);
 		this.setJMenuBar(mb);
 	}
 
-	/**
-	 * Main tester
-	 * @throws SQLException 
-	 */
-	public static void main(String[] args) throws SQLException {
-		new ECScheduleFrame();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		List<List<List<String>>> cells = new ArrayList<List<List<String>>>();
+		for (ECWeeklyComponent comp : ecComponents) {
+			List<List<String>> l = comp.toCellsList();
+			cells.add(l);
+		}
+		
 		if(e.getSource() == this.print) {
-			ECScheduleViewFrame frame;
+			
 			try {
-				frame = new ECScheduleViewFrame();
+				ECScheduleViewFrame frame = new ECScheduleViewFrame(new ECScheduleComponent(cells));
 				frame.printSchedule();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}
+		} else if (e.getSource() == this.save) {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+			if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+				File file = fileChooser.getSelectedFile();
+				if (!file.getName().contains(".")) {
+					file = new File(file.getAbsoluteFile() + ".png");
+				}
+				try {
+					new ECScheduleComponent(cells).save(file);
+				} catch (IOException e2) {
+					JOptionPane.showMessageDialog(this,
+						"Unable to save to file: " + file.getAbsolutePath() + ". Please try again.",
+						"Error saving schedule",
+						JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 	}
