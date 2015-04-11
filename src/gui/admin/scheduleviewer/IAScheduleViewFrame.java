@@ -2,24 +2,24 @@ package gui.admin.scheduleviewer;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.Book;
 import java.awt.print.PageFormat;
-import java.awt.print.Paper;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JComponent;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
@@ -41,20 +41,8 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 	 */
 	private ScheduleDAO dao;
 	
-	/**
-	 * The tabbed content pane for weeks A & B
-	 */
-	private JTabbedPane panel;
-	
-	/**
-	 * JPanel for week A
-	 */
-	private JPanel weekA;
-	
-	/**
-	 * JPanel for week B
-	 */
-	private JPanel weekB;
+	private JPanel panel;
+	private JScrollPane pane;
 
 	/**
 	 * Dropdown menu for printing (and eventually saving/loading?) the schedule
@@ -70,6 +58,9 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 	 * JMenuItem for editing
 	 */
 	private JMenuItem edit;
+	
+	private List<List<List<String>>> weekACells, weekBCells;
+	private IAScheduleComponent iaComponent;
 
 	/**
 	 * The graphics component for the schedule
@@ -85,26 +76,31 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 	 * Create an empty client ID list
 	 * @throws SQLException 
 	 */
-	public IAScheduleViewFrame() throws SQLException {
+	public IAScheduleViewFrame(List<List<List<String>>> weekACells, List<List<List<String>>> weekBCells) throws SQLException {
 		super("View IA Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
-		this.panel = new JTabbedPane();
-		this.setContentPane(this.panel);
-		this.weekA = this.getWeekPanel("A");
-		this.weekB = this.getWeekPanel("B");
-		this.panel.addTab("Week A", weekA);
-		this.panel.addTab("Week B", weekB);
+		this.iaComponent = new IAScheduleComponent(weekACells, weekBCells);
+		this.panel = new JPanel();
+		this.panel.setPreferredSize(new Dimension(600, 1400));
+		this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
+		this.panel.setBackground(Color.WHITE);
+		this.panel.add(iaComponent);
+		this.pane = new JScrollPane(this.panel);
+		this.pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		this.setContentPane(this.pane);
+		this.weekACells = weekACells;
+		this.weekBCells = weekBCells;
 		this.initializeFrame();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-	}
-
-	private JPanel getWeekPanel(String aOrB) throws SQLException {
-		JPanel p = new JPanel(); 
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.setBackground(Color.WHITE);
-		int type = aOrB.equals("A") ? 0 : 1;
-		p.add(new IAScheduleComponent(aOrB, dao.loadScheduleType(type)));
-		return p;
+		JButton tmp = new JButton("Save");
+		this.panel.add(tmp);
+		tmp.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				iaComponent.save();
+			}
+		});
+		
 	}
 
 	/**
@@ -114,7 +110,7 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 		// Initialize menu
 		//this.initializeMenu();
 		// Set preferred size
-		this.getContentPane().setPreferredSize( new Dimension(700, 800) );
+		this.getContentPane().setPreferredSize(new Dimension(700, 800));
 		// Draw stuff
 		//this.add(panel);
 		//this.getContentPane().add(scheduleComponent);
@@ -153,20 +149,17 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == this.print) {
 			
-			
-			this.openPrintDialog();
+			this.iaComponent.save();
+			//this.openPrintDialog();
 		}
 	}
 
 	private void openPrintDialog() {
         PrinterJob job = PrinterJob.getPrinterJob();
-        IAScheduleComponent a = (IAScheduleComponent) weekA.getComponent(0);
-        IAScheduleComponent b = (IAScheduleComponent) weekB.getComponent(0);
         Book book = new Book();
         PageFormat pf = new PageFormat();
         //pf.setPaper(new Paper());
-        book.append((Printable) a, pf);
-        book.append((Printable) b, pf);
+        book.append((Printable) this.iaComponent, pf);
         job.setPageable(book);
         //job.setPrintable(new IASchedulePrinter(a, b));
         boolean ok = job.printDialog();

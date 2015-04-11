@@ -141,8 +141,8 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		if(e.getSource() == this.print) {
 			IAScheduleViewFrame frame;
 			try {
-				frame = new IAScheduleViewFrame();
-				frame.printSchedule();
+				frame = new IAScheduleViewFrame(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray());
+				//frame.printSchedule();
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

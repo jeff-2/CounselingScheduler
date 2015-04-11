@@ -24,6 +24,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
 import bean.SessionNameBean;
+import bean.Utility;
 import bean.Weekday;
 
 
@@ -32,7 +33,28 @@ public class IAWeeklyComponent extends JPanel {
 	private static final long serialVersionUID = -2863270676214624155L;
 	private Component[][] pane;
 	private String[] weekdayLabels;
-	private static final int [] rowLabels = {11, 13, 14, 15};
+	private static final int [] rowLabels = {11, 12, 13, 14, 15};
+	
+	public List<List<List<String>>> toCellsArray() {
+		List<List<List<String>>> cells = new ArrayList<List<List<String>>>();
+		for (int row = 0; row < pane.length; row++) {
+			List<List<String>> rowContents = new ArrayList<List<String>>();
+			for (int col = 0; col < pane[0].length; col++) {
+				List<String> cellContents;
+				if (pane[row][col] instanceof JLabel) {
+					cellContents = new ArrayList<String>();
+					cellContents.add(((JLabel)pane[row][col]).getText());
+				} else {
+					@SuppressWarnings("unchecked")
+					JList<String> list = (JList<String>) ((JScrollPane) pane[row][col]).getViewport().getView();
+					cellContents= Utility.toStringList(list.getModel());
+				}
+				rowContents.add(cellContents);
+			}
+			cells.add(rowContents);
+		}
+		return cells;
+	}
 
 	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, String weekType) {
 
@@ -41,8 +63,8 @@ public class IAWeeklyComponent extends JPanel {
 			weekdayLabels[i] = Weekday.values()[i].name();
 		}
 
-		setLayout(new GridLayout(5, 6, 10, 10));
-		pane = new Component[5][6];
+		setLayout(new GridLayout(6, 6, 10, 10));
+		pane = new Component[6][6];
 		for (int row = 0; row < pane.length; row++) {
 			for (int col = 0; col < pane[0].length; col++) {
 				if (row == 0 || col == 0) {
