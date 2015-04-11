@@ -23,7 +23,7 @@ import bean.ECScheduleWeekBean;
 public class ECWeeklyComponent extends JPanel {
 
 	private List<JComboBox> comboBoxes;
-	private Map<String, Integer> sessionIDs;
+	private Map<String, String> sessionIDs;
 	
 	/**
 	 * Creates a component that displays the clinicians assigned to EC sessions for a particular week.
@@ -33,10 +33,10 @@ public class ECWeeklyComponent extends JPanel {
 		this.setLayout(new GridLayout(4,6));
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
 		comboBoxes = new ArrayList<>();
-		sessionIDs = new HashMap<String, Integer>();
+		sessionIDs = new HashMap<>();
 
 		ArrayList<ArrayList<String>> cells = week.getCellContent();
-		ArrayList<ArrayList<Integer>> ids = week.getCellIDs();
+		ArrayList<ArrayList<String>> ids = week.getCellIDs();
 
 		String item;
 		JComponent comp;

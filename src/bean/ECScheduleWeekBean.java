@@ -186,11 +186,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 		return date;
 	}
 
-	/**
-	 * Returns two dimensional array representing the text to go into the calendar view of this week's schedule.
-	 * @return
-	 */
-	public ArrayList<ArrayList<String>> getCellContent() {
+	private  ArrayList<ArrayList<String>> arrangeCellContent(boolean isName) {
 		ArrayList<ArrayList<String>> entries = new ArrayList<ArrayList<String>>();
 		for(int row = 0; row <4; row++) {
 			entries.add(new ArrayList<String>());
@@ -213,50 +209,35 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 					}
 				}
 				else {
-					name = dayBean.getClinicians()[t-1];
+					if (isName) {
+						name = dayBean.getClinicians()[t-1];
+					}
+					else {
+						name = Integer.toString(dayBean.getSessionIDs()[t-1]);
+					}
 				}
 				entries.get(t).add(name);
 			}
 		}
 		
 		return entries;
+		
+	}
+	
+	/**
+	 * Returns two dimensional array representing the text to go into the calendar view of this week's schedule.
+	 * @return
+	 */
+	public ArrayList<ArrayList<String>> getCellContent() {
+		return arrangeCellContent(true);
 	}
 
 	/**
 	 * Returns two dimensional array contaning the session ID corresponding to each session in the schedule
 	 * @return
 	 */
-	public ArrayList<ArrayList<Integer>> getCellIDs() {
-		ArrayList<ArrayList<Integer>> entries = new ArrayList<>();
-		for(int row = 0; row <4; row++) {
-			entries.add(new ArrayList<>());
-		}
-
-		// if cellID is -1, the cell is not a clinician
-		String month = this.monthAbbrev();		
-		String[] rowLabels = new String[]{month, "8:00", "Noon", "4:00"};
-		entries.get(0).add(0);
-		for(int d=0; d<5; d++) {
-			entries.get(0).add(-1);
-		}
-		for(int t=1; t<4; t++) {
-			entries.get(t).add(-1);
-			for(int d=0; d<5; d++) {
-				ECScheduleDayBean dayBean = days.get(d);
-				int id = 0;
-				if(dayBean.isHoliday()) {
-					if(t==1) {
-						id = -1;
-					}
-				}
-				else {
-					id = dayBean.getSessionIDs()[t-1];
-				}
-				entries.get(t).add(id);
-			}
-		}
-		
-		return entries;
+	public ArrayList<ArrayList<String>> getCellIDs() {
+		return arrangeCellContent(false);
 	}
 
 }

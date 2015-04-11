@@ -43,11 +43,31 @@ public class ScheduleEditTest extends UISpecTestCase {
 		clearCalendarTable();
 	}
 	
+	public void testFirstECSelection() throws SQLException {
+		editECSchedule("0");
+	}
+	
+	public void testSecondECSelection() throws SQLException {
+		editECSchedule("1");
+	}
+	
+	public void testThirdECSelection() throws SQLException {
+		editECSchedule("2");
+	}
+	
+	public void testFourthECSelection() throws SQLException {
+		editECSchedule("3");
+	}
+	
+	public void testFifthECSelection() throws SQLException {
+		editECSchedule("4");
+	}
+	
 	/**
 	 * Tests whether selecting new name in the EC schedule works
 	 * @throws SQLException
 	 */
-	public void testEditECSchedule() throws SQLException {
+	public void editECSchedule(String boxnum) throws SQLException {
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
 		
@@ -61,13 +81,13 @@ public class ScheduleEditTest extends UISpecTestCase {
 		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
 		assertEquals("View EC Schedule", ecSchedule.getTitle());
 		
-		ComboBox cb = ecSchedule.getComboBox("0");
+		ComboBox cb = ecSchedule.getComboBox(boxnum);
 		cb.select("Alice");
 		cb.selectionEquals("Alice");
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
 
-		ComboBox cb1 = ecSchedule.getComboBox("1");
+		ComboBox cb1 = ecSchedule.getComboBox(boxnum);
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
 	}
