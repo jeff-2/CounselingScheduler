@@ -3,6 +3,7 @@ package gui.admin.scheduleviewer;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,9 +14,12 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -78,6 +82,8 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private JMenuItem edit;
 	
+	
+	private List<ECWeeklyComponent> weeklyComponents;
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
@@ -86,24 +92,21 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		super("View EC Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
-		this.scrollPanel = new JScrollPane();
-
-		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));
-		p.setBackground(Color.WHITE);
-
+		weeklyComponents = new ArrayList<>();
+		
 		// Initialize menu
 		this.initializeMenu();
 
 		// Add schedule pages
 		this.pages = getECSchedulePages(dao);
 		
-		
-		for(ECScheduleComponent ecComp : this.pages) {
-			p.add(ecComp, "span, grow, wrap 15px");
-		}		
-		p.validate();
-		
 		JPanel editableSchedule = getEditableSchedule(dao, cDao);
+
+		JPanel controlPanel = new JPanel(new FlowLayout());
+		JButton saveButton = new JButton("Save");
+		saveButton.addActionListener(this);
+//		controlPanel.add(saveButton);
+//		JButton resetButton = new JButton("Reset");
 		
 		this.scrollPanel = new JScrollPane(editableSchedule);
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
@@ -111,9 +114,12 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		this.scrollPanel.setViewportView(editableSchedule);
 		
-	
+		JPanel contentPane = new JPanel(new BorderLayout());
+		contentPane.add(scrollPanel, BorderLayout.CENTER);
+		contentPane.add(controlPanel, BorderLayout.SOUTH);
+
 		// Finish
-		this.getContentPane().add(scrollPanel);
+		this.setContentPane(contentPane);
 		this.pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
@@ -161,10 +167,13 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
 		Vector<String> clinicianNames = cDAO.loadClinicianNames();
 		
+		
 		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1, 1, 0, 50));
 		editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
 		for (ECScheduleWeekBean week: weeks) {
-			editableSchedule.add(new ECWeeklyComponent(week, clinicianNames));
+			ECWeeklyComponent wc = new ECWeeklyComponent(week, clinicianNames);
+			editableSchedule.add(wc);
+			weeklyComponents.add(wc);
 		}
 		
 		editableSchedule.setBackground(Color.white);
@@ -201,7 +210,8 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.print) {
+		JComponent source = (JComponent) e.getSource();
+		if(source == this.print) {
 			ECScheduleViewFrame frame;
 			try {
 				frame = new ECScheduleViewFrame();
@@ -209,6 +219,11 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}
+		}
+		else if (e.getActionCommand().equals("Save")) {
+			for (ECWeeklyComponent wc: weeklyComponents) {
+				wc.saveChanges();
 			}
 		}
 	}

@@ -81,7 +81,7 @@ public class ScheduleDAO extends DAO{
 	private List<SessionNameBean> loadAllECSessions() throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name"
+				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
 				+ " FROM SessionClinicians SessionClinicians"
 				+ " INNER JOIN Sessions Sessions"
 				+ " ON SessionClinicians.sessionID=Sessions.id"
@@ -97,7 +97,8 @@ public class ScheduleDAO extends DAO{
 					results.getInt("startTime"),
 					results.getString("weekday"),
 					results.getDate("sDate"),
-					results.getInt("weektype")));
+					results.getInt("weektype"),
+					results.getInt("id")));
 		}
 		stmt.close();
 		return ECSessions;
@@ -113,7 +114,7 @@ public class ScheduleDAO extends DAO{
 	private List<SessionNameBean> loadAllIASessions(int weekType) throws SQLException {
 		Connection conn = getConnection();
 		PreparedStatement stmt = conn.prepareStatement(
-				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name"
+				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
 				+ " FROM SessionClinicians SessionClinicians"
 				+ " INNER JOIN Sessions Sessions"
 				+ " ON SessionClinicians.sessionID=Sessions.id"
@@ -131,7 +132,8 @@ public class ScheduleDAO extends DAO{
 					results.getInt("startTime"),
 					results.getString("weekday"),
 					results.getDate("sDate"),
-					results.getInt("weektype")));
+					results.getInt("weektype"),
+					results.getInt("id")));
 		}
 		stmt.close();
 		return IASessions;

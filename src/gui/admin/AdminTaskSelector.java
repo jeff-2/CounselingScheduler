@@ -170,6 +170,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	private JRadioButton addRadioButton(String desc) {
 		JRadioButton button = new JRadioButton(desc);
 		button.setActionCommand(desc);
+		button.setName(desc);
 		button.addActionListener(this);
 		choicesGroup.add(button);	
 		this.panel.add(button, "gapleft 30, span");

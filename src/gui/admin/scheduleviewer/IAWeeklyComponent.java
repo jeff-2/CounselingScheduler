@@ -8,6 +8,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -27,7 +29,7 @@ import bean.SessionNameBean;
 import bean.Weekday;
 
 
-public class IAWeeklyComponent extends JPanel {
+public class IAWeeklyComponent extends JPanel implements MouseListener {
 
 	private static final long serialVersionUID = -2863270676214624155L;
 	private Component[][] pane;
@@ -36,6 +38,7 @@ public class IAWeeklyComponent extends JPanel {
 
 	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, String weekType) {
 
+		this.addMouseListener(this);
 		weekdayLabels = new String[5];
 		for (int i = 0; i < weekdayLabels.length; i++) {
 			weekdayLabels[i] = Weekday.values()[i].name();
@@ -67,6 +70,7 @@ public class IAWeeklyComponent extends JPanel {
 					currentList.setDragEnabled(true);
 					currentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					currentList.setDropMode(DropMode.INSERT);
+					currentList.setName(weekType + ", " + row + ", " + col);
 					pane[row][col] = new JScrollPane(currentList);
 					add(pane[row][col]);
 				}
@@ -171,5 +175,35 @@ public class IAWeeklyComponent extends JPanel {
 			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column]).getViewport().getView();
 			((DefaultListModel<String>) l.getModel()).removeElementAt(index);
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		System.out.println("" + arg0.getX() + ", " + arg0.getY());
 	}
 }

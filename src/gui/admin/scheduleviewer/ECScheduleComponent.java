@@ -78,7 +78,7 @@ public class ECScheduleComponent extends JComponent implements Printable {
 		int yoffset = y+50;
 		int[] cols = new int[]{25, 75, 175, 275, 375, 475, 575};
 
-		ArrayList<ArrayList<String>> cells = bean.getCells();
+		ArrayList<ArrayList<String>> cells = bean.getCellContent();
 		for(int i=0; i<cells.size(); i++) {
 			if(i==0) {
 				yoffset = this.drawRow(g, xoffset, yoffset, 25, 15, cells.get(i), cols, false, "");
