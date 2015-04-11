@@ -18,30 +18,20 @@ import dao.TimeAwayDAO;
  */
 public class ClinicianPreferencesAction {
 	
-	/** The preferences. */
 	private ClinicianPreferencesBean preferences;
-	
-	/** The commitments. */
 	private List<CommitmentBean> commitments;
-	
-	/** The times away. */
 	private List<TimeAwayBean> timesAway;
-	
-	/** The clinician preferences dao. */
 	private ClinicianPreferencesDAO clinicianPreferencesDao;
-	
-	/** The time away dao. */
 	private TimeAwayDAO timeAwayDao;
-	
-	/** The commitment dao. */
 	private CommitmentsDAO commitmentDao;
 	
 	/**
 	 * Instantiates a new clinician preferences action.
 	 *
-	 * @param prefs the prefs
-	 * @param cmts the cmts
-	 * @param tsAway the ts away
+	 * @param prefs the clinician preferences
+	 * @param cmts the list of commitments
+	 * @param tsAway the list of time away
+	 * @param conn the connection
 	 */
 	public ClinicianPreferencesAction(ClinicianPreferencesBean prefs, List<CommitmentBean> cmts, List<TimeAwayBean> tsAway, Connection conn) {
 		preferences = prefs;

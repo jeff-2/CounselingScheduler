@@ -8,15 +8,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-
 import dao.CalendarDAO;
 import dao.HolidayDAO;
 import dao.SessionsDAO;
 import bean.CalendarBean;
 import bean.HolidayBean;
-import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
@@ -37,51 +33,39 @@ public class GenerateUnfilledScheduleAction {
 	/**
 	 * Generates an unfilled schedule and (over)writes it to the database
 	 */
-	public void generateUnfilledSchedule() {
-		try {
-			CalendarDAO calDAO = new CalendarDAO(this.conn);
-			CalendarBean calBean = calDAO.loadCalendar();
-			SessionsDAO sessionsDAO = new SessionsDAO(this.conn);
-			sessionsDAO.clearSessions();
-			ArrayList<Date> workDays = this.getWorkDays(calBean);
+	public void generateUnfilledSchedule() throws SQLException {
+		CalendarDAO calDAO = new CalendarDAO(this.conn);
+		CalendarBean calBean = calDAO.loadCalendar();
+		SessionsDAO sessionsDAO = new SessionsDAO(this.conn);
+		sessionsDAO.clearSessions();
+		ArrayList<Date> workDays = this.getWorkDays(calBean);
+		
+		// TODO: actually reflect admin prefs (but works for now/development)
+		int[] ecSlots = new int[]{8, 12, 16};
+		int[] iaSlots = new int[]{11, 13, 14, 15};
+		int ecClinicianMin = 1;
+		int iaClinicianMin = 3;
+		int weektype = 0;
+		Calendar cal = Calendar.getInstance();
+		for (Date d : workDays) {
 			
-			// TODO: actually reflect admin prefs (but works for now/development)
-			int[] ecSlots = new int[]{8, 12, 16};
-			int[] iaSlots = new int[]{11, 13, 14, 15};
-			int ecClinicianMin = 1;
-			int iaClinicianMin = 3;
-			int weektype = 0;
-			for(Date d : workDays) {
-				Weekday day = Weekday.getWeekday(d);
-				// TODO figure out the semester
-				for(int e : ecSlots) {
-					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), Semester.Fall.ordinal(), weektype);
-					sessionsDAO.insertSession(session);
-				}
-				for(int i : iaSlots) {
-					SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), Semester.Fall.ordinal(), weektype);
-					sessionsDAO.insertSession(session);
-				}
-				
-				//TODO figure out better way to check when a week has passed
-				if (day.equals(Weekday.Friday))
-					weektype = 1 - weektype;
+			Weekday day = Weekday.getWeekday(d);
+			for (int e : ecSlots) {
+				SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), calBean.getSemester(), weektype);
+				sessionsDAO.insertSession(session);
+			}
+			for (int i : iaSlots) {
+				SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), calBean.getSemester(), weektype);
+				sessionsDAO.insertSession(session);
+			}
+			
+			int prevWeek = cal.get(Calendar.WEEK_OF_YEAR);
+			cal.setTime(d);
+			int week = cal.get(Calendar.WEEK_OF_YEAR);
+			if (week > prevWeek) {
+				weektype = 1 - weektype;
 			}
 		}
-		catch(IllegalArgumentException e) {
-			JOptionPane.showMessageDialog(new JPanel(),
-					"Tried to schedule appointment on Saturday or Sunday",
-					"Cannot schedule appointment on weekend",
-					JOptionPane.ERROR_MESSAGE);
-		}
-		catch(SQLException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(new JPanel(),
-					"Failed to connect to the remote SQL database; please contact the network administrator.",
-					"Database connection error",
-					JOptionPane.ERROR_MESSAGE);
-		}
-
 	}
 
 	/**
@@ -93,9 +77,9 @@ public class GenerateUnfilledScheduleAction {
 		Date start = calendarInfo.getStartDate();
 		Date end = calendarInfo.getEndDate();
 		ArrayList<Date> possibleDays = getDateRange(start, end);
-		for(Date day : possibleDays) {
-		    if(Weekday.isWeekday(day)) {
-		    	if(holidays.isEmpty() || !holidays.contains(day)) {
+		for (Date day : possibleDays) {
+		    if (Weekday.isWeekday(day)) {
+		    	if (holidays.isEmpty() || !holidays.contains(day)) {
 		    		dates.add(day);
 		    	}
 		    }
@@ -110,7 +94,7 @@ public class GenerateUnfilledScheduleAction {
 		HashSet<Date> dates = new HashSet<Date>();
 		HolidayDAO holidayDAO = new HolidayDAO(this.conn);
 		List<HolidayBean> holidays = holidayDAO.loadHolidays();
-		for(HolidayBean holiday : holidays) {
+		for (HolidayBean holiday : holidays) {
 			Date start = holiday.getStartDate();
 			Date end = holiday.getEndDate();
 			for(Date d : getDateRange(start, end)) {
@@ -129,7 +113,7 @@ public class GenerateUnfilledScheduleAction {
 		calStart.setTime(start);
 		Calendar calEnd = Calendar.getInstance();
 		calEnd.setTime(end);
-		while( !calStart.after(calEnd)){
+		while (!calStart.after(calEnd)) {
 		    Date day = calStart.getTime();
 		    dates.add(day);
 		    calStart.add(Calendar.DATE, 1);

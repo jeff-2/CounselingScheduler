@@ -28,4 +28,8 @@ public enum Weekday {
 	public static String dayName(Date d) {
 		return format.format(d);
 	}
+	
+	public int toCalendarWeekday() {
+		return ordinal() + 2;
+	}
 }

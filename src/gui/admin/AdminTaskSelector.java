@@ -264,6 +264,11 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 					"SQLException when generating schedule",
 					"Error when generating schedule",
 					JOptionPane.WARNING_MESSAGE);
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(this,
+					"Tried to schedule appointment on Saturday or Sunday",
+					"Cannot schedule appointment on weekend",
+					JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
