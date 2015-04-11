@@ -2,6 +2,7 @@ package gui.admin.scheduleviewer;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -53,8 +54,6 @@ public class IAScheduleComponent extends JComponent implements Printable {
 		
 		yoffset = 725;
 		g.drawString("Week B", 350, 700);
-		
-		System.out.println(yoffset);
 		
 		for (int i = 0; i < rowLabels.length; i++) {
 			yoffset = this.drawRow(g, xoffset, yoffset, rowLabels[i], weekBCells.get(i), cols);
@@ -114,22 +113,17 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 	
 	public BufferedImage getImageFromPanel(Component component) {
-        BufferedImage image = new BufferedImage(component.getWidth(), component.getHeight(), BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(800, 1400, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, component.getWidth(), component.getHeight());
+        g2d.fillRect(0, 0, 800, 1400);
         g2d.setColor(Color.BLACK);
         this.buildGrid(g2d);
         g2d.dispose();
         return image;
     }
 
-	public void save() {
-		try {
-			ImageIO.write(getImageFromPanel(this), "png", new File("Schedule.png"));
-			System.out.println("Saved file at location: " + new File("Schedule.png").getAbsolutePath());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public void save(File imageFile) throws IOException {
+		ImageIO.write(getImageFromPanel(this), "png", imageFile);
 	}
 }

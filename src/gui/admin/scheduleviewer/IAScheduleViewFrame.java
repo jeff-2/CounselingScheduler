@@ -32,7 +32,7 @@ import dao.ScheduleDAO;
  * @author ramusa2, lim92
  *
  */
-public class IAScheduleViewFrame extends JFrame implements ActionListener {
+public class IAScheduleViewFrame extends JFrame {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
@@ -43,35 +43,10 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 	
 	private JPanel panel;
 	private JScrollPane pane;
-
-	/**
-	 * Dropdown menu for printing (and eventually saving/loading?) the schedule
-	 */
-	private JMenu menu;
-
-	/**
-	 * JMenuItem for printing
-	 */
-	private JMenuItem print;
-
-	/**
-	 * JMenuItem for editing
-	 */
-	private JMenuItem edit;
 	
 	private List<List<List<String>>> weekACells, weekBCells;
 	private IAScheduleComponent iaComponent;
-
-	/**
-	 * The graphics component for the schedule
-	 */
-	//private IAScheduleComponent scheduleComponent;
-
-	/**
-	 * Graphics object for rendering schedule
-	 */
-	//private final Graphics2D g;
-
+	
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
@@ -92,76 +67,23 @@ public class IAScheduleViewFrame extends JFrame implements ActionListener {
 		this.weekBCells = weekBCells;
 		this.initializeFrame();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-		JButton tmp = new JButton("Save");
-		this.panel.add(tmp);
-		tmp.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				iaComponent.save();
-			}
-		});
-		
 	}
 
 	/**
 	 * Set up the components of this JFrame, pack, and make it visible
 	 */
 	private void initializeFrame() {
-		// Initialize menu
-		//this.initializeMenu();
-		// Set preferred size
 		this.getContentPane().setPreferredSize(new Dimension(700, 800));
-		// Draw stuff
-		//this.add(panel);
-		//this.getContentPane().add(scheduleComponent);
-		// Finish
-		//this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
-	}
-
-	/**
-	 * Set up the dropdown menu
-	 */
-	private void initializeMenu() {
-		this.menu = new JMenu("Options");
-		this.edit = new JMenuItem("Edit schedule");
-		this.edit.setEnabled(false);
-		this.menu.add(this.edit);
-		this.menu.add(new JSeparator());
-		this.print = new JMenuItem("Print");
-		this.print.addActionListener(this);
-		this.menu.add(this.print);
-		JMenuBar mb = new JMenuBar();
-		mb.add(menu);
-		this.setJMenuBar(mb);
-	}
-
-	/**
-	 * Main tester
-	 * @throws SQLException 
-	 */
-	public static void main(String[] args) throws SQLException {
-		IAScheduleFrame frame = new IAScheduleFrame();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.print) {
-			
-			this.iaComponent.save();
-			//this.openPrintDialog();
-		}
 	}
 
 	private void openPrintDialog() {
         PrinterJob job = PrinterJob.getPrinterJob();
         Book book = new Book();
         PageFormat pf = new PageFormat();
-        //pf.setPaper(new Paper());
         book.append((Printable) this.iaComponent, pf);
         job.setPageable(book);
-        //job.setPrintable(new IASchedulePrinter(a, b));
         boolean ok = job.printDialog();
         if (ok) {
             try {
