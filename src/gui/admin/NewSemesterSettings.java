@@ -26,6 +26,7 @@ import javax.swing.JTextField;
 import validator.DateRangeValidator;
 import validator.InvalidDateRangeException;
 import action.ImportClinicianMeetingsAction;
+import action.InvalidExcelFormatException;
 import bean.CalendarBean;
 import bean.HolidayBean;
 import bean.Semester;
@@ -66,6 +67,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		panel = new JPanel();
 		panel.setLayout(new MigLayout("gap rel, fill"));
 		fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Select Meeting Schedule");
 		initializeComponents();
 		initializeFrame();
 	}
@@ -85,6 +87,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		IAHoursLabel = new JLabel("hours/week");
 		ECHoursLabel = new JLabel("hours/week");
 		excelFilenameLabel = new JLabel("No File Selected");
+		excelFilenameLabel.setName("excelFilenameLabel");
 	}
 
 	/**
@@ -115,7 +118,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		addHolidayButton.setName("addHolidayButton");
 		removeHolidayButton = new JButton("Remove Holiday");
 		removeHolidayButton.setName("removeHolidayButton");
-		submitButton = new JButton("create");
+		submitButton = new JButton("Create");
 		submitButton.setName("submitButton");
 		importMeetingsButton = new JButton("Import Meetings");
 		importMeetingsButton.setName("importMeetingsButton");
@@ -210,6 +213,12 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 
 					try {
 						Connection conn = ConnectionFactory.getInstance();
+
+						if (!excelFilenameLabel.getText().equals("No File Selected")) {
+							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, new File(excelFilenameLabel.getText()));
+							action.insertImportedMeetings(calendar.getEndDate());
+						}
+						
 						CalendarDAO calendarDao = new CalendarDAO(conn);
 						HolidayDAO holidayDao = new HolidayDAO(conn);
 						int calendarId = calendarDao.getNextAvailableId();
@@ -219,12 +228,13 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 							HolidayBean holiday = holidayList.get(i);
 							holidayDao.insertHoliday(holiday, calendarId, i);
 						}
-						if (!excelFilenameLabel.getText().equals("No File Selected")) {
-							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, new File(excelFilenameLabel.getText()));
-							action.insertImportedMeetings(calendar.getEndDate());
-						}
 					} catch (SQLException e1) {
 						e1.printStackTrace();
+					} catch (InvalidExcelFormatException e2) {
+						JOptionPane.showMessageDialog(panel,
+								e2.getMessage(),
+								"Invalid Format",
+								JOptionPane.ERROR_MESSAGE);
 					}
 				}
 			}

@@ -36,6 +36,14 @@ public final class Utility {
 		return cmts;
 	}
 	
+	public static List<String> toStringList(ListModel<String> model) {
+		List<String> list = new ArrayList<String>();
+		for (int i = 0; i < model.getSize(); i++) {
+			list.add(model.getElementAt(i));
+		}
+		return list;
+	}
+	
 	public static List<TimeAwayBean> toTimeAwayList(ListModel<TimeAwayBean> model) {
 		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
 		for (int i = 0; i < model.getSize(); i++) {

@@ -3,15 +3,20 @@ package gui.admin.scheduleviewer;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
@@ -27,47 +32,14 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
-	/**
-	 * DAO to get schedule information from DB
-	 */
 	private ScheduleDAO dao;
-	
 	private JSplitPane panel;
-	
-	/**
-	 * JPanel for week A
-	 */
 	private JPanel weekA;
-	
-	/**
-	 * JPanel for week B
-	 */
 	private JPanel weekB;
-
-	/**
-	 * Dropdown menu for printing (and eventually saving/loading?) the schedule
-	 */
 	private JMenu menu;
-
-	/**
-	 * JMenuItem for printing
-	 */
 	private JMenuItem print;
-
-	/**
-	 * JMenuItem for editing
-	 */
-	private JMenuItem edit;
-
-	/**
-	 * The graphics component for the schedule
-	 */
-	//private IAScheduleComponent scheduleComponent;
-
-	/**
-	 * Graphics object for rendering schedule
-	 */
-	//private final Graphics2D g;
+	private JMenuItem edit;	
+	private JMenuItem save;
 
 	/**
 	 * Create an empty client ID list
@@ -95,15 +67,8 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 * Set up the components of this JFrame, pack, and make it visible
 	 */
 	private void initializeFrame() {
-		// Initialize menu
 		this.initializeMenu();
-		// Set preferred size
 		this.getContentPane().setPreferredSize(new Dimension(1200, 800));
-		// Draw stuff
-		//this.add(panel);
-		//this.getContentPane().add(scheduleComponent);
-		// Finish
-		//this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
 	}
@@ -113,39 +78,43 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void initializeMenu() {
 		this.menu = new JMenu("Options");
-		/*
-		this.edit = new JMenuItem("Edit schedule");
-		this.edit.setEnabled(false);
-		this.menu.add(this.edit);
-		this.menu.add(new JSeparator());
-		*/
 		this.print = new JMenuItem("Print");
 		this.print.addActionListener(this);
 		this.menu.add(this.print);
+		this.save = new JMenuItem("Save");
+		this.save.addActionListener(this);
+		this.menu.add(this.save);
 		JMenuBar mb = new JMenuBar();
 		mb.add(menu);
 		this.setJMenuBar(mb);
 	}
 
-	/**
-	 * Main tester
-	 * @throws SQLException 
-	 */
-	public static void main(String[] args) throws SQLException {
-		IAScheduleFrame frame = new IAScheduleFrame();
-	}
-
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.print) {
+		if (e.getSource() == this.print) {
 			IAScheduleViewFrame frame;
 			try {
-				frame = new IAScheduleViewFrame();
+				frame = new IAScheduleViewFrame(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray());
 				frame.printSchedule();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
+			}
+		} else if (e.getSource() == this.save) {
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+			if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+				File file = fileChooser.getSelectedFile();
+				if (!file.getName().contains(".")) {
+					file = new File(file.getAbsoluteFile() + ".png");
+				}
+				try {
+					new IAScheduleComponent(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray()).save(file);
+				} catch (IOException e2) {
+					JOptionPane.showMessageDialog(this,
+						"Unable to save to file: " + file.getAbsolutePath() + ". Please try again.",
+						"Error saving schedule",
+						JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		}
 	}

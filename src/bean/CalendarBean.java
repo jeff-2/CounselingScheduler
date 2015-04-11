@@ -17,6 +17,17 @@ public class CalendarBean {
 	private int ecMinHours;
 	private int semester;
 	
+	public CalendarBean() {}
+	
+	public CalendarBean(int id, Date startDate, Date endDate, int iaMinHours, int ecMinHours, int semester) {
+		this.id = id;
+		this.startDate = startDate;
+		this.endDate = endDate;
+		this.iaMinHours = iaMinHours;
+		this.ecMinHours = ecMinHours;
+		this.semester = semester;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -54,4 +65,22 @@ public class CalendarBean {
 		this.semester = semester;
 	}
 
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+		
+		if (other == null) {
+			return false;
+		}
+		
+		if (!(other instanceof CalendarBean)) {
+			return false;
+		}
+		
+		CalendarBean calendar = (CalendarBean)other;
+		return id == calendar.id && startDate.equals(calendar.startDate)
+				&& endDate.equals(calendar.endDate) && iaMinHours == calendar.iaMinHours
+				&& ecMinHours == calendar.ecMinHours && semester == calendar.semester;
+	}
 }
