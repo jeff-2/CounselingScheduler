@@ -8,19 +8,25 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.DropMode;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
@@ -30,11 +36,14 @@ import bean.Utility;
 import bean.Weekday;
 
 
-public class IAWeeklyComponent extends JPanel {
+public class IAWeeklyComponent extends JPanel implements ActionListener, MouseListener {
 
 	private static final long serialVersionUID = -2863270676214624155L;
 	private Component[][] pane;
 	private String[] weekdayLabels;
+	private List<String> clinicianNames;
+	private JPopupMenu menu;
+	private JMenuItem add, remove;
 	private static final int [] rowLabels = {11, 12, 13, 14, 15};
 	
 	public List<List<List<String>>> toCellsArray() {
@@ -60,6 +69,16 @@ public class IAWeeklyComponent extends JPanel {
 
 	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, String weekType) {
 
+		this.clinicianNames = clinicianNames;
+		
+		menu = new JPopupMenu();
+		add = new JMenuItem("Add Clinician");
+		add.addActionListener(this);
+		menu.add(add);
+		remove = new JMenuItem("Remove Clinician");
+		remove.addActionListener(this);
+		menu.add(remove);
+		
 		weekdayLabels = new String[5];
 		for (int i = 0; i < weekdayLabels.length; i++) {
 			weekdayLabels[i] = Weekday.values()[i].name();
@@ -92,9 +111,42 @@ public class IAWeeklyComponent extends JPanel {
 					currentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					currentList.setDropMode(DropMode.INSERT);
 					currentList.setName(weekType + ", " + row + ", " + col);
+					currentList.addMouseListener(this);
+					currentList.setComponentPopupMenu(menu);
 					pane[row][col] = new JScrollPane(currentList);
 					add(pane[row][col]);
 				}
+			}
+		}
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == add) {
+			@SuppressWarnings("unchecked")
+			JList<String> list = (JList<String>)menu.getInvoker();
+			List<String> remainingNames = new ArrayList<String>(clinicianNames);
+			DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+			for (int i = 0; i < model.getSize(); i++) {
+				if (remainingNames.contains(model.getElementAt(i))) {
+					remainingNames.remove(model.getElementAt(i));
+				}
+			}
+			JComboBox<String> choices = new JComboBox<String>();
+			for (String name : remainingNames) {
+				choices.addItem(name);
+			}
+			int n = JOptionPane.showConfirmDialog(this, choices, "Add Clinician", JOptionPane.OK_CANCEL_OPTION);
+			if (n == JOptionPane.OK_OPTION) {
+				model.addElement((String)choices.getSelectedItem());
+			}
+		} else if (e.getSource() == remove) {
+			@SuppressWarnings("unchecked")
+			JList<String> list = (JList<String>)menu.getInvoker();
+			DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+			int index = list.getSelectedIndex();
+			if (index >= 0 && index < list.getModel().getSize()) {
+				model.remove(index);
 			}
 		}
 	}
@@ -196,5 +248,32 @@ public class IAWeeklyComponent extends JPanel {
 			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column]).getViewport().getView();
 			((DefaultListModel<String>) l.getModel()).removeElementAt(index);
 		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+		@SuppressWarnings("unchecked")
+		JList<String> list = (JList<String>) e.getComponent();
+		list.setSelectedIndex(list.locationToIndex(e.getPoint()));
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		if (e.isPopupTrigger()) {
+			menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+		@SuppressWarnings("unchecked")
+		JList<String> list = (JList<String>) e.getComponent();
+		list.setSelectedIndex(list.locationToIndex(e.getPoint()));
 	}
 }
