@@ -130,9 +130,11 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void initializeMenu() {
 		this.menu = new JMenu("Options");
+		this.menu.setName("Options");
 		this.print = new JMenuItem("Print");
 		this.print.addActionListener(this);
 		this.save = new JMenuItem("Save");
+		this.save.setName("Save");
 		this.save.addActionListener(this);
 		this.menu.add(this.save);
 		this.menu.add(this.print);
@@ -159,6 +161,7 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 			}
 		} else if (e.getSource() == this.save) {
 			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.setDialogTitle("Save Schedule");
 			fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
 			if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();

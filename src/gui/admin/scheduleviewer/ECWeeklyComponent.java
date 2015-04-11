@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -24,7 +26,9 @@ public class ECWeeklyComponent extends JPanel {
 	private static final long serialVersionUID = 1181653974079435258L;
 	private Component [][] pane;
 	private int row, column;
-
+	private List<JComboBox> comboBoxes;
+	private Map<String, String> sessionIDs;
+	
 	/**
 	 * Creates a component that displays the clinicians assigned to EC sessions for a particular week.
 	 * @param week 
@@ -32,8 +36,11 @@ public class ECWeeklyComponent extends JPanel {
 	public ECWeeklyComponent(ECScheduleWeekBean week, Vector<String> clinicianNames) {
 		this.setLayout(new GridLayout(4,6));
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
+		comboBoxes = new ArrayList<>();
+		sessionIDs = new HashMap<>();
 
-		ArrayList<ArrayList<String>> cells = week.getCells();
+		ArrayList<ArrayList<String>> cells = week.getCellContent();
+		ArrayList<ArrayList<String>> ids = week.getCellIDs();
 
 		String item;
 		JComponent comp;
@@ -51,12 +58,17 @@ public class ECWeeklyComponent extends JPanel {
 					comp.setBackground(Color.gray);
 				} else {
 					JComboBox<String> assignedClinician = new JComboBox<String>(clinicianNames);
+					String key = cells.get(0).get(c) + ", " + cells.get(r).get(0);
 					comp = assignedClinician;
 					assignedClinician.setSelectedItem(cells.get(r).get(c));
-					assignedClinician.setActionCommand(cells.get(0).get(c) + cells.get(r).get(0));
+					assignedClinician.setActionCommand(key);
+					comboBoxes.add(assignedClinician);
+					sessionIDs.put(key, ids.get(r).get(c));
+					assignedClinician.setName("" + ids.get(r).get(c));
+					
 				}
-				pane[r][c] = comp;
 				
+				pane[r][c] = comp;
 				add(comp);
 				comp.setBorder(BorderFactory.createLineBorder(Color.black));
 			}

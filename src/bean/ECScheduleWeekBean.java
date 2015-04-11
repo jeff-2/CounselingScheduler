@@ -78,10 +78,10 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	/**
 	 * Add a clinician to a day in this week
 	 */
-	public void addClinician(Date date, int timeslot, String clinician) {
+	public void addClinician(Date date, int timeslot, String clinician, int id) {
 		Integer d = dateMap.get(date);
 		if(d != null) {
-			this.days.get(d).addClinician(clinician, timeslot);
+			this.days.get(d).addClinician(clinician, timeslot, id);
 		}
 	}
 
@@ -142,7 +142,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 		List<SessionNameBean> sessions = dao.loadScheduleType(2); // loads EC sessions
 		for(SessionNameBean bean : sessions) {
 			Date date = bean.getDate();
-			getWeek(date, weekMap).addClinician(date, bean.getStartTime(), bean.getClinicianName());
+			getWeek(date, weekMap).addClinician(date, bean.getStartTime(), bean.getClinicianName(), bean.getSessionID());
 		}		
 
 		// Sort weeks
@@ -186,8 +186,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 		return date;
 	}
 
-
-	public ArrayList<ArrayList<String>> getCells() {
+	private  ArrayList<ArrayList<String>> arrangeCellContent(boolean isName) {
 		ArrayList<ArrayList<String>> entries = new ArrayList<ArrayList<String>>();
 		for(int row = 0; row <4; row++) {
 			entries.add(new ArrayList<String>());
@@ -210,13 +209,35 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 					}
 				}
 				else {
-					name = dayBean.getClinicians()[t-1];
+					if (isName) {
+						name = dayBean.getClinicians()[t-1];
+					}
+					else {
+						name = Integer.toString(dayBean.getSessionIDs()[t-1]);
+					}
 				}
 				entries.get(t).add(name);
 			}
 		}
 		
 		return entries;
+		
+	}
+	
+	/**
+	 * Returns two dimensional array representing the text to go into the calendar view of this week's schedule.
+	 * @return
+	 */
+	public ArrayList<ArrayList<String>> getCellContent() {
+		return arrangeCellContent(true);
+	}
+
+	/**
+	 * Returns two dimensional array contaning the session ID corresponding to each session in the schedule
+	 * @return
+	 */
+	public ArrayList<ArrayList<String>> getCellIDs() {
+		return arrangeCellContent(false);
 	}
 
 }

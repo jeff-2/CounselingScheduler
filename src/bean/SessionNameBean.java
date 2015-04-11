@@ -20,12 +20,15 @@ public class SessionNameBean {
 	/**  The type of week A/B. */
 	private int weekType;
 	
-	public SessionNameBean(String name, int sTime, String sDay, Date sDate, int sWeekType) {
+	private int sessionID;
+	
+	public SessionNameBean(String name, int sTime, String sDay, Date sDate, int sWeekType, int sSessionID) {
 		clinicianName = name;
 		startTime = sTime;
 		dayOfWeek = sDay;
 		date = sDate;
 		weekType = sWeekType;
+		sessionID = sSessionID;
 		
 	}
 
@@ -72,4 +75,13 @@ public class SessionNameBean {
 	public String toString() {
 		return "Clinician: " + clinicianName + " startTime: " + startTime + " startDay: " + dayOfWeek + " startDate: " + date + " weekType: " + weekType;
 	}
+
+	public int getSessionID() {
+		return sessionID;
+	}
+
+	public void setSessionID(int sessionID) {
+		this.sessionID = sessionID;
+	}
+	
 }

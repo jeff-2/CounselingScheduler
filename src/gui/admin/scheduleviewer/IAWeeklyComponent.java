@@ -8,6 +8,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.IOException;
@@ -89,6 +91,7 @@ public class IAWeeklyComponent extends JPanel {
 					currentList.setDragEnabled(true);
 					currentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					currentList.setDropMode(DropMode.INSERT);
+					currentList.setName(weekType + ", " + row + ", " + col);
 					pane[row][col] = new JScrollPane(currentList);
 					add(pane[row][col]);
 				}

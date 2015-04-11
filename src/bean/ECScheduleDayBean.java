@@ -30,6 +30,8 @@ public class ECScheduleDayBean {
 	 */
 	private final String[] clinicians;
 	
+	private int[] sessionIDs;
+	
 	/**
 	 * Default constructor
 	 */
@@ -38,6 +40,7 @@ public class ECScheduleDayBean {
 		dayName = myDayName;
 		holiday = null;
 		clinicians = new String[3];
+		sessionIDs = new int[3];
 	}
 	
 	/**
@@ -64,7 +67,7 @@ public class ECScheduleDayBean {
 	/**
 	 * Adds a clinicians for this day's EC sessions (0 = 8am, 1 = noon, 2 = 4pm)
 	 */
-	public void addClinician(String name, int timeslot) {
+	public void addClinician(String name, int timeslot, int id) {
 		int mappedTimeslot = -1;
 		if(timeslot == 8) {
 			mappedTimeslot = 0;
@@ -79,6 +82,7 @@ public class ECScheduleDayBean {
 			timeslot = mappedTimeslot;
 			if(timeslot >= 0 && timeslot <3) {
 				clinicians[timeslot] = name;
+				sessionIDs[timeslot] = id;
 			}
 		}
 	}
@@ -113,6 +117,14 @@ public class ECScheduleDayBean {
 
 	public String headerString() {
 		return this.dayName+" "+this.date.getDate();
+	}
+
+	public int[] getSessionIDs() {
+		return sessionIDs;
+	}
+
+	public void setSessionIDs(int[] sessionIDs) {
+		this.sessionIDs = sessionIDs;
 	}
 
 }
