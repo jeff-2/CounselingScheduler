@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -21,6 +22,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -132,8 +134,10 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		this.menu = new JMenu("Options");
 		this.menu.setName("Options");
 		this.print = new JMenuItem("Print");
+		this.print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
 		this.print.addActionListener(this);
 		this.save = new JMenuItem("Save");
+		this.save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		this.save.setName("Save");
 		this.save.addActionListener(this);
 		this.menu.add(this.save);
