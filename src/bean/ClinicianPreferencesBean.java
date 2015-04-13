@@ -1,5 +1,6 @@
 package bean;
 
+
 /**
  * The Class ClinicianPreferences handles the storage of clinician preferences.
  * 
@@ -18,6 +19,9 @@ public class ClinicianPreferencesBean {
 	
 	/** The afternoon rank. */
 	private int afternoonRank;
+	
+	/** Ranking in order */
+	private int[] ranking;
 
 	/**
 	 * Creates a clinician's coverage for emergence coverage sessions.
@@ -32,6 +36,10 @@ public class ClinicianPreferencesBean {
 		morningRank = morning;
 		noonRank = noon;
 		afternoonRank = afternoon;
+		ranking = new int[4];
+		ranking[morning] = 1;
+		ranking[noon] = 2;
+		ranking[afternoon] = 3;
 	}
 	
 	/**
@@ -68,6 +76,7 @@ public class ClinicianPreferencesBean {
 	 */
 	public void setMorningRank(int morningRank) {
 		this.morningRank = morningRank;
+		ranking[morningRank] = 1;
 	}
 	
 	/**
@@ -86,6 +95,7 @@ public class ClinicianPreferencesBean {
 	 */
 	public void setNoonRank(int noonRank) {
 		this.noonRank = noonRank;
+		ranking[noonRank] = 2;
 	}
 	
 	/**
@@ -104,6 +114,15 @@ public class ClinicianPreferencesBean {
 	 */
 	public void setAfternoonRank(int afternoonRank) {
 		this.afternoonRank = afternoonRank;
+		ranking[afternoonRank] = 3;
+	}
+	
+	/**
+	 * Returns the time by ranking where morning = 1, noon = 2, and afternoon = 3
+	 * @param rank 1-3
+	 */
+	public int getRanking(int rank) {
+		return ranking[rank];
 	}
 	
 	/* (non-Javadoc)

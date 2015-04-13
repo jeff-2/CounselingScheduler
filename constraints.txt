@@ -50,3 +50,9 @@ select day of week, clinician from ia of week b, 1:00,
 
 select day of week, unique(clinician) from  ec of even week, 12:00
  
+ 
+ 
+ Calendar is id necessary?
+ ClinicianPreferences ia/ec hours, week A/B bias, foreign key
+ Clinician combine with preferences?
+ Committments, weekday, weektype, startdate, xth weekday of month, externel?
