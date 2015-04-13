@@ -99,38 +99,38 @@ public class ScheduleDAO extends DAO {
 	public List<SessionNameBean> loadScheduleType(int scheduleType) throws SQLException {
 		List<SessionNameBean> schedule = null;
 		if(scheduleType == 0) { //week A of IA sessions
-			List<SessionNameBean> temp = loadAllIASessions(0);
-			if (temp.isEmpty()) {
-				return temp;
-			}
-			int i=0;
-			String firstDay = temp.get(i).getDayOfWeek();
-			while(temp.get(i).getDayOfWeek().equals(firstDay)) {
-				i++;
-			}
-			while(!temp.get(i).getDayOfWeek().equals(firstDay)) {
-				i++;
-			}
-			schedule = temp.subList(0, i);
+			schedule = loadIAScheduleType(0);
 		}
 		else if(scheduleType == 1) { //week B of IA sessions
-			List<SessionNameBean> temp = loadAllIASessions(1);
-			if (temp.isEmpty()) {
-				return temp;
-			}
-			int i=0;
-			String firstDay = temp.get(i).getDayOfWeek();
-			while(temp.get(i).getDayOfWeek().equals(firstDay)) {
-				i++;
-			}
-			while(!temp.get(i).getDayOfWeek().equals(firstDay)) {
-				i++;
-			}
-			schedule = temp.subList(0, i);
+			schedule = loadIAScheduleType(0);
 		}
 		else if(scheduleType == 2) { //All weeks of EC sessions
 			schedule = loadAllECSessions();
 		}
+		return schedule;
+	}
+	
+	/**
+	 * Helper method to load a specific type of IA schedule
+	 * 
+	 * @param 0 refers to week A of IA sessions, 1 refers to week B of IA sessions 
+	 * @return
+	 * @throws SQLException
+	 */
+	private List<SessionNameBean> loadIAScheduleType(int scheduleType) throws SQLException {
+		List<SessionNameBean> temp = loadAllIASessions(scheduleType);
+		if (temp.isEmpty()) {
+			return temp;
+		}
+		int i=0;
+		String firstDay = temp.get(i).getDayOfWeek();
+		while(temp.get(i).getDayOfWeek().equals(firstDay)) {
+			i++;
+		}
+		while(!temp.get(i).getDayOfWeek().equals(firstDay)) {
+			i++;
+		}
+		List<SessionNameBean> schedule = temp.subList(0, i);
 		return schedule;
 	}
 }
