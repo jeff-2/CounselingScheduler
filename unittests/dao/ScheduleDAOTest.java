@@ -1,5 +1,6 @@
 package dao;
 
+import static org.junit.Assert.assertEquals;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
@@ -9,9 +10,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import bean.SessionNameBean;
 import action.FillScheduleAction;
 import action.GenerateUnfilledScheduleAction;
+import bean.SessionNameBean;
 
 /**
  * A JUnit test for the ScheduleDAO class
@@ -23,13 +24,15 @@ public class ScheduleDAOTest {
 	
 	private Connection conn;
 	private TestDataGenerator gen;
-	
-	/*@Before
+	private ScheduleDAO scheduleDAO;
+
+	@Before
 	public void setUp() throws Exception {
 		conn = ConnectionFactory.getInstance();
 		gen = new TestDataGenerator(conn);
 		gen.clearTables();
 		gen.generateStandardDataset();
+		scheduleDAO = new ScheduleDAO(conn);
 		GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(conn);
 		action.generateUnfilledSchedule();
 		FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
@@ -42,32 +45,41 @@ public class ScheduleDAOTest {
 	}
 	
 	@Test
+	public void testLoadIASessionsForWeekAEmpty() throws Exception {
+		gen.clearTables();
+		List<SessionNameBean> ECSessions = scheduleDAO.loadScheduleType(0);
+		assertEquals(0, ECSessions.size());
+	}
+	
+	@Test
+	public void testLoadIASessionsForWeekBEmpty() throws Exception {
+		gen.clearTables();
+		List<SessionNameBean> ECSessions = scheduleDAO.loadScheduleType(1);
+		assertEquals(0, ECSessions.size());
+	}
+	
+	@Test
+	public void testLoadECSessionsEmpty() throws Exception {
+		gen.clearTables();
+		List<SessionNameBean> ECSessions = scheduleDAO.loadScheduleType(2);
+		assertEquals(0, ECSessions.size());
+	}
+	
+	@Test
 	public void testLoadIASessionsForWeekA() throws Exception {
-		ScheduleDAO scheduleDAO = new ScheduleDAO(conn);
 		List<SessionNameBean> IASessionsWeekA = scheduleDAO.loadScheduleType(0);
-		System.out.println("This is week A");
-		for(SessionNameBean b : IASessionsWeekA) {
-			System.out.println(b.getClinicianName() + " " + b.getDayOfWeek());
-		}
+		assertEquals(80, IASessionsWeekA.size());
 	}
 	
 	@Test
 	public void testLoadIASessionsForWeekB() throws Exception {
-		ScheduleDAO scheduleDAO = new ScheduleDAO(conn);
 		List<SessionNameBean> IASessionsWeekB = scheduleDAO.loadScheduleType(1);
-		System.out.println("This is week B");
-		for(SessionNameBean b : IASessionsWeekB) {
-			System.out.println(b.getClinicianName() + " " + b.getDayOfWeek());
-		}
+		assertEquals(80, IASessionsWeekB.size());
 	}
 	
 	@Test
 	public void testLoadECSessions() throws Exception {
-		ScheduleDAO scheduleDAO = new ScheduleDAO(conn);
 		List<SessionNameBean> ECSessions = scheduleDAO.loadScheduleType(2);
-		System.out.println("These are the EC Sessions");
-		for(SessionNameBean b : ECSessions) {
-			System.out.println(b.getClinicianName() + " " + b.getDate());
-		}
-	}*/
+		assertEquals(210, ECSessions.size());
+	}
 }

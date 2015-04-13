@@ -1,7 +1,5 @@
 package bean;
 
-import gui.admin.scheduleviewer.ECScheduleComponent;
-
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +9,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import dao.CalendarDAO;
+import dao.ConnectionFactory;
+import dao.HolidayDAO;
 import dao.ScheduleDAO;
 
 /**
@@ -117,7 +118,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	 * @throws SQLException 
 	 */
 	public static ArrayList<ECScheduleWeekBean> getECScheduleWeekBeans(ScheduleDAO dao) throws SQLException {
-		CalendarBean cal = dao.getCalendarBean();
+		CalendarBean cal = new CalendarDAO(ConnectionFactory.getInstance()).loadCalendar();
 		Calendar c = Calendar.getInstance();
 		// Build weeks
 		c.setFirstDayOfWeek(Calendar.MONDAY);
@@ -136,7 +137,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 			curDate = incrementDateByDays(curDate, 7);
 		}
 		// Add holidays
-		addHolidays(weekMap, dao);
+		addHolidays(weekMap, new HolidayDAO(ConnectionFactory.getInstance()));
 		
 		// Clinician sessions
 		List<SessionNameBean> sessions = dao.loadScheduleType(2); // loads EC sessions
@@ -154,8 +155,8 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	}
 
 	private static void addHolidays(HashMap<Date, ECScheduleWeekBean> weekMap,
-			ScheduleDAO dao) throws SQLException {
-		for(HolidayBean bean : dao.getHolidays()) {
+			HolidayDAO dao) throws SQLException {
+		for(HolidayBean bean : dao.loadHolidays()) {
 			Date curDate = bean.getStartDate();
 			while(!curDate.after(bean.getEndDate())) {
 				getWeek(curDate, weekMap);
