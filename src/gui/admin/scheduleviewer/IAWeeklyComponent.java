@@ -69,6 +69,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 
 	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, String weekType) {
 
+		setName("IAWeeklyComponent" + weekType);
 		this.clinicianNames = clinicianNames;
 		
 		menu = new JPopupMenu();
@@ -83,6 +84,8 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		for (int i = 0; i < weekdayLabels.length; i++) {
 			weekdayLabels[i] = Weekday.values()[i].name();
 		}
+		
+		int compNo = 0;
 
 		setLayout(new GridLayout(6, 6, 10, 10));
 		pane = new Component[6][6];
@@ -113,7 +116,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 					currentList.setName(weekType + ", " + row + ", " + col);
 					currentList.addMouseListener(this);
 					currentList.setComponentPopupMenu(menu);
+					currentList.setName("JList" + weekType + compNo);
 					pane[row][col] = new JScrollPane(currentList);
+					pane[row][col].setName("JScrollPane" + compNo++);
 					add(pane[row][col]);
 				}
 			}
