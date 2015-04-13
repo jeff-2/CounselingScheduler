@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import bean.ClinicianBean;
-import bean.ClinicianPref;
 import bean.ClinicianPreferencesBean;
 import bean.SessionBean;
 import bean.SessionType;
@@ -155,7 +154,7 @@ public class FillScheduleAction {
 	 * @throws SQLException
 	 */
 	private HashMap<Integer, Integer> generateEcAssignments(List<ClinicianBean> allClinicians, ClinicianDAO clinicianDAO, ClinicianPreferencesDAO clinicianPreferencesDAO) throws SQLException {
-		List<ClinicianPref> clinicians = buildPreferencesList(allClinicians, clinicianDAO, clinicianPreferencesDAO);
+		List<ClinicianPreferencesBean> clinicians = buildPreferencesList(allClinicians, clinicianDAO, clinicianPreferencesDAO);
 		HashMap<Integer, Integer> ecAssignments = new HashMap<Integer, Integer>(); // mapping id to assignment
 		int[] prefOneCounts = countRankings(clinicians, 1);
 		
@@ -208,10 +207,10 @@ public class FillScheduleAction {
 	 * @param clinicians
 	 * @return ecAssignments
 	 */
-	private HashMap<Integer, Integer> assignECSlotsForE5E5E5(List<ClinicianPref> clinicians) {
+	private HashMap<Integer, Integer> assignECSlotsForE5E5E5(List<ClinicianPreferencesBean> clinicians) {
 		HashMap<Integer, Integer> ecAssignments = new HashMap<Integer, Integer>();
-		for (ClinicianPref pref : clinicians) {
-			ecAssignments.put(new Integer(pref.id), new Integer(pref.prefOne));
+		for (ClinicianPreferencesBean pref : clinicians) {
+			ecAssignments.put(pref.getClinicianID(), new Integer(pref.getRanking(1)));
 		}
 		return ecAssignments;
 	}
@@ -222,7 +221,7 @@ public class FillScheduleAction {
 	 * @param prefOneCounts
 	 * @return ecAssignments
 	 */
-	private HashMap<Integer, Integer> assignECSlotsForLT5E5GT5(List<ClinicianPref> clinicians, int[] prefOneCounts) {
+	private HashMap<Integer, Integer> assignECSlotsForLT5E5GT5(List<ClinicianPreferencesBean> clinicians, int[] prefOneCounts) {
 		//System.out.println("Number of clinicians for assignment: " + clinicians.size());
 		HashMap<Integer, Integer> ecAssignments = new HashMap<Integer, Integer>();
 		int indexFor5 = -1;
@@ -257,10 +256,10 @@ public class FillScheduleAction {
 
 		// Assign clinicians with unpopular preferences to their first choice
 		for (int i = 14; i >= 0; i--) {
-			if (clinicians.get(i).prefOne == indexFor5 + 1 ||
-					clinicians.get(i).prefOne == indexForLT5 + 1) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(clinicians.get(i).prefOne));
-				assignmentCounts[clinicians.get(i).prefOne - 1]++;
+			if (clinicians.get(i).getRanking(1) == indexFor5 + 1 ||
+					clinicians.get(i).getRanking(1) == indexForLT5 + 1) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(clinicians.get(i).getRanking(1)));
+				assignmentCounts[clinicians.get(i).getRanking(1) - 1]++;
 				clinicians.remove(i);
 			}
 		}
@@ -268,10 +267,10 @@ public class FillScheduleAction {
 		// First try to assign remaining indexForLT5 slots based on prefTwo
 		Collections.shuffle(clinicians);
 		for (int i = clinicians.size() - 1; i >= 0; i--) {
-			if (clinicians.get(i).prefTwo == indexForLT5 + 1 && 
+			if (clinicians.get(i).getRanking(2) == indexForLT5 + 1 && 
 					assignmentCounts[indexForLT5] < 5) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(clinicians.get(i).prefTwo));
-				assignmentCounts[clinicians.get(i).prefTwo - 1]++;
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(clinicians.get(i).getRanking(2)));
+				assignmentCounts[clinicians.get(i).getRanking(2) - 1]++;
 				clinicians.remove(i);
 			}
 		}
@@ -285,14 +284,14 @@ public class FillScheduleAction {
 			// Assign the remaining indexForLT5 slots
 			int numNeededForLT5 = 5 - assignmentCounts[indexForLT5];
 			for (int i = 0; i < numNeededForLT5; i++) {
-				ecAssignments.put(new Integer(clinicians.get(0).id), new Integer(indexForLT5 + 1));
+				ecAssignments.put(new Integer(clinicians.get(0).getClinicianID()), new Integer(indexForLT5 + 1));
 				assignmentCounts[indexForLT5]++;
 				clinicians.remove(0);
 				//System.out.println("Assignment counts: " + assignmentCounts[0] + " " + assignmentCounts[1] + " " + assignmentCounts[2]);
 			}
 			// Assign the remaining slots
 			for (int i = 0; i < 5; i++) {
-				ecAssignments.put(new Integer(clinicians.get(0).id), new Integer(indexForGT5 + 1));
+				ecAssignments.put(new Integer(clinicians.get(0).getClinicianID()), new Integer(indexForGT5 + 1));
 				assignmentCounts[indexForGT5]++;
 				clinicians.remove(0);
 				//System.out.println("Assignment counts: " + assignmentCounts[0] + " " + assignmentCounts[1] + " " + assignmentCounts[2]);
@@ -309,7 +308,7 @@ public class FillScheduleAction {
 	 * @param prefOneCounts
 	 * @return ecAssignments
 	 */
-	private HashMap<Integer, Integer> assignECSlotsForLT5GT5GT5(List<ClinicianPref> clinicians, int[] prefOneCounts) {
+	private HashMap<Integer, Integer> assignECSlotsForLT5GT5GT5(List<ClinicianPreferencesBean> clinicians, int[] prefOneCounts) {
 		HashMap<Integer, Integer> ecAssignments = new HashMap<Integer, Integer>();
 
 		int indexForLT5 = -1;
@@ -332,8 +331,8 @@ public class FillScheduleAction {
 
 		// Assign clinicians with least popular time slot as first choice
 		for (int i = 14; i >= 0; i--) {
-			if (clinicians.get(i).prefOne - 1 == indexForLT5) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5 + 1));
+			if (clinicians.get(i).getRanking(1) - 1 == indexForLT5) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5 + 1));
 				clinicians.remove(i);
 			}
 		}
@@ -344,8 +343,8 @@ public class FillScheduleAction {
 		int excessGT5a = prefOneCounts[indexForGT5a] - 5;
 		int countExcessAssignedGT5a = 0;
 		for (int i = clinicians.size() - 1; i >= 0; i--) {
-			if (clinicians.get(i).prefOne - 1 == indexForGT5a && clinicians.get(i).prefTwo - 1 == indexForLT5) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5 + 1));
+			if (clinicians.get(i).getRanking(1) - 1 == indexForGT5a && clinicians.get(i).getRanking(2) - 1 == indexForLT5) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5 + 1));
 				clinicians.remove(i);
 				countExcessAssignedGT5a++;
 			}
@@ -358,8 +357,8 @@ public class FillScheduleAction {
 		int excessGT5b = prefOneCounts[indexForGT5b] - 5;
 		int countExcessAssignedGT5b = 0;
 		for (int i = clinicians.size() - 1; i >= 0; i--) {
-			if (clinicians.get(i).prefOne - 1 == indexForGT5b && clinicians.get(i).prefTwo - 1 == indexForLT5) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5 + 1));
+			if (clinicians.get(i).getRanking(1) - 1 == indexForGT5b && clinicians.get(i).getRanking(2) - 1 == indexForLT5) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5 + 1));
 				clinicians.remove(i);
 				countExcessAssignedGT5b++;
 			}
@@ -372,8 +371,8 @@ public class FillScheduleAction {
 		if (excessGT5a > countExcessAssignedGT5a) {
 			for (int i = clinicians.size() - 1; i >= 0; i--) {
 				if (excessGT5a > countExcessAssignedGT5a) {
-					if (clinicians.get(i).prefOne - 1 == indexForGT5a) {
-						ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5 + 1));
+					if (clinicians.get(i).getRanking(1) - 1 == indexForGT5a) {
+						ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5 + 1));
 						clinicians.remove(i);
 						countExcessAssignedGT5a++;
 					}
@@ -387,8 +386,8 @@ public class FillScheduleAction {
 		if (excessGT5b > countExcessAssignedGT5b) {
 			for (int i = clinicians.size() - 1; i >= 0; i--) {
 				if (excessGT5b > countExcessAssignedGT5b) {
-					if (clinicians.get(i).prefOne - 1 == indexForGT5b) {
-						ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5 + 1));
+					if (clinicians.get(i).getRanking(1) - 1 == indexForGT5b) {
+						ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5 + 1));
 						clinicians.remove(i);
 						countExcessAssignedGT5b++;
 					}
@@ -399,8 +398,8 @@ public class FillScheduleAction {
 		}
 
 		// Assign remaining clinicians to their first pref
-		for (ClinicianPref pref : clinicians) {
-			ecAssignments.put(new Integer(pref.id), new Integer(pref.prefOne));
+		for (ClinicianPreferencesBean pref : clinicians) {
+			ecAssignments.put(new Integer(pref.getClinicianID()), new Integer(pref.getRanking(1)));
 		}
 		
 		//System.out.println("Created ecAssignments with this number of keys: " + ecAssignments.keySet().size());
@@ -414,7 +413,7 @@ public class FillScheduleAction {
 	 * @param prefOneCounts
 	 * @return ecAssignments
 	 */
-	private HashMap<Integer, Integer> assignECSlotsForLT5LT5GT5(List<ClinicianPref> clinicians, int[] prefOneCounts) {
+	private HashMap<Integer, Integer> assignECSlotsForLT5LT5GT5(List<ClinicianPreferencesBean> clinicians, int[] prefOneCounts) {
 		HashMap<Integer, Integer> ecAssignments = new HashMap<Integer, Integer>();
 
 		int indexForLT5a = -1;
@@ -439,9 +438,9 @@ public class FillScheduleAction {
 
 		// Assign clinicians with first pref < 5
 		for (int i = 14; i >= 0; i--) {
-			if (clinicians.get(i).prefOne - 1 == indexForLT5a ||
-					clinicians.get(i).prefOne - 1 == indexForLT5b) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(clinicians.get(i).prefOne));
+			if (clinicians.get(i).getRanking(1) - 1 == indexForLT5a ||
+					clinicians.get(i).getRanking(1) - 1 == indexForLT5b) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(clinicians.get(i).getRanking(1)));
 				clinicians.remove(i);
 			}
 		}
@@ -456,12 +455,12 @@ public class FillScheduleAction {
 		int countExcessAssignedLT5a = 0;
 		int countExcessAssignedLT5b = 0;
 		for (int i = clinicians.size() - 1; i >= 0; i--) {
-			if (clinicians.get(i).prefTwo - 1 == indexForLT5a && countExcessAssignedLT5a < excessLT5a) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5a + 1));
+			if (clinicians.get(i).getRanking(2) - 1 == indexForLT5a && countExcessAssignedLT5a < excessLT5a) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5a + 1));
 				clinicians.remove(i);
 				countExcessAssignedLT5a++;
-			} else if (clinicians.get(i).prefTwo - 1 == indexForLT5b && countExcessAssignedLT5b < excessLT5b) {
-				ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(indexForLT5b + 1));
+			} else if (clinicians.get(i).getRanking(2) - 1 == indexForLT5b && countExcessAssignedLT5b < excessLT5b) {
+				ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(indexForLT5b + 1));
 				clinicians.remove(i);
 				countExcessAssignedLT5b++;
 			}
@@ -474,7 +473,7 @@ public class FillScheduleAction {
 		// Assign LT5a randomly
 		if (countExcessAssignedLT5a < excessLT5a) {
 			for (int i = 0; i < excessLT5a - countExcessAssignedLT5a; i++) {
-				ecAssignments.put(new Integer(clinicians.get(0).id), new Integer(indexForLT5a + 1));
+				ecAssignments.put(new Integer(clinicians.get(0).getClinicianID()), new Integer(indexForLT5a + 1));
 				clinicians.remove(0);
 			}
 		}
@@ -482,7 +481,7 @@ public class FillScheduleAction {
 		// Assign LT5b randomly
 		if (countExcessAssignedLT5b < excessLT5b) {
 			for (int i = 0; i < excessLT5b - countExcessAssignedLT5b; i++) {
-				ecAssignments.put(new Integer(clinicians.get(0).id), new Integer(indexForLT5b + 1));
+				ecAssignments.put(new Integer(clinicians.get(0).getClinicianID()), new Integer(indexForLT5b + 1));
 				clinicians.remove(0);
 			}
 		}
@@ -490,7 +489,7 @@ public class FillScheduleAction {
 
 		// Assign the rest to pref one
 		for (int i = 0; i < 5; i++) {
-			ecAssignments.put(new Integer(clinicians.get(i).id), new Integer(clinicians.get(i).prefOne));
+			ecAssignments.put(new Integer(clinicians.get(i).getClinicianID()), new Integer(clinicians.get(i).getRanking(1)));
 		}
 
 		return ecAssignments;
@@ -502,16 +501,16 @@ public class FillScheduleAction {
 	 * @param rank
 	 * @return
 	 */
-	private int[] countRankings(List<ClinicianPref> clinicianPrefs, int rank) {
+	private int[] countRankings(List<ClinicianPreferencesBean> clinicianPrefs, int rank) {
 		int[] counts = new int[] {0 , 0 , 0};
 
-		for(ClinicianPref pref : clinicianPrefs) {
+		for(ClinicianPreferencesBean pref : clinicianPrefs) {
 			if (rank == 1) {
-				////System.out.println("pref one: " + pref.id + " " + pref.prefOne);
-				counts[pref.prefOne - 1]++;
+				////System.out.println("pref one: " + pref.id + " " + pref.getRanking(1));
+				counts[pref.getRanking(1) - 1]++;
 			}
 			if (rank == 2) {
-				counts[pref.prefTwo - 1]++;
+				counts[pref.getRanking(2) - 1]++;
 			}
 		}
 
@@ -528,63 +527,29 @@ public class FillScheduleAction {
 	 * @return
 	 * @throws SQLException
 	 */
-	private List<ClinicianPref> buildPreferencesList(List<ClinicianBean> allClinicians, ClinicianDAO clincianDAO, ClinicianPreferencesDAO clinicianPreferencesDAO) throws SQLException {
-		List<ClinicianPref> clinicians = new ArrayList<ClinicianPref>();
+	private List<ClinicianPreferencesBean> buildPreferencesList(List<ClinicianBean> allClinicians, ClinicianDAO clincianDAO, ClinicianPreferencesDAO clinicianPreferencesDAO) throws SQLException {
+		List<ClinicianPreferencesBean> clinicians = new ArrayList<>();
 
 		Collections.shuffle(allClinicians);
 
 		if(allClinicians.size() >= 15) {
 			List<ClinicianBean> beans = new ArrayList<ClinicianBean> (allClinicians.subList(0, 15));
 			for (ClinicianBean bean : beans) {
-				int[] ranks = getRanks(clinicianPreferencesDAO.loadClinicianPreferences(bean.getClinicianID()));
-				clinicians.add(new ClinicianPref(bean.getClinicianID(), ranks[0], ranks[1]));
+				clinicians.add(clinicianPreferencesDAO.loadClinicianPreferences(bean.getClinicianID()));
 			}
 		}
 		else {
 			List<ClinicianBean> beans = new ArrayList<ClinicianBean> (allClinicians.subList(0, (int) (15 - allClinicians.size() * Math.floor(15.0 / allClinicians.size()))));
 			for (ClinicianBean bean : beans) {
-				int[] ranks = getRanks(clinicianPreferencesDAO.loadClinicianPreferences(bean.getClinicianID()));
-				clinicians.add(new ClinicianPref(bean.getClinicianID(), ranks[0], ranks[1]));
+				clinicians.add(clinicianPreferencesDAO.loadClinicianPreferences(bean.getClinicianID()));
 			}
 			for (int c = 0; c < allClinicians.size(); c++) {
 				for (int i = 0; i < Math.floor(15.0 / allClinicians.size()); i++) {
 					ClinicianBean cb = allClinicians.get(c);
-					ClinicianPreferencesBean bean = clinicianPreferencesDAO.loadClinicianPreferences(cb.getClinicianID());
-					int[] ranks = getRanks(bean);
-					clinicians.add(new ClinicianPref(cb.getClinicianID(), ranks[0], ranks[1]));
+					clinicians.add(clinicianPreferencesDAO.loadClinicianPreferences(cb.getClinicianID()));
 				}
 			}
 		}
 		return clinicians;		
-	}
-
-	/**
-	 * Given a ClinicianBean, translate their morning, noon, and afternoon ranks into first preference = ? and second preference = ?
-	 * @param bean
-	 * @return
-	 */
-	private int[] getRanks(ClinicianPreferencesBean bean) {
-		int first = -1;
-		int second = -1;
-		// Morning: 1    Noon: 2    Afternoon: 3
-		if (bean.getMorningRank() == 1) {
-			first = 1;
-		}
-		if (bean.getMorningRank() == 2) {
-			second = 1;
-		}
-		if (bean.getNoonRank() == 1) {
-			first = 2;
-		}
-		if (bean.getNoonRank() == 2) {
-			second = 2;
-		}
-		if (bean.getAfternoonRank() == 1) {
-			first = 3;
-		}
-		if (bean.getAfternoonRank() == 2) {
-			second = 3;
-		}
-		return new int[] {first, second};
 	}
 }
