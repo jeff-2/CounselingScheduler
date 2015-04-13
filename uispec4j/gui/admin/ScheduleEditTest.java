@@ -9,8 +9,6 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.uispec4j.Button;
 import org.uispec4j.ComboBox;
 import org.uispec4j.ListBox;
