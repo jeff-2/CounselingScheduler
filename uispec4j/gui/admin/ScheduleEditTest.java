@@ -9,6 +9,8 @@ import java.util.Vector;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.uispec4j.Button;
 import org.uispec4j.ComboBox;
 import org.uispec4j.ListBox;
@@ -51,15 +53,15 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 	
 	public void testFirstECSelection() throws SQLException {
-		editECSchedule("0");
+		testEditECSchedule("0");
 	}
 	
 	public void testSecondECSelection() throws SQLException {
-		editECSchedule("1");
+		testEditECSchedule("1");
 	}
 	
 	public void testThirdECSelection() throws SQLException {
-		editECSchedule("2");
+		testEditECSchedule("2");
 	}
 	
 	public void testRemoveClinicianIAScheduleWeekA() {
@@ -79,18 +81,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 	
 	public void testAddClinicianIAScheduleWeektypeQ(String weekType) throws SQLException {
-		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
-		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editIA = window.getRadioButton("Edit/print IA schedule");
-		editIA.click();
-		Window iaSchedule = WindowInterceptor.run(runTask.triggerClick());
-		assertEquals("View IA Schedule", iaSchedule.getTitle());
+		Window iaSchedule = navigateScheduleWindow("IA");
 		
 		ListBox jList = iaSchedule.getListBox("JList" + weekType + "0");
 		ClinicianDAO dao = new ClinicianDAO(ConnectionFactory.getInstance());
@@ -123,20 +114,9 @@ public class ScheduleEditTest extends UISpecTestCase {
 	    .run();
 		assertTrue(jList.contains(c));
 	}
-	
+
 	public void testRemoveClinicianIAScheduleWeektype(String weekType) {
-		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
-		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editIA = window.getRadioButton("Edit/print IA schedule");
-		editIA.click();
-		Window iaSchedule = WindowInterceptor.run(runTask.triggerClick());
-		assertEquals("View IA Schedule", iaSchedule.getTitle());
+		Window iaSchedule = navigateScheduleWindow("IA");
 		
 		ListBox jList = iaSchedule.getListBox("JList" + weekType + "0");
 		@SuppressWarnings("unchecked")
@@ -153,10 +133,10 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 	
 	/**
-	 * Tests whether selecting new name in the EC schedule works
-	 * @throws SQLException
+	 * Go to the a schedule window
+	 * @return
 	 */
-	public void editECSchedule(String boxnum) throws SQLException {
+	public Window navigateScheduleWindow(String scheduleType) {
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
 		
@@ -165,22 +145,83 @@ public class ScheduleEditTest extends UISpecTestCase {
 		Button runTask = window.getButton("Run task");
 		runTask.click();
 		
-		RadioButton editEC = window.getRadioButton("Edit/print EC schedule");
-		editEC.click();
-		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
-		assertEquals("View EC Schedule", ecSchedule.getTitle());
+		RadioButton edit = window.getRadioButton("Edit/print " + scheduleType + " schedule");
+		edit.click();
+		Window schedule = WindowInterceptor.run(runTask.triggerClick());
+		assertEquals("View "+ scheduleType + " Schedule", schedule.getTitle());
+		return schedule;
+	}
+
+	/**
+	 * Tests whether selecting new name in the EC schedule works
+	 * @throws SQLException
+	 */
+	public void testEditECSchedule(String boxnum) throws SQLException {
+		Window ecSchedule = navigateScheduleWindow("EC");
 		
 		ComboBox cb = ecSchedule.getComboBox(boxnum);
 		cb.select("Alice");
 		cb.selectionEquals("Alice");
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
-
+	
 		ComboBox cb1 = ecSchedule.getComboBox(boxnum);
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
 	}
 
+	/**
+	 * Tests whether reseting the EC schedule after making unsaved edits reverts back to original version
+	 * @throws SQLException
+	 */
+	public void testResetECSchedule() throws SQLException {
+		
+		Window ecSchedule = navigateScheduleWindow("EC");
+		
+		ComboBox cb[] = new ComboBox[3];
+		int selected[] = new int[3];
+		
+		for (int i = 0; i < cb.length; i++) {
+			cb[i] = ecSchedule.getComboBox("" + i);
+			selected[i] = cb[i].getAwtComponent().getSelectedIndex();
+			cb[i].select("Alice");
+		}
+		
+		Button reset = ecSchedule.getButton("Reset");
+		reset.click();
+		
+		for (int i = 0; i < cb.length; i++) {
+			cb[i] = ecSchedule.getComboBox("" + i);
+			this.assertEquals(selected[i], cb[i].getAwtComponent().getSelectedIndex());
+		}
+	}
+
+	/**
+	 * Tests whether reseting the IA schedule after making unsaved edits reverts back to the original version
+	 * @throws SQLException
+	 */
+	public void testResetIASchedule() throws SQLException {
+		Window iaSchedule = navigateScheduleWindow("IA");
+		
+		ListBox jList = iaSchedule.getListBox("JListA0");
+		@SuppressWarnings("unchecked")
+		JList<String> list = (JList<String>)jList.getAwtComponent();
+		DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
+		List<String> l = Utility.toStringList(model);
+		String clinicianZero = l.get(0);
+		
+		PopupMenuInterceptor
+		 	.run(jList.triggerRightClick(0))
+		 	.getSubMenu("Remove Clinician")
+		 	.click();
+		assertFalse(jList.contains(clinicianZero));
+		
+		Button reset = iaSchedule.getButton("Reset");
+		reset.click();
+		jList = iaSchedule.getListBox("JListA0");
+		assertTrue(jList.contains(clinicianZero));
+	}
+	
 	private void clearHolidayTable() throws SQLException {
 		Statement stmt = con.createStatement();
 		

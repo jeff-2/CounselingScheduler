@@ -1,7 +1,9 @@
 package gui.admin.scheduleviewer;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -13,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -48,6 +51,11 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	private ScheduleDAO dao;
 	
 	/**
+	 * DAO to get clinician information from DB
+	 */
+	private ClinicianDAO clinicianDao;
+
+	/**
 	 * The scrollable content pane for weeks A & B
 	 */
 	private JScrollPane scrollPanel;
@@ -77,42 +85,46 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	public ECScheduleFrame() throws SQLException {
 		super("View EC Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
-		ClinicianDAO cDao = new ClinicianDAO(ConnectionFactory.getInstance());
+		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.scrollPanel = new JScrollPane();
-
-		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));
-		p.setBackground(Color.WHITE);
 
 		// Initialize menu
 		this.initializeMenu();
 		
-		ecComponents = new ArrayList<ECWeeklyComponent>();
-		editableSchedule = getEditableSchedule(dao, cDao);
-		
-		this.scrollPanel = new JScrollPane(editableSchedule);
+		this.scrollPanel = new JScrollPane();
+		loadEditableSchedule();
 		this.scrollPanel.setPreferredSize(new Dimension(700, 800));
 		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		this.scrollPanel.setViewportView(editableSchedule);
 		
-	
+		JButton saveButton = new JButton("Save");
+		saveButton.addActionListener(this);
+		saveButton.setActionCommand("Save");
+		
+		JButton resetButton = new JButton("Reset");
+		resetButton.addActionListener(this);
+		resetButton.setActionCommand("Reset");
+		
+		JPanel controlPanel = new JPanel(new FlowLayout());
+		controlPanel.add(saveButton);
+		controlPanel.add(resetButton);
+		
 		// Finish
-		this.getContentPane().add(scrollPanel);
+		this.add(scrollPanel, BorderLayout.CENTER);
+		this.add(controlPanel, BorderLayout.SOUTH);
 		this.pack();
 		this.setVisible(true);
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
 	}
 
 	/**
-	 * Creates a JPanel that displays an editable EC schedule from the database
-	 * @param schDAO
-	 * @param cDAO
-	 * @return
+	 * Loads a JPanel that displays an editable EC schedule with data from the database
 	 * @throws SQLException 
 	 */
-	private JPanel getEditableSchedule(ScheduleDAO schDAO, ClinicianDAO cDAO) throws SQLException {
+	private void loadEditableSchedule() throws SQLException {
 		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
-		Vector<String> clinicianNames = cDAO.loadClinicianNames();
+		Vector<String> clinicianNames = clinicianDao.loadClinicianNames();
+		ecComponents = new ArrayList<>();
 		
 		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1, 1, 0, 50));
 		editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
@@ -124,7 +136,8 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		
 		editableSchedule.setBackground(Color.white);
 		
-		return editableSchedule;
+		scrollPanel.setViewportView(editableSchedule);
+		repaint();
 	}
 
 	/**
@@ -180,6 +193,18 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 						"Error saving schedule",
 						JOptionPane.ERROR_MESSAGE);
 				}
+			}
+		} else {
+			switch (e.getActionCommand()) {
+				case "Save":
+					break;
+				case "Reset":
+					try {
+						this.loadEditableSchedule();
+					} catch (SQLException e1) {
+						e1.printStackTrace();
+					}
+					break;
 			}
 		}
 	}
