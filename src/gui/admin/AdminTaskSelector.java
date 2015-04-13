@@ -275,7 +275,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 
 	private void viewIASchedule() {
 		try {
-			IAScheduleFrame frame = new IAScheduleFrame();
+			new IAScheduleFrame();
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this,
 					"SQLException when attempting to view schedule",
@@ -287,7 +287,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 
 	private void viewECSchedule() {
 		try {
-			ECScheduleFrame frame = new ECScheduleFrame();
+			new ECScheduleFrame();
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this,
 					"SQLException when attempting to view schedule",

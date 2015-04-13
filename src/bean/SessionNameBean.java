@@ -1,7 +1,6 @@
 package bean;
 
 import java.util.Date;
-import java.util.List;
 
 public class SessionNameBean {
 	

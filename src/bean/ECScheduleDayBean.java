@@ -60,6 +60,7 @@ public class ECScheduleDayBean {
 	/**
 	 * Returns true if this day starts a month
 	 */
+	@SuppressWarnings("deprecation")
 	public boolean startsMonth() {
 		return this.date.getDate() == 1;
 	}
@@ -115,6 +116,7 @@ public class ECScheduleDayBean {
 		return holiday != null;
 	}
 
+	@SuppressWarnings("deprecation")
 	public String headerString() {
 		return this.dayName+" "+this.date.getDate();
 	}

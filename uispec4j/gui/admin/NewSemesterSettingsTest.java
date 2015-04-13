@@ -307,10 +307,4 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		
 		stmt.execute("DELETE FROM Holiday");
 	}
-	
-	private void clearCalendarTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Calendar");
-	}
 }

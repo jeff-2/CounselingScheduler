@@ -14,8 +14,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import dao.ConnectionFactory;
-import dao.ScheduleDAO;
 
 /**
  * A GUI window for displaying the IA appointment for weeks A and B
@@ -27,15 +25,9 @@ public class IAScheduleViewFrame extends JFrame {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
-	/**
-	 * DAO to get schedule information from DB
-	 */
-	private ScheduleDAO dao;
-	
 	private JPanel panel;
 	private JScrollPane pane;
 	
-	private List<List<List<String>>> weekACells, weekBCells;
 	private IAScheduleComponent iaComponent;
 	
 	/**
@@ -44,7 +36,6 @@ public class IAScheduleViewFrame extends JFrame {
 	 */
 	public IAScheduleViewFrame(List<List<List<String>>> weekACells, List<List<List<String>>> weekBCells) throws SQLException {
 		super("View IA Schedule");
-		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		this.iaComponent = new IAScheduleComponent(weekACells, weekBCells);
 		this.panel = new JPanel();
 		this.panel.setPreferredSize(new Dimension(600, 1400));
@@ -54,8 +45,6 @@ public class IAScheduleViewFrame extends JFrame {
 		this.pane = new JScrollPane(this.panel);
 		this.pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		this.setContentPane(this.pane);
-		this.weekACells = weekACells;
-		this.weekBCells = weekBCells;
 		this.initializeFrame();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
 	}

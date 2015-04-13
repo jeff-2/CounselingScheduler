@@ -1,21 +1,12 @@
 package runner;
 
-import static org.junit.Assert.assertEquals;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
 
-import bean.CalendarBean;
-import bean.SessionBean;
-import bean.Weekday;
-import dao.CalendarDAO;
-import dao.ConnectionFactory;
-import dao.SessionsDAO;
 import action.FillScheduleAction;
 import action.GenerateUnfilledScheduleAction;
+import dao.ConnectionFactory;
 
 public class FillScheduleActionRunner {
 

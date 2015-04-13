@@ -175,8 +175,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		cb.selectionEquals("Alice");
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
-
-		ComboBox cb1 = ecSchedule.getComboBox(boxnum);
+		
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
 	}
