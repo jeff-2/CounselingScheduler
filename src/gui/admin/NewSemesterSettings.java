@@ -207,7 +207,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 						e1.printStackTrace();
 					}
 
-					calendar.setSemester(semesterSeasonBox.getSelectedIndex());
+					calendar.setSemester((Semester)semesterSeasonBox.getSelectedItem());
 					calendar.setEcMinHours(Integer.parseInt(ECHoursText.getText()));
 					calendar.setIaMinHours(Integer.parseInt(IAHoursText.getText()));
 

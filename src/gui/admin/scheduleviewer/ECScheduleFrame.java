@@ -29,7 +29,6 @@ import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import net.miginfocom.swing.MigLayout;
 import bean.ECScheduleWeekBean;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
@@ -45,38 +44,16 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
-	/**
-	 * DAO to get schedule information from DB
-	 */
 	private ScheduleDAO dao;
-	
-	/**
-	 * DAO to get clinician information from DB
-	 */
 	private ClinicianDAO clinicianDao;
-
-	/**
-	 * The scrollable content pane for weeks A & B
-	 */
 	private JScrollPane scrollPanel;
-	/**
-	 * The scrollable content pane for weeks A & B
-	 */
-	private JPanel editableSchedule;
-
-	/**
-	 * Dropdown menu for printing (and eventually saving/loading?) the schedule
-	 */
 	private JMenu menu;
-
-	/**
-	 * JMenuItem for printing
-	 */
 	private JMenuItem print;
-	
 	private JMenuItem save;
-	
 	private List<ECWeeklyComponent> ecComponents;
+	private JButton resetButton;
+	private JPanel controlPanel;
+	private JFileChooser fileChooser;
 	
 	/**
 	 * Create an empty client ID list
@@ -97,16 +74,14 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		JButton saveButton = new JButton("Save");
-		saveButton.addActionListener(this);
-		saveButton.setActionCommand("Save");
+		fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Schedule");
+		fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
 		
-		JButton resetButton = new JButton("Reset");
+		resetButton = new JButton("Reset");
 		resetButton.addActionListener(this);
-		resetButton.setActionCommand("Reset");
 		
-		JPanel controlPanel = new JPanel(new FlowLayout());
-		controlPanel.add(saveButton);
+		controlPanel = new JPanel(new FlowLayout());
 		controlPanel.add(resetButton);
 		
 		// Finish
@@ -169,7 +144,6 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		}
 		
 		if(e.getSource() == this.print) {
-			
 			try {
 				ECScheduleViewFrame frame = new ECScheduleViewFrame(new ECScheduleComponent(cells));
 				frame.printSchedule();
@@ -177,9 +151,6 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == this.save) {
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Save Schedule");
-			fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
 			if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
 				if (!file.getName().contains(".")) {
@@ -194,18 +165,12 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 						JOptionPane.ERROR_MESSAGE);
 				}
 			}
-		} else {
-			switch (e.getActionCommand()) {
-				case "Save":
-					break;
-				case "Reset":
-					try {
-						this.loadEditableSchedule();
-					} catch (SQLException e1) {
-						e1.printStackTrace();
-					}
-					break;
-			}
+		} else if (e.getSource() == this.resetButton) {
+				try {
+					this.loadEditableSchedule();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 		}
 	}
 }

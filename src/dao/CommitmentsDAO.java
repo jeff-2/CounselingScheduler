@@ -33,7 +33,7 @@ public class CommitmentsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insert(CommitmentBean commitment) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO Commitments (id, startHour, endHour, commitmentDate, description) VALUES (?, ?, ?, ?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Commitments (id, startHour, endHour, commitmentDate, description) VALUES (?, ?, ?, ?, ?)");
 		stmt.setInt(1, commitment.getClinicianID());
 		stmt.setInt(2, commitment.getStartHour());
 		stmt.setInt(3, commitment.getEndHour());
@@ -51,7 +51,7 @@ public class CommitmentsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<CommitmentBean> loadCommitments(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT startHour, endHour, commitmentDate, description FROM Commitments WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("SELECT startHour, endHour, commitmentDate, description FROM Commitments WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -88,7 +88,7 @@ public class CommitmentsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void delete(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Commitments WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("DELETE FROM Commitments WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		stmt.close();

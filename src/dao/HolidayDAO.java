@@ -28,10 +28,7 @@ public class HolidayDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insertHoliday(HolidayBean holiday, int calendarId, int id) throws SQLException {
-
-		Connection con = getConnection();
-		
-		PreparedStatement stmt = con.prepareStatement("INSERT INTO Holiday(id, calendarId, "
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Holiday(id, calendarId, "
 				+ "name, startDate, endDate) VALUES (?, ?, ?, ?, ?)");
 		
 		
@@ -51,7 +48,7 @@ public class HolidayDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<HolidayBean> loadHolidays() throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM Holiday");
+		PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Holiday");
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
 		
@@ -70,7 +67,6 @@ public class HolidayDAO extends DAO {
 	 */
 	private HolidayBean loadHoliday(ResultSet res) throws SQLException {
 		int id = res.getInt("id");
-		//int calendarID = res.getInt("calendarId");
 		String name = res.getString("name");
 		Date startDate = res.getDate("startDate");
 		Date endDate = res.getDate("endDate");

@@ -23,6 +23,7 @@ import org.uispec4j.interception.WindowInterceptor;
 import bean.CalendarBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
+import bean.Semester;
 import bean.TimeAwayBean;
 import dao.CalendarDAO;
 import dao.ClinicianPreferencesDAO;
@@ -61,7 +62,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		CalendarBean calendar = new CalendarBean();
 		calendar.setId(0);
-		calendar.setSemester(2);
+		calendar.setSemester(Semester.Spring);
 		calendar.setStartDate(format.parse("3/25/2015"));
 		calendar.setEndDate(format.parse("4/27/2015"));
 		calendar.setIaMinHours(35);

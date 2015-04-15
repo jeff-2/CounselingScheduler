@@ -26,7 +26,7 @@ public class ECWeeklyComponent extends JPanel {
 	private static final long serialVersionUID = 1181653974079435258L;
 	private Component [][] pane;
 	private int row, column;
-	private List<JComboBox> comboBoxes;
+	private List<JComboBox<String>> comboBoxes;
 	private Map<String, String> sessionIDs;
 	
 	/**

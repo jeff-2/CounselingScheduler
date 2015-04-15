@@ -186,6 +186,22 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 			if (!support.isDataFlavorSupported(DataFlavor.stringFlavor)) {
 				return false;
 			}
+			
+			@SuppressWarnings("unchecked")
+			JList<String> list = ((JList<String>) support.getComponent());
+			DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
+			String data;
+			try {
+				data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
+			} catch (UnsupportedFlavorException e) {
+				return false;
+			} catch (IOException e) {
+				return false;
+			}
+			
+			if (model.contains(data)) {
+				return false;
+			}
 
 			if ((action & support.getSourceDropActions()) == action) {
 				support.setDropAction(action);

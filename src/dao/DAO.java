@@ -7,14 +7,10 @@ import java.sql.Statement;
 
 public class DAO {
 	
-	private Connection connection;
+	protected Connection connection;
 	
 	public DAO(Connection conn) {
 		connection = conn;
-	}
-	
-	protected Connection getConnection() {
-		return connection;
 	}
 	
 	/**
@@ -25,18 +21,17 @@ public class DAO {
 	 * @return the next ID
 	 * @throws SQLException
 	 */
-	protected static final int getNextID(String table) throws SQLException {
-		Connection con = ConnectionFactory.getInstance();
-		Statement stmt = con.createStatement();
+	protected int getNextID(String table) throws SQLException {
+		Statement stmt = connection.createStatement();
 		
-		stmt.execute("SELECT COUNT(*) AS count FROM "+table);
+		stmt.execute("SELECT COUNT(*) AS count FROM " + table);
 		ResultSet res = stmt.getResultSet();
 		res.next();
-		if(res.getInt("count") == 0) {
+		if (res.getInt("count") == 0) {
 			return 0;
 		}
 				
-		stmt.execute("SELECT MAX(id) AS max FROM "+table);
+		stmt.execute("SELECT MAX(id) AS max FROM " + table);
 		res = stmt.getResultSet();
 		res.next();
 		return res.getInt("max") + 1;

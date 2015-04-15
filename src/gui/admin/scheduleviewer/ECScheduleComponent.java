@@ -24,40 +24,22 @@ import javax.swing.JComponent;
 public class ECScheduleComponent extends JComponent implements Printable {
 
 	private static final long serialVersionUID = 6604353427809987021L;
-
-	/**
-	 * If first, print the schedule title
-	 */
-	private boolean first;
-	
-	/**
-	 * Title of first page
-	 */
 	private String title;
-	
-	/**
-	 * Each pages has 4-5 weeks (maybe fewer if it's the last page)
-	 */
 	private List<List<List<String>>> cells;
 	
 	public ECScheduleComponent(List<List<List<String>>> cells) {
-		title = "";
-		first = false;
+		title = "Title";
 		this.cells = cells;
-		this.setPreferredSize(new Dimension(700, cells.size() * 250));
+		this.setPreferredSize(new Dimension(700, 175 + cells.size() * 250));
 	}
 
 	public void paint (Graphics g1) {
 		Graphics2D g = (Graphics2D) g1;
 		this.setVisible(true);
-		//g.setBackground(Color.WHITE);
 		g.setColor(Color.BLACK);
 		int x = 0; 
-		int y = 0;
-		if(this.first) {
-			g.drawString(title, 250, 50);
-			y = 50;
-		}
+		int y = 75;
+		g.drawString(title, 250, 50);
 		int [] cols = new int[] {25, 75, 175, 275, 375, 475, 575};
 		for(List<List<String>> grid : cells) {
 			for (List<String> row : grid) {
@@ -106,10 +88,10 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	}
 
 	private BufferedImage getImageFromPanel(Component component) {
-        BufferedImage image = new BufferedImage(700, cells.size() * 250, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(700, 175 + cells.size() * 250, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, 700, cells.size() * 250);
+        g2d.fillRect(0, 0, 700, 175 + cells.size() * 250);
         g2d.setColor(Color.BLACK);
         this.print(g2d);
         g2d.dispose();

@@ -15,8 +15,6 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
-import dao.ConnectionFactory;
-import dao.ScheduleDAO;
 
 /**
  * A GUI window for displaying the EC appointments for a semester
@@ -28,16 +26,7 @@ public class ECScheduleViewFrame extends JFrame {
 
 	private static final long serialVersionUID = -4271567771784608985L;
 	
-	/**
-	 * DAO to get schedule information from DB
-	 */
-	private ScheduleDAO dao;
-	
-	/**
-	 * The scrollable content pane for weeks A & B
-	 */
 	private JScrollPane scrollPanel;
-
 	private ECScheduleComponent ecComponent;
 	
 	/**
@@ -46,7 +35,6 @@ public class ECScheduleViewFrame extends JFrame {
 	 */
 	public ECScheduleViewFrame(ECScheduleComponent ecComponent) throws SQLException {
 		super("View EC Schedule");
-		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		this.scrollPanel = new JScrollPane();
 
 		JPanel p = new JPanel(new MigLayout("gap rel 0", "grow"));

@@ -37,15 +37,14 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insertSession(SessionBean session) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType, semester, weektype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType, semester, weektype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		stmt.setInt(1, session.getID());
 		stmt.setInt(2, session.getStartTime());
 		stmt.setInt(3, session.getDuration());
 		stmt.setString(4, session.getDayOfWeek().toString());
 		stmt.setDate(5, new java.sql.Date(session.getDate().getTime()));
 		stmt.setInt(6, session.getType().ordinal());
-		stmt.setInt(7, session.getSemester());
+		stmt.setInt(7, session.getSemester().ordinal());
 		stmt.setInt(8, session.getWeekType());
 		stmt.execute();
 		stmt.close();
@@ -60,8 +59,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<SessionBean> loadSessions() throws SQLException {
-		Connection conn = getConnection();
-		Statement stmt = conn.createStatement();
+		Statement stmt = connection.createStatement();
 		stmt.execute("SELECT id, startTime, duration, weekday, sDate, sType, semester, weektype FROM Sessions");
 		ResultSet results = stmt.getResultSet();
 		List<SessionBean> sessions = new ArrayList<SessionBean>();
@@ -79,12 +77,11 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void deleteSession(SessionBean session) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("DELETE FROM Sessions WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("DELETE FROM Sessions WHERE id = ?");
 		stmt.setInt(1, session.getID());
 		stmt.execute();
 		stmt.close();
-		stmt = conn.prepareStatement("DELETE FROM SessionClinicians WHERE sessionID = ?");
+		stmt = connection.prepareStatement("DELETE FROM SessionClinicians WHERE sessionID = ?");
 		stmt.setInt(1, session.getID());
 		stmt.execute();
 		stmt.close();
@@ -104,7 +101,7 @@ public class SessionsDAO extends DAO {
 		String dayOfWeek = results.getString("weekday");
 		Date date = results.getDate("sDate");
 		int type = results.getInt("sType");
-		int semester = results.getInt("semester"); 
+		Semester semester = Semester.values()[results.getInt("semester")]; 
 		int weekType = results.getInt("weekType");
 	
 		List<Integer> clinicians = loadSessionClinicians(id);
@@ -120,8 +117,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insertSessionClinicians(int sessionID, List<Integer> clinicians) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO SessionClinicians (sessionID, clinicianID) VALUES (?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO SessionClinicians (sessionID, clinicianID) VALUES (?, ?)");
 		for (int clinicianID: clinicians) {
 			stmt.setInt(1, sessionID);
 			stmt.setInt(2, clinicianID);
@@ -138,8 +134,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<Integer> loadSessionClinicians(int sessionID) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
+		PreparedStatement stmt = connection.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
 		stmt.setInt(1, sessionID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -158,15 +153,14 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getNextSessionID() throws SQLException {
-		return DAO.getNextID("Sessions");
+		return getNextID("Sessions");
 	}
 
 	/**
 	 * Deletes all sessions from the database
 	 */
 	public void clearSessions() throws SQLException {
-		// TODO: could depend on (what is currently) TestDataGenerator.java
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Sessions");
+		PreparedStatement stmt = connection.prepareStatement("DELETE FROM Sessions");
 		stmt.execute();
 	}
 	
@@ -179,8 +173,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException
 	 */
 	public List<SessionBean> getInvalidECSessions(int semester, int year) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE (startTime != ? AND startTime != ? AND startTime != ?)"
+		PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Sessions WHERE (startTime != ? AND startTime != ? AND startTime != ?)"
 				+ "AND sType = ? AND semester = ? AND YEAR(sDate) = ?");
 		stmt.setInt(1, 8);
 		stmt.setInt(2, 12);
@@ -207,8 +200,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException
 	 */
 	public List<SessionBean> getInvalidIASessions(Semester semester, int year) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement("SELECT * FROM Sessions WHERE "
+		PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Sessions WHERE "
 				+ "(startTime != ? AND startTime != ? AND startTime != ? AND startTime != ?)"
 				+ "AND sType = ? AND semester = ? AND YEAR(sDate) = ?");
 		stmt.setInt(1, 11);
@@ -237,8 +229,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException
 	 */
 	public List<String> getWeeklyECSessionConstraintViolation(Semester semester, int year) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(""
+		PreparedStatement stmt = connection.prepareStatement(""
 				+ "SELECT weektype, C.id id "
 				+ "FROM Sessions S INNER JOIN SessionClinicians SC "
 				+ "ON S.id = SC.sessionID INNER JOIN Clinicians C "
@@ -268,8 +259,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException
 	 */
 	public List<String> getDailyIASessionConstraintViolation(Semester semester, int year) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(""
+		PreparedStatement stmt = connection.prepareStatement(""
 				+ "SELECT weektype, weekday, C.id id "
 				+ "FROM Sessions S INNER JOIN SessionClinicians SC "
 				+ "ON S.id = SC.sessionID INNER JOIN Clinicians C "
@@ -300,8 +290,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException
 	 */
 	public List<String> getAlternatingIAFridayConstraintViolation(Semester semester, int year) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(""
+		PreparedStatement stmt = connection.prepareStatement(""
 				+ "SELECT SC1.clinicianID id "
 				+ "FROM Sessions S1 INNER JOIN SessionClinicians SC1 ON S1.id = SC1.sessionID "
 				+ "INNER JOIN SessionClinicians SC2 ON SC1.clinicianID = SC2.clinicianID "
@@ -348,8 +337,7 @@ public class SessionsDAO extends DAO {
 	 * @throws SQLException
 	 */
 	public List<String> getNoonECConstraintViolation(Semester semester, int year) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(""
+		PreparedStatement stmt = connection.prepareStatement(""
 				+ "SELECT SC1.clinicianID id, S1.sDate as sDate "
 				+ "FROM Sessions S1 INNER JOIN SessionClinicians SC1 ON S1.id = SC1.sessionID "
 				+ "INNER JOIN SessionClinicians SC2 ON SC1.clinicianID = SC2.clinicianID "

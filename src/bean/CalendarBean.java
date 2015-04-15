@@ -1,5 +1,6 @@
 package bean;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -15,11 +16,11 @@ public class CalendarBean {
 	private Date endDate;
 	private int iaMinHours;
 	private int ecMinHours;
-	private int semester;
+	private Semester semester;
 	
 	public CalendarBean() {}
 	
-	public CalendarBean(int id, Date startDate, Date endDate, int iaMinHours, int ecMinHours, int semester) {
+	public CalendarBean(int id, Date startDate, Date endDate, int iaMinHours, int ecMinHours, Semester semester) {
 		this.id = id;
 		this.startDate = startDate;
 		this.endDate = endDate;
@@ -58,11 +59,17 @@ public class CalendarBean {
 	public void setEcMinHours(int ecMinHours) {
 		this.ecMinHours = ecMinHours;
 	}
-	public int getSemester() {
+	public Semester getSemester() {
 		return semester;
 	}
-	public void setSemester(int semester) {
+	public void setSemester(Semester semester) {
 		this.semester = semester;
+	}
+	
+	public int getYear() {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		return calendar.get(Calendar.YEAR);
 	}
 
 	public boolean equals(Object other) {

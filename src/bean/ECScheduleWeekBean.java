@@ -27,11 +27,6 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	public static final String[] timeslots = new String[]{"8:00", "Noon", "4:00"};
 
 	/**
-	 * Week type (A or B, for IAs)
-	 */
-	private String weekType;
-
-	/**
 	 * List of the days for this week
 	 */
 	private ArrayList<ECScheduleDayBean> days;
@@ -44,8 +39,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	/**
 	 * Default constructor
 	 */
-	private ECScheduleWeekBean(String weekAOrB, Date mondayDate) {
-		weekType = weekAOrB;
+	private ECScheduleWeekBean(Date mondayDate) {
 		days = new ArrayList<ECScheduleDayBean>();
 		dateMap = new HashMap<Date, Integer>();
 		Calendar c = Calendar.getInstance();
@@ -101,13 +95,6 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 		return format.format(days.get(0).date());
 	}
 
-	/**
-	 * Returns this week's IA type (A or B)
-	 */
-	public String weekType() {
-		return weekType;
-	}
-
 	@Override
 	public int compareTo(ECScheduleWeekBean o) {
 		return this.days.get(0).date().compareTo(o.days.get(0).date());
@@ -125,15 +112,8 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 		HashMap<Date, ECScheduleWeekBean> weekMap = new HashMap<Date, ECScheduleWeekBean>();
 		Date curDate = cal.getStartDate();
 		curDate = getMondayDate(curDate);
-		String type = "A";
 		while(!curDate.after(cal.getEndDate())) {
-			weekMap.put(curDate, new ECScheduleWeekBean(type, curDate));
-			if(type.equals("A")) {
-				type = "B";
-			}
-			else {
-				type = "A";
-			}
+			weekMap.put(curDate, new ECScheduleWeekBean(curDate));
 			curDate = incrementDateByDays(curDate, 7);
 		}
 		// Add holidays

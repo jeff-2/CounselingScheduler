@@ -45,7 +45,9 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	private JMenu menu;
 	private JMenuItem print;
 	private JMenuItem save;
-
+	private JButton resetButton;
+	private JPanel controlPanel;
+	private JFileChooser fileChooser;
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
@@ -59,18 +61,17 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 		this.panel.setResizeWeight(0.5);
 		this.panel.setDividerSize(25);
 		this.loadEditableSchedule();
-
-		JButton saveButton = new JButton("Save");
-		saveButton.addActionListener(this);
-		saveButton.setActionCommand("Save");
 		
-		JButton resetButton = new JButton("Reset");
+		resetButton = new JButton("Reset");
 		resetButton.addActionListener(this);
-		resetButton.setActionCommand("Reset");
 		
-		JPanel controlPanel = new JPanel(new FlowLayout());
-		controlPanel.add(saveButton);
+		controlPanel = new JPanel(new FlowLayout());
 		controlPanel.add(resetButton);
+		
+		fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Schedule");
+		fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+
 
 		this.add(this.panel, BorderLayout.CENTER);
 		this.add(controlPanel, BorderLayout.SOUTH);
@@ -132,9 +133,6 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 				e1.printStackTrace();
 			}
 		} else if (e.getSource() == this.save) {
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.setDialogTitle("Save Schedule");
-			fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
 			if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 				File file = fileChooser.getSelectedFile();
 				if (!file.getName().contains(".")) {
@@ -149,18 +147,12 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 						JOptionPane.ERROR_MESSAGE);
 				}
 			}
-		} else {
-			switch (e.getActionCommand()) {
-			case "Save":
-				break;
-			case "Reset":
-				try {
-					this.loadEditableSchedule();
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
-				break;
+		} else if (e.getSource() == this.resetButton){
+			try {
+				this.loadEditableSchedule();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
-	}
 	}
 }

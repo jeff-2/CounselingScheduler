@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import utils.Logger;
+import bean.CalendarBean;
 import bean.Semester;
 import bean.SessionBean;
 import dao.CalendarDAO;
@@ -37,9 +38,10 @@ public class ValidateScheduleAction {
 	 *
 	 * @throws SQLException the SQL exception
 	 */
-	public void validateSchedule() throws SQLException {		
-		currentSemester = calendarDAO.getCurrentSemester();
-		currentYear = calendarDAO.getCurrentYear();
+	public void validateSchedule() throws SQLException {
+		CalendarBean calendarBean = calendarDAO.loadCalendar();
+		currentSemester = calendarBean.getSemester();
+		currentYear = calendarBean.getYear();
 		
 		validateIASessions();
 		validateECSessions();

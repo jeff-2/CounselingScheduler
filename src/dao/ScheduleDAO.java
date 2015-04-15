@@ -29,8 +29,7 @@ public class ScheduleDAO extends DAO {
 	 * @throws SQLException
 	 */
 	private List<SessionNameBean> loadAllECSessions() throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(
+		PreparedStatement stmt = connection.prepareStatement(
 				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
 				+ " FROM SessionClinicians SessionClinicians"
 				+ " INNER JOIN Sessions Sessions"
@@ -62,8 +61,7 @@ public class ScheduleDAO extends DAO {
 	 * @throws SQLException
 	 */
 	private List<SessionNameBean> loadAllIASessions(int weekType) throws SQLException {
-		Connection conn = getConnection();
-		PreparedStatement stmt = conn.prepareStatement(
+		PreparedStatement stmt = connection.prepareStatement(
 				"SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
 				+ " FROM SessionClinicians SessionClinicians"
 				+ " INNER JOIN Sessions Sessions"

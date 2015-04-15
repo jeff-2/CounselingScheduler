@@ -12,6 +12,7 @@ import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.HolidayBean;
+import bean.Semester;
 import bean.TimeAwayBean;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
@@ -193,7 +194,7 @@ public class TestDataGenerator {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		CalendarBean calendar = new CalendarBean();
 		calendar.setId(0);
-		calendar.setSemester(2);
+		calendar.setSemester(Semester.Fall);
 		calendar.setStartDate(format.parse("01/23/2015"));
 		calendar.setEndDate(format.parse("5/10/2015"));
 		calendar.setIaMinHours(35);
@@ -218,7 +219,7 @@ public class TestDataGenerator {
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		CalendarBean calendar = new CalendarBean();
 		calendar.setId(0);
-		calendar.setSemester(2);
+		calendar.setSemester(Semester.Spring);
 		calendar.setStartDate(format.parse("03/14/2015"));
 		calendar.setEndDate(format.parse("03/15/2015"));
 		calendar.setIaMinHours(35);

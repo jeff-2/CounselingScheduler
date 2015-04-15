@@ -16,8 +16,14 @@ public class DBBuilder {
 	private static final String DROP_TABLES = "sql/dropTables.sql";
 	private static final String CREATE_TABLES = "sql/createTables.sql";
 
-	public static void main(String[] args) throws Exception {
-		rebuildAll();
+	public static void main(String[] args) {
+		try {
+			rebuildAll();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void rebuildAll() throws SQLException, IOException {

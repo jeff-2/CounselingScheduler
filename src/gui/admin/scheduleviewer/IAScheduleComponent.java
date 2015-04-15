@@ -2,7 +2,6 @@ package gui.admin.scheduleviewer;
 
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
@@ -24,7 +23,6 @@ import javax.swing.JComponent;
 public class IAScheduleComponent extends JComponent implements Printable {
 	
 	private static final long serialVersionUID = -7813470335774759257L;
-	private static final String[] weekdays = new String[]{"MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"};
 	private List<List<List<String>>> weekACells, weekBCells;
 
 	public IAScheduleComponent(List<List<List<String>>> weekACells, List<List<List<String>>> weekBCells) {
@@ -100,10 +98,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	public int print(Graphics g, PageFormat pf, int page) throws PrinterException {
 		Graphics2D g2d = (Graphics2D)g;      
 		g2d.translate(pf.getImageableX(), pf.getImageableY());
-		//double yscale = pf.getImageableHeight()/this.getHeight();
 		double scale = pf.getImageableWidth()/this.getWidth();
-		//double scale = Math.min(xscale, yscale);
-		//System.out.println(scale);
 		((Graphics2D)g).scale(scale, scale);
 
 		// Now print the window and its visible contents 

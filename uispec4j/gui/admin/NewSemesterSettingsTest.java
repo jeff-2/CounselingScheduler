@@ -246,7 +246,7 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		expectedCommitments.add(new CommitmentBean(2, 10, 12, DateRangeValidator.parseDate("5/25/2015"), "Other Meeting"));
 		List<HolidayBean> expectedHolidays = new ArrayList<HolidayBean>();
 		expectedHolidays.add(new HolidayBean(0, "Spring Break", DateRangeValidator.parseDate("3/5/2015"), DateRangeValidator.parseDate("3/12/2015")));
-		CalendarBean expectedCalendar = new CalendarBean(0, DateRangeValidator.parseDate("1/20/2015"), DateRangeValidator.parseDate("5/25/2015"), 33, 15, Semester.Spring.ordinal());
+		CalendarBean expectedCalendar = new CalendarBean(0, DateRangeValidator.parseDate("1/20/2015"), DateRangeValidator.parseDate("5/25/2015"), 33, 15, Semester.Spring);
 		assertEquals(expectedCommitments, commitments);
 		assertEquals(expectedHolidays, holidays);
 		assertEquals(expectedCalendar, calendar);

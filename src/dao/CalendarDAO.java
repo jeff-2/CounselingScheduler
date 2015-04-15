@@ -27,10 +27,8 @@ public class CalendarDAO extends DAO {
 	 * @param calendar the Calendar to add
 	 * @throws SQLException the SQL exception
 	 */
-	public void insertCalendar(CalendarBean calendar) throws SQLException {
-		Connection con = getConnection();
-		
-		PreparedStatement stmt = con.prepareStatement("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
+	public void insertCalendar(CalendarBean calendar) throws SQLException {		
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
 				+ "ecMinHours, term) VALUES(?, ?, ?, ?, ?, ?)");
 		
 		stmt.setInt(1, calendar.getId());
@@ -38,7 +36,7 @@ public class CalendarDAO extends DAO {
 		stmt.setDate(3, new java.sql.Date(calendar.getEndDate().getTime()));
 		stmt.setInt(4,  calendar.getIaMinHours());
 		stmt.setInt(5,  calendar.getEcMinHours());
-		stmt.setInt(6, calendar.getSemester());
+		stmt.setInt(6, calendar.getSemester().ordinal());
 		
 		stmt.executeUpdate();
 	}
@@ -50,8 +48,7 @@ public class CalendarDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public CalendarBean loadCalendar() throws SQLException {
-		Connection conn = getConnection();
-		Statement stmt = conn.createStatement();
+		Statement stmt = connection.createStatement();
 		stmt.execute("Select * From Calendar");
 		
 		ResultSet res = stmt.getResultSet();
@@ -62,7 +59,7 @@ public class CalendarDAO extends DAO {
 		cal.setEndDate(res.getDate("endDate"));
 		cal.setIaMinHours(res.getInt("iaMinHours"));
 		cal.setEcMinHours(res.getInt("ecMinHours"));
-		cal.setSemester(res.getInt("term"));
+		cal.setSemester(Semester.values()[res.getInt("term")]);
 		return cal;
 	}
 	
@@ -73,39 +70,6 @@ public class CalendarDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getNextAvailableId() throws SQLException {
-		return DAO.getNextID("Calendar");		
-	}
-
-	/**
-	 * Gets the current semester. Assumes only one entry in Calendar table every semester. 
-	 * 
-	 * @return Semester
-	 * @throws SQLException
-	 */
-	public Semester getCurrentSemester() throws SQLException {
-		Connection conn = getConnection();
-		Statement stmt = conn.createStatement();
-		stmt.execute("Select term From Calendar");
-		
-		ResultSet res = stmt.getResultSet();
-		res.next();
-		int semester = res.getInt("term");
-		return Semester.values()[semester];
-	}
-
-	/**
-	 * Gets the current year. Assumes only one entry in the Calendar table every semester. 
-	 * 
-	 * @return int representing the year
-	 * @throws SQLException
-	 */
-	public int getCurrentYear() throws SQLException {
-		Connection conn = getConnection();
-		Statement stmt = conn.createStatement();
-		stmt.execute("Select YEAR(startDate) AS year From Calendar");
-		
-		ResultSet res = stmt.getResultSet();
-		res.next();
-		return res.getInt("year");
+		return getNextID("Calendar");		
 	}
 }

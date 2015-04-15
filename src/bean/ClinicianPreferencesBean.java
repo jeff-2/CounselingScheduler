@@ -1,7 +1,5 @@
 package bean;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The Class ClinicianPreferences handles the storage of clinician preferences.

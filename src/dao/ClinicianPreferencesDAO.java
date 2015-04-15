@@ -30,7 +30,7 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insert(ClinicianPreferencesBean preferences) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO ClinicianPreferences (id, morningRank, noonRank, afternoonRank) VALUES (?, ?, ?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO ClinicianPreferences (id, morningRank, noonRank, afternoonRank) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, preferences.getClinicianID());
 		stmt.setInt(2, preferences.getMorningRank());
 		stmt.setInt(3, preferences.getNoonRank());
@@ -47,7 +47,7 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public ClinicianPreferencesBean loadClinicianPreferences(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT morningRank, noonRank, afternoonRank FROM ClinicianPreferences WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("SELECT morningRank, noonRank, afternoonRank FROM ClinicianPreferences WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -71,7 +71,7 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void update(ClinicianPreferencesBean preferences) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("UPDATE ClinicianPreferences SET morningRank = ?, noonRank = ?, afternoonRank = ? WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("UPDATE ClinicianPreferences SET morningRank = ?, noonRank = ?, afternoonRank = ? WHERE id = ?");
 		stmt.setInt(1, preferences.getMorningRank());
 		stmt.setInt(2, preferences.getNoonRank());
 		stmt.setInt(3, preferences.getAfternoonRank());
@@ -87,7 +87,7 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void delete(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM ClinicianPreferences WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("DELETE FROM ClinicianPreferences WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		stmt.close();

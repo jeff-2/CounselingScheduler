@@ -1,5 +1,6 @@
 package dao;
 import static org.junit.Assert.assertEquals;
+import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -13,9 +14,6 @@ import org.junit.Test;
 
 import bean.CalendarBean;
 import bean.Semester;
-import dao.CalendarDAO;
-import dao.ConnectionFactory;
-import generator.TestDataGenerator;
 
 /**
  * @author nbeltr2
@@ -56,7 +54,7 @@ public class CalendarDAOTest {
 	public void testInsertCalendar() throws ParseException, SQLException {
 		CalendarBean calendar = new CalendarBean();
 		calendar.setId(0);
-		calendar.setSemester(2);
+		calendar.setSemester(Semester.Winter);
 		calendar.setStartDate(format.parse("01/01/1990"));
 		calendar.setEndDate(format.parse("01/01/1991"));
 		calendar.setIaMinHours(35);
@@ -71,18 +69,6 @@ public class CalendarDAOTest {
 		assertEquals(calendar.getIaMinHours(), output.getIaMinHours());
 		assertEquals(calendar.getEcMinHours(), output.getEcMinHours());
 
-	}
-	
-	@Test
-	public void testGetCurrentYear() throws SQLException {
-		generateCalendarData();
-		assertEquals(calendarDAO.getCurrentYear(), 2000);
-	}
-	
-	@Test
-	public void testGetCurrentSemester() throws SQLException {
-		generateCalendarData();
-		assertEquals(calendarDAO.getCurrentSemester(), Semester.Spring);
 	}
 	
 	private void generateCalendarData() throws SQLException {

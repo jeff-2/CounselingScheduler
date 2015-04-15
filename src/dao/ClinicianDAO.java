@@ -33,7 +33,7 @@ public class ClinicianDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insert(ClinicianBean clinician) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
 		stmt.setInt(1, clinician.getClinicianID());
 		stmt.setString(2, clinician.getName());
 		stmt.execute();
@@ -47,7 +47,7 @@ public class ClinicianDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<ClinicianBean> loadClinicians() throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT * FROM Clinicians");
+		PreparedStatement stmt = connection.prepareStatement("SELECT * FROM Clinicians");
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
 		
@@ -96,7 +96,7 @@ public class ClinicianDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void delete(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM Clinicians WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("DELETE FROM Clinicians WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		stmt.close();
@@ -110,7 +110,7 @@ public class ClinicianDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getClinicianID(String name) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT id FROM Clinicians WHERE name = ?");
+		PreparedStatement stmt = connection.prepareStatement("SELECT id FROM Clinicians WHERE name = ?");
 		stmt.setString(1, name);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -130,6 +130,6 @@ public class ClinicianDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public int getNextClinicianID() throws SQLException {
-		return DAO.getNextID("Clinicians");
+		return getNextID("Clinicians");
 	}
 }

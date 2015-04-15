@@ -33,7 +33,7 @@ public class TimeAwayDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insert(TimeAwayBean timeAway) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) VALUES (?, ?, ?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, timeAway.getClinicianID());
 		stmt.setDate(2, new java.sql.Date(timeAway.getStartDate().getTime()));
 		stmt.setDate(3, new java.sql.Date(timeAway.getEndDate().getTime()));	
@@ -50,7 +50,7 @@ public class TimeAwayDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public List<TimeAwayBean> loadTimeAway(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("SELECT startDate, endDate, description FROM TimeAway WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("SELECT startDate, endDate, description FROM TimeAway WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -87,7 +87,7 @@ public class TimeAwayDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void delete(int clinicianID) throws SQLException {
-		PreparedStatement stmt = getConnection().prepareStatement("DELETE FROM TimeAway WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("DELETE FROM TimeAway WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		stmt.close();

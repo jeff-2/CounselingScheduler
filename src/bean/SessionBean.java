@@ -3,7 +3,6 @@ package bean;
 import java.util.Date;
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SessionBean.
  * 
@@ -33,7 +32,7 @@ public class SessionBean {
 	private List<Integer> clinicians;
 	
 	/** The semester. */
-	private int semester;
+	private Semester semester;
 	
 	/**  The type of week A/B. */
 	private int weekType;
@@ -49,7 +48,7 @@ public class SessionBean {
 	 * @param sType the s type
 	 * @param sClinicians the s clinicians
 	 */
-	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians, int sSemester, int sWeekType) {
+	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians, Semester sSemester, int sWeekType) {
 		id = sID;
 		startTime = sTime;
 		duration = sDur;
@@ -193,7 +192,7 @@ public class SessionBean {
 	 *
 	 * @return the semester
 	 */
-	public int getSemester() {
+	public Semester getSemester() {
 		return semester;
 	}
 
@@ -202,7 +201,7 @@ public class SessionBean {
 	 *
 	 * @param semester the new semester
 	 */
-	public void setSemester(int semester) {
+	public void setSemester(Semester semester) {
 		this.semester = semester;
 	}
 
