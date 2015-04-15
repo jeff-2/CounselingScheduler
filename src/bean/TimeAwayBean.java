@@ -2,6 +2,8 @@ package bean;
 
 import java.util.Date;
 
+import validator.DateRangeValidator;
+
 /**
  * The Class TimeAway handles the storage related to time away for a particular clinician id.
  * 
@@ -112,7 +114,7 @@ public class TimeAwayBean {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return description + ": " + Utility.formatDate(startDate) + "-" + Utility.formatDate(endDate);
+		return description + ": " + DateRangeValidator.formatDate(startDate) + "-" + DateRangeValidator.formatDate(endDate);
 	}
 	
 	/* (non-Javadoc)

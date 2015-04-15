@@ -37,7 +37,7 @@ public class IAScheduleViewFrame extends JFrame {
 		super("View IA Schedule");
 		this.iaComponent = new IAScheduleComponent(weekACells, weekBCells);
 		this.panel = new JPanel();
-		this.panel.setPreferredSize(new Dimension(600, 1400));
+		this.panel.setPreferredSize(new Dimension(700, iaComponent.requiredHeight()));
 		this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
 		this.panel.setBackground(Color.WHITE);
 		this.panel.add(iaComponent);

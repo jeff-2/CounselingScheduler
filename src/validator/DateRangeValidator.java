@@ -12,6 +12,22 @@ import java.util.Date;
  */
 public class DateRangeValidator {
 	
+	private static final SimpleDateFormat dateFormat;
+	
+	static {
+		dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+		dateFormat.setLenient(false);
+	}
+	
+	/**
+	 * Formats the date as a string in month/day/year format
+	 * @param date
+	 * @return date formatted as string
+	 */
+	public static String formatDate(Date date) {
+		return dateFormat.format(date);
+	}
+	
 	/**
 	 * Parses the date. Ensures it is in the proper date format MM/dd/yyyy with a year 
 	 * between 1800 and 10000. 
@@ -23,9 +39,7 @@ public class DateRangeValidator {
 	public static Date parseDate(String date) throws ParseException {
 		Date d;
 		try {
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-			format.setLenient(false);
-			d = format.parse(date);
+			d = dateFormat.parse(date);
 		} catch (ParseException e) {
 			throw new ParseException("The date " + date + " must be a valid date of the form mm/dd/yyyy. For example March 3, 1994 should be entered as 3/3/1994.", 0);
 		}

@@ -21,22 +21,23 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ListModel;
 
+import net.miginfocom.swing.MigLayout;
+import validator.DateRangeValidator;
+import validator.InvalidDateRangeException;
+import action.ClinicianPreferencesAction;
 import bean.CalendarBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.OperatingHours;
+import bean.Semester;
 import bean.TimeAwayBean;
-import bean.Utility;
 import bean.Weekday;
-import action.ClinicianPreferencesAction;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
-import validator.DateRangeValidator;
-import validator.InvalidDateRangeException;
-import net.miginfocom.swing.MigLayout;
 
 /**
  * The Class ClinicianForm.
@@ -48,67 +49,39 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5377691259929030865L;
 	
-	/** The panel. */
 	private JPanel panel;
-	
-	/** The name label. */
 	private JLabel nameLabel, preferenceFormLabel, periodLabel, timeAwayLabel;
-	
-	/** The commitments pane. */
 	private JScrollPane timeAwayPane, commitmentsPane;
-	
-	/** The time away. */
 	private JList<TimeAwayBean> timeAway;
-	
-	/** The commitments. */
 	private JList<CommitmentBean> commitments;
-	
-	/** The time away end date. */
 	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
-	
-	/** The commitment description. */
 	private JTextField commitmentDescription;
-	
-	/** The time away end date label. */
 	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
-	
-	/** The commitment description label. */
 	private JLabel commitmentHourLabel, commitmentDayLabel, commitmentDescriptionLabel;
-	
-	/** The rank label. */
 	private JLabel timeLabel, rankLabel;
-	
-	/** The afternoon label. */
 	private JLabel morningLabel, noonLabel, afternoonLabel;
-	
-	/** The remove time away button. */
 	private JButton addTimeAwayButton, removeTimeAwayButton;
-	
-	/** The remove commitment button. */
 	private JButton addCommitmentButton, removeCommitmentButton;
-	
-	/** The submit button. */
 	private JButton clearButton, submitButton;
-	
-	/** The operating hours box. */
 	private JComboBox<String> daysOfWeekBox, operatingHoursBox;
-	
-	/** The afternoon rank box. */
 	private JComboBox<Integer> morningRankBox, noonRankBox, afternoonRankBox;
-	
-	/** The name field. */
 	private JTextField nameField;
-	
-	/** The Constant NAME_LENGTH. */
 	private static final int NAME_LENGTH = 20;
+	private Semester semester;
+	private int year;
+	private Date startDate, endDate;
 
 	/**
 	 * Instantiates a new clinician form.
 	 */
-	public ClinicianForm() {
+	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate) {
 		super("Clinician Input Form");
 		panel = new JPanel();
 		panel.setLayout(new MigLayout("gap rel", "grow"));
+		this.semester = semester;
+		this.year = year;
+		this.startDate = startDate;
+		this.endDate = endDate;
 		initializeComponents();
 		initializeFrame();
 	}
@@ -145,9 +118,9 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 */
 	private void initializeLabels() {
 		nameLabel = new JLabel("NAME:");
-		preferenceFormLabel = new JLabel( "Spring 2015 IA/EC Preference Form");
-		periodLabel = new JLabel("This covers the period from 1/19/2015-5/10/2015.");
-		timeAwayLabel = new JLabel("Spring Semester 2015 \"Time Away\" Plans");
+		preferenceFormLabel = new JLabel(semester.name() + " " + year + " IA/EC Preference Form");
+		periodLabel = new JLabel("This covers the period from " + DateRangeValidator.formatDate(startDate) + "-" + DateRangeValidator.formatDate(endDate));
+		timeAwayLabel = new JLabel(semester.name() + " Semester " + year + " \"Time Away\" Plans");
 		timeAwayNameLabel = new JLabel("Description");
 		timeAwayStartDateLabel = new JLabel("Start Date");
 		timeAwayEndDateLabel = new JLabel("End Date");
@@ -307,7 +280,6 @@ public class ClinicianForm extends JFrame implements ActionListener {
 					    "An error occurred accessing the database. Please contact your system administrator. " + e1.getMessage(),
 					    "Error accessing database",
 					    JOptionPane.ERROR_MESSAGE);
-				return;
 			}
 		} else if (e.getSource() == addTimeAwayButton) {
 			addTimeAway();
@@ -360,7 +332,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		CalendarDAO calendarDAO = new CalendarDAO(conn);
 		CalendarBean calendar = calendarDAO.loadCalendar();
 
-		List<CommitmentBean> cmts = Utility.toCommitmentList(commitments.getModel());
+		List<CommitmentBean> cmts = toCommitmentList(commitments.getModel());
 		List<CommitmentBean> allCommitments = new ArrayList<CommitmentBean>();
 
 		for (CommitmentBean commitment: cmts) {
@@ -385,7 +357,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		
 		
 		ClinicianPreferencesAction action = new ClinicianPreferencesAction(preferences, 
-				allCommitments, Utility.toTimeAwayList(timeAway.getModel()), conn);
+				allCommitments, toTimeAwayList(timeAway.getModel()), conn);
 		if (existing == null) {
 			action.insertPreferences();
 		} else {
@@ -404,6 +376,22 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			    "Successfully inserted clinician preferences!",
 			    "SUCCESS",
 			    JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	private static List<CommitmentBean> toCommitmentList(ListModel<CommitmentBean> model) {
+		List<CommitmentBean> cmts = new ArrayList<CommitmentBean>();
+		for (int i = 0; i < model.getSize(); i++) {
+			cmts.add(model.getElementAt(i));
+		}
+		return cmts;
+	}
+	
+	private static List<TimeAwayBean> toTimeAwayList(ListModel<TimeAwayBean> model) {
+		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
+		for (int i = 0; i < model.getSize(); i++) {
+			tsAway.add(model.getElementAt(i));
+		}
+		return tsAway;
 	}
 
 	/**

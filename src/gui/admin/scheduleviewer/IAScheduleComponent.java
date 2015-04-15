@@ -36,6 +36,25 @@ public class IAScheduleComponent extends JComponent implements Printable {
 		super.paint(g1);
 		buildGrid((Graphics2D) g1);
 	}
+	
+	public int requiredHeight() {
+		int requiredHeight = 0;
+		for (List<List<String>> c : weekACells) {
+			int max = 0;
+			for (List<String> cell : c) {
+				max = Math.max(max, cell.size());
+			}
+			requiredHeight += 30 + 20 * max;
+		}
+		for (List<List<String>> c : weekBCells) {
+			int max = 0;
+			for (List<String> cell : c) {
+				max = Math.max(max, cell.size());
+			}
+			requiredHeight += 30 + 20 * max;
+		}
+		return requiredHeight + 225;
+	}
 
 	private void buildGrid(Graphics2D g) {
 		
@@ -50,8 +69,9 @@ public class IAScheduleComponent extends JComponent implements Printable {
 			yoffset = this.drawRow(g, xoffset, yoffset, rowLabels[i], weekACells.get(i), cols);
 		}
 		
-		yoffset = 725;
-		g.drawString("Week B", 350, 700);
+		yoffset += 50;
+		g.drawString("Week B", 350, yoffset);
+		yoffset += 25;
 		
 		for (int i = 0; i < rowLabels.length; i++) {
 			yoffset = this.drawRow(g, xoffset, yoffset, rowLabels[i], weekBCells.get(i), cols);
@@ -108,10 +128,11 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 	
 	private BufferedImage getImageFromPanel(Component component) {
-        BufferedImage image = new BufferedImage(800, 1400, BufferedImage.TYPE_INT_RGB);
+		int height = requiredHeight();
+        BufferedImage image = new BufferedImage(700, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, 800, 1400);
+        g2d.fillRect(0, 0, 700, height);
         g2d.setColor(Color.BLACK);
         this.buildGrid(g2d);
         g2d.dispose();
