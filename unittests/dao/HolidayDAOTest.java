@@ -1,22 +1,20 @@
 package dao;
 
 import static org.junit.Assert.assertEquals;
+import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import validator.DateRangeValidator;
 import bean.HolidayBean;
-import dao.ConnectionFactory;
-import dao.HolidayDAO;
-import generator.TestDataGenerator;
 
 /**
  * @author nbeltr2
@@ -25,7 +23,6 @@ import generator.TestDataGenerator;
 public class HolidayDAOTest {
 	 
 	private HolidayDAO holidayDAO;
-	private SimpleDateFormat format;
 	private Connection con;
 	private TestDataGenerator gen;
 	
@@ -33,7 +30,6 @@ public class HolidayDAOTest {
 	public void setUp() throws SQLException {
 		con = ConnectionFactory.getInstance();
 		holidayDAO = new HolidayDAO(con);
-		format = new SimpleDateFormat("MM/dd/yyyy");
 		gen = new TestDataGenerator(con);
 		gen.clearHolidayTable();
 	}
@@ -47,8 +43,8 @@ public class HolidayDAOTest {
 	@Test 
 	public void testInsertHoliday() throws ParseException, SQLException {
 		HolidayBean holiday = new HolidayBean();
-		holiday.setStartDate(format.parse("02/01/1990"));
-		holiday.setEndDate(format.parse("02/02/1990"));
+		holiday.setStartDate(DateRangeValidator.parseDate("02/01/1990"));
+		holiday.setEndDate(DateRangeValidator.parseDate("02/02/1990"));
 		holiday.setName("TestName");
 		holidayDAO.insertHoliday(holiday, 0, 0);
 		

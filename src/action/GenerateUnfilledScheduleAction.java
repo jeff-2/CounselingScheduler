@@ -13,6 +13,7 @@ import dao.HolidayDAO;
 import dao.SessionsDAO;
 import bean.CalendarBean;
 import bean.HolidayBean;
+import bean.IAWeektype;
 import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
@@ -45,17 +46,17 @@ public class GenerateUnfilledScheduleAction {
 		int[] iaSlots = new int[]{11, 13, 14, 15};
 		int ecClinicianMin = 1;
 		int iaClinicianMin = 3;
-		int weektype = 0;
+		IAWeektype weekType = IAWeektype.A;
 		Calendar cal = Calendar.getInstance();
 		for (Date d : workDays) {
 			
 			Weekday day = Weekday.getWeekday(d);
 			for (int e : ecSlots) {
-				SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), calBean.getSemester(), weektype);
+				SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), e, ecClinicianMin, day, d, SessionType.EC, new ArrayList<Integer>(), calBean.getSemester(), weekType);
 				sessionsDAO.insertSession(session);
 			}
 			for (int i : iaSlots) {
-				SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), calBean.getSemester(), weektype);
+				SessionBean session = new SessionBean(sessionsDAO.getNextSessionID(), i, iaClinicianMin, day, d, SessionType.IA, new ArrayList<Integer>(), calBean.getSemester(), weekType);
 				sessionsDAO.insertSession(session);
 			}
 			
@@ -63,7 +64,7 @@ public class GenerateUnfilledScheduleAction {
 			cal.setTime(d);
 			int week = cal.get(Calendar.WEEK_OF_YEAR);
 			if (week > prevWeek) {
-				weektype = 1 - weektype;
+				weekType = IAWeektype.values()[(weekType.ordinal() + 1) % IAWeektype.values().length];
 			}
 		}
 	}

@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,9 +12,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import validator.DateRangeValidator;
+import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.TimeAwayBean;
+import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
@@ -38,7 +38,6 @@ public class ClinicianPreferencesActionTest {
 	private CommitmentsDAO commitmentsDAO;
 	private TimeAwayDAO timeAwayDAO;
 	private TestDataGenerator gen;
-	private SimpleDateFormat format;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -51,13 +50,8 @@ public class ClinicianPreferencesActionTest {
 		commitmentsDAO = new CommitmentsDAO(conn);
 		timeAwayDAO = new TimeAwayDAO(conn);
 		
-		format = new SimpleDateFormat("MM/dd/yyyy");
-		
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setString(2, "Jeff");
-		stmt.execute();
-		stmt.close();
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
 		
 		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
 		commitments = new ArrayList<CommitmentBean>();
@@ -65,8 +59,8 @@ public class ClinicianPreferencesActionTest {
 		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("3/30/2015"), "other desc"));
 		
 		timeAway = new ArrayList<TimeAwayBean>();
-		timeAway.add(new TimeAwayBean(0, "some desc", format.parse("1/5/2015"), format.parse("2/7/2015")));
-		timeAway.add(new TimeAwayBean(0, "some other desc", format.parse("2/1/2015"), format.parse("2/1/2015")));
+		timeAway.add(new TimeAwayBean(0, "some desc", DateRangeValidator.parseDate("1/5/2015"), DateRangeValidator.parseDate("2/7/2015")));
+		timeAway.add(new TimeAwayBean(0, "some other desc", DateRangeValidator.parseDate("2/1/2015"), DateRangeValidator.parseDate("2/1/2015")));
 		
 		action = new ClinicianPreferencesAction(preferences, commitments, timeAway, conn);
 	}
@@ -87,7 +81,7 @@ public class ClinicianPreferencesActionTest {
 		cmts.add(new CommitmentBean(0, 14, 15, DateRangeValidator.parseDate("4/2/2015"), "pear"));
 		
 		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
-		tsAway.add(new TimeAwayBean(0, "orange", format.parse("2/2/2015"), format.parse("2/17/2015")));
+		tsAway.add(new TimeAwayBean(0, "orange", DateRangeValidator.parseDate("2/2/2015"), DateRangeValidator.parseDate("2/17/2015")));
 		
 		ClinicianPreferencesAction a = new ClinicianPreferencesAction(prefs, cmts, tsAway, conn);
 		a.updatePreferences();

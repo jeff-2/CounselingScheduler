@@ -53,6 +53,7 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	 * @see org.uispec4j.UISpecTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
+		super.setUp();
 		setAdapter(new MainClassAdapter(NewSemesterSettingsRunner.class, new String[0]));
 		con = ConnectionFactory.getInstance();
 		ImportClinicianMeetingsActionTest.generateExcelFile(new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
@@ -66,10 +67,10 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
 		clinicianDAO.insert(new ClinicianBean(1, "Ryan"));
 		clinicianDAO.insert(new ClinicianBean(2, "Nathan"));
-		clearHolidayTable();
 	}
 	
-	protected void tearDown() throws SQLException {
+	protected void tearDown() throws Exception {
+		super.tearDown();
 		gen.clearTables();
 		File f = new File("tmpFile.xlsx");
 		f.delete();
@@ -300,17 +301,5 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		ResultSet res = stmt.getResultSet();
 		res.next();
 		return res.getInt("count");
-	}
-	
-	private void clearHolidayTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Holiday");
-	}
-	
-	private void clearCalendarTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Calendar");
 	}
 }

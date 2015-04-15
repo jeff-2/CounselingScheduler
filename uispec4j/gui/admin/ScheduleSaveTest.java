@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import org.uispec4j.Button;
 import org.uispec4j.MenuBar;
@@ -29,8 +28,10 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	
 	private TestDataGenerator gen;
 	private Connection conn;
+	private static final String filePath = new File("tmp.png").getAbsolutePath();
 	
 	protected void setUp() throws Exception {
+		super.setUp();
 		setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
 		conn = ConnectionFactory.getInstance();
 		gen = new TestDataGenerator(conn);
@@ -46,8 +47,6 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
-		
-		String filePath = new File("tmp.png").getAbsolutePath();
 		
 		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
 		generateSchedule.click();
@@ -77,8 +76,6 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
 		
-		String filePath = new File("tmp.png").getAbsolutePath();
-		
 		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
 		generateSchedule.click();
 		Button runTask = window.getButton("Run task");
@@ -105,8 +102,6 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	public void testSaveIASchedule() {
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
-		
-		String filePath = new File("tmp.png").getAbsolutePath();
 		
 		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
 		generateSchedule.click();
@@ -135,8 +130,6 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
 		
-		String filePath = new File("tmp.png").getAbsolutePath();
-		
 		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
 		generateSchedule.click();
 		Button runTask = window.getButton("Run task");
@@ -164,8 +157,6 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		Window window = this.getMainWindow();
 		assertEquals("Select Admin Task", window.getTitle());
 		
-		String filePath = new File("tmp.png").getAbsolutePath();
-		
 		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
 		generateSchedule.click();
 		Button runTask = window.getButton("Run task");
@@ -189,9 +180,10 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		assertFalse(f.exists());
 	}
 	
-	protected void tearDown() throws SQLException {
+	protected void tearDown() throws Exception {
+		super.tearDown();
 		gen.clearTables();
-		File f = new File("tmp.png");
+		File f = new File(filePath);
 		f.delete();
 	}
 }

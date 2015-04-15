@@ -1,12 +1,9 @@
 package dao;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import bean.ClinicianBean;
-import dao.ClinicianDAO;
-import dao.ConnectionFactory;
 
 /**
  * 
@@ -45,18 +40,15 @@ public class ClinicianDAOTest {
 	
 	@Test
 	public void testInsertValidClinician() throws Exception {
-		int clinicianID = 1;
-		ClinicianBean clinician = new ClinicianBean(clinicianID, "Jeff");
+		ClinicianBean clinician = new ClinicianBean(0, "Jeff");
 		clinicianDAO.insert(clinician);
-		PreparedStatement stmt = conn.prepareStatement("SELECT id, name FROM Clinicians WHERE id = ?");
-		stmt.setInt(1, clinicianID);
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		results.next();
-		String name = results.getString("name");
-		int id = results.getInt("id");
-		stmt.close();
-		assertEquals(clinician, new ClinicianBean(id, name));
+		
+		List<ClinicianBean> actual = clinicianDAO.loadClinicians();
+		List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
+		expected.add(clinician);
+		
+		assertEquals(expected, actual);
+		assertEquals(clinicianDAO.getNextClinicianID(), 1);
 	}
 	
 	@Test(expected=SQLException.class)
@@ -68,19 +60,16 @@ public class ClinicianDAOTest {
 	
 	@Test
 	public void testLoadClinicians() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?), (?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setString(2, "Jeff");
-		stmt.setInt(3, 1);
-		stmt.setString(4, "Kevin");
-		stmt.execute();
-		stmt.close();
+		ClinicianBean clinicianBeanOne = new ClinicianBean(0, "Jeff");
+		ClinicianBean clinicianBeanTwo = new ClinicianBean(1, "Kevin");
+		clinicianDAO.insert(clinicianBeanOne);
+		clinicianDAO.insert(clinicianBeanTwo);
 		
 		List<ClinicianBean> actual = clinicianDAO.loadClinicians();
 		List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
-		expected.add(new ClinicianBean(0, "Jeff"));
-		expected.add(new ClinicianBean(1, "Kevin"));
-		assertEquals(actual, expected);
+		expected.add(clinicianBeanOne);
+		expected.add(clinicianBeanTwo);
+		assertEquals(expected, actual);
 		assertEquals(clinicianDAO.getNextClinicianID(), 2);
 	}
 	
@@ -93,34 +82,22 @@ public class ClinicianDAOTest {
 	
 	@Test
 	public void testDeleteValidClinician() throws Exception {
-		int clinicianID = 0;
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
-		stmt.setInt(1, clinicianID);
-		stmt.setString(2, "Jeff");
-		stmt.execute();
-		stmt.close();
-
-		clinicianDAO.delete(clinicianID);
-		stmt = conn.prepareStatement("SELECT id, name FROM Clinicians WHERE id = ?");
-		stmt.setInt(1, clinicianID);
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		assertFalse(results.next());
-		stmt.close();
+		ClinicianBean expected = new ClinicianBean(0, "Jeff");
+		clinicianDAO.insert(expected);
+		clinicianDAO.delete(expected.getClinicianID());
+		
+		List<ClinicianBean> actualClinicians = clinicianDAO.loadClinicians();
+		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
+		assertEquals(expectedClinicians, actualClinicians);
 	}
 	
 	@Test
 	public void testGetValidClinicianID() throws Exception {
-		int clinicianID = 0;
-		String clinicianName = "Jeff";
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
-		stmt.setInt(1, clinicianID);
-		stmt.setString(2, clinicianName);
-		stmt.execute();
-		stmt.close();
+		ClinicianBean expected = new ClinicianBean(0, "Jeff");
+		clinicianDAO.insert(expected);
 		
-		int actualID = clinicianDAO.getClinicianID(clinicianName);
-		assertEquals(clinicianID, actualID);
+		int actualID = clinicianDAO.getClinicianID(expected.getName());
+		assertEquals(expected.getClinicianID(), actualID);
 	}
 	
 	@Test

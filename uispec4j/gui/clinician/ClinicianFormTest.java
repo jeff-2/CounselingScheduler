@@ -3,7 +3,6 @@ package gui.clinician;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,18 +19,20 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
+import runner.ClinicianFormRunner;
+import validator.DateRangeValidator;
 import bean.CalendarBean;
+import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.Semester;
 import bean.TimeAwayBean;
 import dao.CalendarDAO;
+import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import dao.TimeAwayDAO;
-import runner.ClinicianFormRunner;
-import validator.DateRangeValidator;
 
 /**
  * 
@@ -44,18 +45,18 @@ public class ClinicianFormTest extends UISpecTestCase {
 	private List<CommitmentBean> commitments;
 	private ClinicianPreferencesBean preferences;
 	private List<TimeAwayBean> timeAway;
-	private ClinicianPreferencesDAO clinicianPreferencesDao;
-	private CommitmentsDAO commitmentsDao;
+	private ClinicianPreferencesDAO clinicianPreferencesDAO;
+	private CommitmentsDAO commitmentsDAO;
 	private TimeAwayDAO timeAwayDao;
 	private TestDataGenerator gen;
 	
 	@Before
 	protected void setUp() throws Exception {
+		super.setUp();
 		setAdapter(new MainClassAdapter(ClinicianFormRunner.class, new String[0]));
 		
 		conn = ConnectionFactory.getInstance();
 		gen = new TestDataGenerator(conn);
-		
 		gen.clearTables();
 		
 		CalendarDAO calendarDAO = new CalendarDAO(conn);
@@ -69,15 +70,12 @@ public class ClinicianFormTest extends UISpecTestCase {
 		calendar.setEcMinHours(44);
 		calendarDAO.insertCalendar(calendar);
 		
-		clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
-		commitmentsDao = new CommitmentsDAO(conn);
+		clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		commitmentsDAO = new CommitmentsDAO(conn);
 		timeAwayDao = new TimeAwayDAO(conn);
 		
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setString(2, "Jeff");
-		stmt.execute();
-		stmt.close();
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
 		
 		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
 		commitments = new ArrayList<CommitmentBean>();
@@ -99,6 +97,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 	
 	@After
 	public void tearDown() throws Exception {
+		super.tearDown();
 		gen.clearTables();
 	}
 
@@ -117,8 +116,8 @@ public class ClinicianFormTest extends UISpecTestCase {
 	public void testInsertClinicianForm() throws Exception {
 		insertData();
 		
-		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDao.loadClinicianPreferences(0);
-		List<CommitmentBean> actualCommitments = commitmentsDao.loadCommitments(0);
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
 		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
 		
 		assertEquals(preferences, actualPreferences);
@@ -193,8 +192,8 @@ public class ClinicianFormTest extends UISpecTestCase {
 		})
 		.run();
 		
-		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDao.loadClinicianPreferences(0);
-		List<CommitmentBean> actualCommitments = commitmentsDao.loadCommitments(0);
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
 		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
 		
 		assertEquals(preferences, actualPreferences);
@@ -223,8 +222,8 @@ public class ClinicianFormTest extends UISpecTestCase {
 		})
 		.run();
 		
-		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDao.loadClinicianPreferences(0);
-		List<CommitmentBean> actualCommitments = commitmentsDao.loadCommitments(0);
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
 		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
 		
 		ClinicianPreferencesBean otherPreferences = new ClinicianPreferencesBean(0, 3, 1, 2);

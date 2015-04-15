@@ -23,6 +23,7 @@ import javax.swing.JSplitPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import bean.IAWeektype;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
@@ -85,8 +86,8 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void loadEditableSchedule() throws SQLException {
 		List<String> clinicianNames = clinicianDao.loadClinicianNames();
-		this.weekA = new IAWeeklyComponent(dao.loadScheduleType(0), clinicianNames, "A");
-		this.weekB = new IAWeeklyComponent(dao.loadScheduleType(1), clinicianNames, "B");
+		this.weekA = new IAWeeklyComponent(dao.loadScheduleType(0), clinicianNames, IAWeektype.A);
+		this.weekB = new IAWeeklyComponent(dao.loadScheduleType(1), clinicianNames, IAWeektype.B);
 		this.panel.setLeftComponent(weekA);
 		this.panel.setRightComponent(weekB);
 		repaint();

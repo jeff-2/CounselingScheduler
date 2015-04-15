@@ -36,7 +36,6 @@ public class ImportClinicianMeetingsAction {
 	
 	private CommitmentsDAO commitmentsDAO;
 	private ClinicianDAO clinicianDAO;
-	private Connection conn;
 	private File excelFile;
 	
 	/**
@@ -46,7 +45,6 @@ public class ImportClinicianMeetingsAction {
 	 * @param excelFile the excel file
 	 */
 	public ImportClinicianMeetingsAction(Connection conn, File excelFile) {
-		this.conn = conn;
 		this.excelFile = excelFile;
 		commitmentsDAO = new CommitmentsDAO(conn);
 		clinicianDAO = new ClinicianDAO(conn);

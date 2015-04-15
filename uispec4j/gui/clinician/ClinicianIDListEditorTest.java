@@ -34,6 +34,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	
 	@Before
 	protected void setUp() throws Exception {
+		super.setUp();
 		setAdapter(new MainClassAdapter(ClinicianIDListRunner.class, new String[0]));
 		
 		conn = ConnectionFactory.getInstance();
@@ -47,6 +48,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	
 	@After
 	public void tearDown() throws Exception {
+		super.tearDown();
 		gen.clearTables();
 	}
 	

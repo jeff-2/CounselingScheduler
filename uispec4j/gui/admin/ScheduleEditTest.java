@@ -1,8 +1,9 @@
 package gui.admin;
 
+import generator.TestDataGenerator;
+
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.List;
 import java.util.Vector;
 
@@ -22,6 +23,7 @@ import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
 import runner.AdminApplicationRunner;
+import bean.IAWeektype;
 import bean.Utility;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
@@ -33,21 +35,22 @@ import dao.ConnectionFactory;
  */
 public class ScheduleEditTest extends UISpecTestCase {
 
+	private TestDataGenerator gen;
 	private Connection con;
 
 	/* (non-Javadoc)
 	 * @see org.uispec4j.UISpecTestCase#setUp()
 	 */
 	protected void setUp() throws Exception {
+		super.setUp();
 		setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
 		con = ConnectionFactory.getInstance();
-		clearHolidayTable();
-		clearCalendarTable();
+		gen = new TestDataGenerator(con);
 	}
 	
-	protected void tearDown() throws SQLException {
-		clearHolidayTable();
-		clearCalendarTable();
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		gen.clearTables();
 	}
 	
 	public void testFirstECSelection() throws SQLException {
@@ -63,22 +66,22 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 	
 	public void testRemoveClinicianIAScheduleWeekA() {
-		testRemoveClinicianIAScheduleWeektype("A");
+		testRemoveClinicianIAScheduleWeektype(IAWeektype.A);
 	}
 	
 	public void testRemoveClinicianIAScheduleWeekB() {
-		testRemoveClinicianIAScheduleWeektype("B");
+		testRemoveClinicianIAScheduleWeektype(IAWeektype.B);
 	}
 	
 	public void testAddClinicianIAScheduleWeekA() throws SQLException {
-		testAddClinicianIAScheduleWeektypeQ("A");
+		testAddClinicianIAScheduleWeektype(IAWeektype.A);
 	}
 	
 	public void testAddClinicianIAScheduleWeekB() throws SQLException {
-		testAddClinicianIAScheduleWeektypeQ("B");
+		testAddClinicianIAScheduleWeektype(IAWeektype.B);
 	}
 	
-	public void testAddClinicianIAScheduleWeektypeQ(String weekType) throws SQLException {
+	public void testAddClinicianIAScheduleWeektype(IAWeektype weekType) throws SQLException {
 		Window iaSchedule = navigateScheduleWindow("IA");
 		
 		ListBox jList = iaSchedule.getListBox("JList" + weekType + "0");
@@ -113,7 +116,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		assertTrue(jList.contains(c));
 	}
 
-	public void testRemoveClinicianIAScheduleWeektype(String weekType) {
+	public void testRemoveClinicianIAScheduleWeektype(IAWeektype weekType) {
 		Window iaSchedule = navigateScheduleWindow("IA");
 		
 		ListBox jList = iaSchedule.getListBox("JList" + weekType + "0");
@@ -162,10 +165,6 @@ public class ScheduleEditTest extends UISpecTestCase {
 		cb.selectionEquals("Alice");
 		cb.select("Yusheng");
 		cb.selectionEquals("Yusheng");
-	
-		ComboBox cb1 = ecSchedule.getComboBox(boxnum);
-		cb.select("Yusheng");
-		cb.selectionEquals("Yusheng");
 	}
 
 	/**
@@ -190,7 +189,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		
 		for (int i = 0; i < cb.length; i++) {
 			cb[i] = ecSchedule.getComboBox("" + i);
-			this.assertEquals(selected[i], cb[i].getAwtComponent().getSelectedIndex());
+			assertEquals(selected[i], cb[i].getAwtComponent().getSelectedIndex());
 		}
 	}
 
@@ -201,7 +200,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	public void testResetIASchedule() throws SQLException {
 		Window iaSchedule = navigateScheduleWindow("IA");
 		
-		ListBox jList = iaSchedule.getListBox("JListA0");
+		ListBox jList = iaSchedule.getListBox("JList" + IAWeektype.A + "0");
 		@SuppressWarnings("unchecked")
 		JList<String> list = (JList<String>)jList.getAwtComponent();
 		DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
@@ -216,20 +215,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		
 		Button reset = iaSchedule.getButton("Reset");
 		reset.click();
-		jList = iaSchedule.getListBox("JListA0");
+		jList = iaSchedule.getListBox("JList" + IAWeektype.A + "0");
 		assertTrue(jList.contains(clinicianZero));
 	}
-	
-	private void clearHolidayTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Holiday");
-	}
-	
-	private void clearCalendarTable() throws SQLException {
-		Statement stmt = con.createStatement();
-		
-		stmt.execute("DELETE FROM Calendar");
-	}
-
 }

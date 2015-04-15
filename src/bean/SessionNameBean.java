@@ -11,7 +11,7 @@ public class SessionNameBean {
 	private int startTime;
 	
 	/** The day of week. */
-	private String dayOfWeek;
+	private Weekday dayOfWeek;
 	
 	/** The date. */
 	private Date date;
@@ -21,7 +21,7 @@ public class SessionNameBean {
 	
 	private int sessionID;
 	
-	public SessionNameBean(String name, int sTime, String sDay, Date sDate, int sWeekType, int sSessionID) {
+	public SessionNameBean(String name, int sTime, Weekday sDay, Date sDate, int sWeekType, int sSessionID) {
 		clinicianName = name;
 		startTime = sTime;
 		dayOfWeek = sDay;
@@ -47,11 +47,11 @@ public class SessionNameBean {
 		this.startTime = startTime;
 	}
 
-	public String getDayOfWeek() {
+	public Weekday getDayOfWeek() {
 		return dayOfWeek;
 	}
 
-	public void setDayOfWeek(String dayOfWeek) {
+	public void setDayOfWeek(Weekday dayOfWeek) {
 		this.dayOfWeek = dayOfWeek;
 	}
 

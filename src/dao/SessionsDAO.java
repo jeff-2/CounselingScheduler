@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import bean.IAWeektype;
 import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
@@ -45,7 +46,7 @@ public class SessionsDAO extends DAO {
 		stmt.setDate(5, new java.sql.Date(session.getDate().getTime()));
 		stmt.setInt(6, session.getType().ordinal());
 		stmt.setInt(7, session.getSemester().ordinal());
-		stmt.setInt(8, session.getWeekType());
+		stmt.setInt(8, session.getWeekType().ordinal());
 		stmt.execute();
 		stmt.close();
 		
@@ -106,7 +107,7 @@ public class SessionsDAO extends DAO {
 	
 		List<Integer> clinicians = loadSessionClinicians(id);
 		
-		return new SessionBean(id, startTime, duration, Weekday.valueOf(dayOfWeek), date, SessionType.values()[type], clinicians, semester, weekType);
+		return new SessionBean(id, startTime, duration, Weekday.valueOf(dayOfWeek), date, SessionType.values()[type], clinicians, semester, IAWeektype.values()[weekType]);
 	}
 	
 	/**
@@ -314,7 +315,7 @@ public class SessionsDAO extends DAO {
 		}
 		else {
 			stmt.close();
-			new ArrayList<String>();
+			return new ArrayList<String>();
 		}
 		
 		stmt.execute();

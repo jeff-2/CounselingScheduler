@@ -1,15 +1,16 @@
 package action;
 
 import static org.junit.Assert.assertEquals;
+import generator.TestDataGenerator;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import generator.TestDataGenerator;
-
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import bean.CalendarBean;
@@ -27,14 +28,24 @@ import dao.SessionsDAO;
  */
 public class GenerateUnfilledScheduleTest {
 	
+	private Connection conn;
+	private TestDataGenerator gen;
+	private SessionsDAO sessionsDAO;
+	private GenerateUnfilledScheduleAction action;
+	
+	@Before
+	public void setUp() throws Exception {
+		conn = ConnectionFactory.getInstance();
+		sessionsDAO = new SessionsDAO(conn);
+		gen = new TestDataGenerator(conn);
+		gen.clearTables();
+		action = new GenerateUnfilledScheduleAction(conn);
+	}
+	
 	@Test
 	public void testGenerateUnfilledSchedule() throws SQLException, ParseException {
-		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
-		gen.clearTables();
 		gen.generateStandardDataset();
-		GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(ConnectionFactory.getInstance());
 		action.generateUnfilledSchedule();
-		SessionsDAO sessionsDAO = new SessionsDAO(ConnectionFactory.getInstance());
 		List<SessionBean> sessions = sessionsDAO.loadSessions();
 		assertEquals(sessions.size(), 490);
 		boolean onlyWeekdays = true;
@@ -52,12 +63,8 @@ public class GenerateUnfilledScheduleTest {
 	
 	@Test
 	public void testGenerateUnfilledEmptySchedule() throws SQLException, ParseException {
-		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
-		gen.clearTables();
-		gen.generateEmptySemesterDataset();
-		GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(ConnectionFactory.getInstance());
+		gen.generateEmptySemesterDataset();		
 		action.generateUnfilledSchedule();
-		SessionsDAO sessionsDAO = new SessionsDAO(ConnectionFactory.getInstance());
 		List<SessionBean> sessions = sessionsDAO.loadSessions();
 		assertEquals(sessions.size(), 0);
 	}

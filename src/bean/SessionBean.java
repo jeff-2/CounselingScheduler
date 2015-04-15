@@ -35,7 +35,7 @@ public class SessionBean {
 	private Semester semester;
 	
 	/**  The type of week A/B. */
-	private int weekType;
+	private IAWeektype weekType;
 	
 	/**
 	 * Instantiates a new session bean.
@@ -48,7 +48,7 @@ public class SessionBean {
 	 * @param sType the s type
 	 * @param sClinicians the s clinicians
 	 */
-	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians, Semester sSemester, int sWeekType) {
+	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians, Semester sSemester, IAWeektype sWeekType) {
 		id = sID;
 		startTime = sTime;
 		duration = sDur;
@@ -210,7 +210,7 @@ public class SessionBean {
 	 *
 	 * @return the week type
 	 */
-	public int getWeekType() {
+	public IAWeektype getWeekType() {
 		return weekType;
 	}
 
@@ -219,7 +219,7 @@ public class SessionBean {
 	 *
 	 * @param weekType the new week type
 	 */
-	public void setWeekType(int weekType) {
+	public void setWeekType(IAWeektype weekType) {
 		this.weekType = weekType;
 	}
 

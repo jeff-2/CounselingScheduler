@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import bean.SessionNameBean;
+import bean.Weekday;
 
 /**
  * The ScheduleDAO is an interface with the SQL database that allows for the insertion and recovery 
@@ -44,7 +45,7 @@ public class ScheduleDAO extends DAO {
 			ECSessions.add(new SessionNameBean (
 					results.getString("name"),
 					results.getInt("startTime"),
-					results.getString("weekday"),
+					Weekday.valueOf(results.getString("weekday")),
 					results.getDate("sDate"),
 					results.getInt("weektype"),
 					results.getInt("id")));
@@ -78,7 +79,7 @@ public class ScheduleDAO extends DAO {
 			IASessions.add(new SessionNameBean (
 					results.getString("name"),
 					results.getInt("startTime"),
-					results.getString("weekday"),
+					Weekday.valueOf(results.getString("weekday")),
 					results.getDate("sDate"),
 					results.getInt("weektype"),
 					results.getInt("id")));
@@ -121,7 +122,7 @@ public class ScheduleDAO extends DAO {
 			return temp;
 		}
 		int i=0;
-		String firstDay = temp.get(i).getDayOfWeek();
+		Weekday firstDay = temp.get(i).getDayOfWeek();
 		while(temp.get(i).getDayOfWeek().equals(firstDay)) {
 			i++;
 		}

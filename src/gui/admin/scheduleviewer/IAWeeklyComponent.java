@@ -31,6 +31,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
+import bean.IAWeektype;
 import bean.SessionNameBean;
 import bean.Utility;
 import bean.Weekday;
@@ -40,7 +41,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 
 	private static final long serialVersionUID = -2863270676214624155L;
 	private Component[][] pane;
-	private String[] weekdayLabels;
 	private List<String> clinicianNames;
 	private JPopupMenu menu;
 	private JMenuItem add, remove;
@@ -67,7 +67,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		return cells;
 	}
 
-	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, String weekType) {
+	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, IAWeektype weekType) {
 
 		setName("IAWeeklyComponent" + weekType);
 		this.clinicianNames = clinicianNames;
@@ -80,11 +80,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		remove.addActionListener(this);
 		menu.add(remove);
 		
-		weekdayLabels = new String[5];
-		for (int i = 0; i < weekdayLabels.length; i++) {
-			weekdayLabels[i] = Weekday.values()[i].name();
-		}
-		
 		int compNo = 0;
 
 		setLayout(new GridLayout(6, 6, 10, 10));
@@ -95,7 +90,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 					if (row == 0 && col == 0) {
 						pane[row][col] = new JLabel("Week " + weekType);
 					} else if (row == 0) {
-						pane[row][col] = new JLabel(weekdayLabels[col - 1]);
+						pane[row][col] = new JLabel(Weekday.values()[col - 1].name());
 					} else {
 						pane[row][col] = new JLabel(rowLabels[row - 1] + ":00");
 					}
@@ -105,7 +100,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 				} else {
 					JList<String> currentList = new JList<String>();
 					DefaultListModel<String> currentModel = new DefaultListModel<String>();
-					for (String name : getClinicians(sessionNames, weekdayLabels[col - 1], rowLabels[row - 1])) {
+					for (String name : getClinicians(sessionNames, Weekday.values()[col - 1], rowLabels[row - 1])) {
 						currentModel.addElement(name);
 					}
 					currentList.setModel(currentModel);
@@ -156,10 +151,10 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		}
 	}
 	
-	private List<String> getClinicians(List<SessionNameBean> sessions, String day, int time) {
+	private List<String> getClinicians(List<SessionNameBean> sessions, Weekday day, int time) {
 		ArrayList<String> clinicianNames = new ArrayList<String>();
 		for (SessionNameBean b : sessions) {
-			if (b.getStartTime() == time && day.equalsIgnoreCase(b.getDayOfWeek())) {
+			if (b.getStartTime() == time && day.equals(b.getDayOfWeek())) {
 				clinicianNames.add(b.getClinicianName());
 			}
 		}

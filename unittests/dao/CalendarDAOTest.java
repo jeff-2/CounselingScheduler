@@ -6,12 +6,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import validator.DateRangeValidator;
 import bean.CalendarBean;
 import bean.Semester;
 
@@ -21,7 +21,6 @@ import bean.Semester;
  */ 
 public class CalendarDAOTest {
 	private CalendarDAO calendarDAO;
-	private SimpleDateFormat format;
 	private Connection con;
 	private TestDataGenerator gen;
 	
@@ -29,7 +28,6 @@ public class CalendarDAOTest {
 	public void setUp() throws SQLException {
 		con = ConnectionFactory.getInstance();
 		calendarDAO = new CalendarDAO(con);
-		format = new SimpleDateFormat("MM/dd/yyyy");
 		gen = new TestDataGenerator(con);
 		gen.clearCalendarTable();
 	}
@@ -55,8 +53,8 @@ public class CalendarDAOTest {
 		CalendarBean calendar = new CalendarBean();
 		calendar.setId(0);
 		calendar.setSemester(Semester.Winter);
-		calendar.setStartDate(format.parse("01/01/1990"));
-		calendar.setEndDate(format.parse("01/01/1991"));
+		calendar.setStartDate(DateRangeValidator.parseDate("01/01/1990"));
+		calendar.setEndDate(DateRangeValidator.parseDate("01/01/1991"));
 		calendar.setIaMinHours(35);
 		calendar.setEcMinHours(44);
 		calendarDAO.insertCalendar(calendar);

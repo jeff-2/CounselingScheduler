@@ -1,23 +1,23 @@
 package dao;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import validator.DateRangeValidator;
+import bean.ClinicianBean;
+import bean.IAWeektype;
 import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
@@ -29,7 +29,6 @@ public class SessionsDAOTest {
 	private Connection conn;
 	private TestDataGenerator gen;
 	private List<Integer> clinicians;
-	private SimpleDateFormat format;
 	
 	@Before
 	public void setUp() throws Exception {
@@ -37,21 +36,14 @@ public class SessionsDAOTest {
 		sessionsDAO = new SessionsDAO(conn);
 		gen = new TestDataGenerator(conn);
 		gen.clearTables();
-		
-		format = new SimpleDateFormat("MM/dd/yyyy");
-		
 
 		clinicians = new ArrayList<Integer>();
 		clinicians.add(0);
 		clinicians.add(1);
 		
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Clinicians (id, name) VALUES (?, ?), (?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setString(2, "Jeff");
-		stmt.setInt(3, 1);
-		stmt.setString(4, "Ryan");
-		stmt.execute();
-		stmt.close();
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
+		clinicianDAO.insert(new ClinicianBean(1, "Ryan"));
 	}
 	
 	@After
@@ -62,35 +54,14 @@ public class SessionsDAOTest {
 	@Test
 	public void testInsertValidSession() throws Exception {
 		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("2/15/2015"), SessionType.IA, clinicians, Semester.Fall, 0);
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, DateRangeValidator.parseDate("2/15/2015"), SessionType.IA, clinicians, Semester.Fall, IAWeektype.A);
 		sessionsDAO.insertSession(session);
 		
-		List<Integer> actualClinicians = new ArrayList<Integer>();
+		List<SessionBean> actualSessions = sessionsDAO.loadSessions();
+		List<SessionBean> expectedSessions = new ArrayList<SessionBean>();
+		expectedSessions.add(session);
 		
-		PreparedStatement stmt = conn.prepareStatement("SELECT id, startTime, duration, weekday, sDate, sType FROM Sessions");
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		results.next();
-		int id = results.getInt("id");
-		int startTime = results.getInt("startTime");
-		int duration = results.getInt("duration");
-		String weekday = results.getString("weekday");
-		Date date = results.getDate("sDate");
-		int type = results.getInt("sType");
-		stmt.close();
-		
-		stmt = conn.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
-		stmt.setInt(1, 0);
-		stmt.execute();
-		results = stmt.getResultSet();
-		results.next();
-		actualClinicians.add(results.getInt("clinicianID"));
-		results.next();
-		actualClinicians.add(results.getInt("clinicianID"));
-		stmt.close();
-		
-		SessionBean actualSession = new SessionBean(id, startTime, duration, Weekday.valueOf(weekday), date, SessionType.values()[type], actualClinicians, Semester.Fall, 0);
-		assertEquals(session, actualSession);
+		assertEquals(expectedSessions, actualSessions);
 	}
 	
 	@Test
@@ -102,114 +73,42 @@ public class SessionsDAOTest {
 	
 	@Test
 	public void testLoadSessions() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType) VALUES (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setInt(2, 8);
-		stmt.setInt(3, 1);
-		stmt.setString(4, Weekday.Wednesday.toString());
-		stmt.setDate(5, new java.sql.Date(format.parse("3/18/2015").getTime()));
-		stmt.setInt(6, SessionType.IA.ordinal());
-		stmt.setInt(7, 1);
-		stmt.setInt(8, 10);
-		stmt.setInt(9, 1);
-		stmt.setString(10, Weekday.Monday.toString());
-		stmt.setDate(11, new java.sql.Date(format.parse("3/16/2015").getTime()));
-		stmt.setInt(12, SessionType.EC.ordinal());
-		stmt.execute();
-		stmt.close();
-		
-		stmt = conn.prepareStatement("INSERT INTO SessionClinicians (sessionID, clinicianID) VALUES (?, ?), (?, ?), (?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setInt(2, 0);
-		stmt.setInt(3, 0);
-		stmt.setInt(4, 1);
-		stmt.setInt(5, 1);
-		stmt.setInt(6, 1);
-		stmt.execute();
-		stmt.close();
-		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians, Semester.Fall, 0);
-		
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, DateRangeValidator.parseDate("3/18/2015"), SessionType.IA, clinicians, Semester.Fall, IAWeektype.A);
 		List<Integer> otherClinicians = new ArrayList<Integer>();
 		otherClinicians.add(1);
-		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians, Semester.Fall, 0);
-		
-		List<SessionBean> sessions = new ArrayList<SessionBean>();
-		sessions.add(session);
-		sessions.add(otherSession);
+		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, DateRangeValidator.parseDate("3/16/2015"), SessionType.EC, otherClinicians, Semester.Fall, IAWeektype.A);
+		sessionsDAO.insertSession(session);
+		sessionsDAO.insertSession(otherSession);
+
+		List<SessionBean> expectedSessions = new ArrayList<SessionBean>();
+		expectedSessions.add(session);
+		expectedSessions.add(otherSession);
 		
 		List<SessionBean> actualSessions = sessionsDAO.loadSessions();
-		assertEquals(sessions, actualSessions);
+		assertEquals(expectedSessions, actualSessions);
 	}
 	
 	@Test
 	public void testDeleteValidSession() throws Exception {
-		PreparedStatement stmt = conn.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType) VALUES (?, ?, ?, ?, ?, ?), (?, ?, ?, ?, ?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setInt(2, 8);
-		stmt.setInt(3, 1);
-		stmt.setString(4, Weekday.Wednesday.toString());
-		stmt.setDate(5, new java.sql.Date(format.parse("3/18/2015").getTime()));
-		stmt.setInt(6, SessionType.IA.ordinal());
-		stmt.setInt(7, 1);
-		stmt.setInt(8, 10);
-		stmt.setInt(9, 1);
-		stmt.setString(10, Weekday.Monday.toString());
-		stmt.setDate(11, new java.sql.Date(format.parse("3/16/2015").getTime()));
-		stmt.setInt(12, SessionType.EC.ordinal());
-		stmt.execute();
-		stmt.close();
-		
-		stmt = conn.prepareStatement("INSERT INTO SessionClinicians (sessionID, clinicianID) VALUES (?, ?), (?, ?), (?, ?)");
-		stmt.setInt(1, 0);
-		stmt.setInt(2, 0);
-		stmt.setInt(3, 0);
-		stmt.setInt(4, 1);
-		stmt.setInt(5, 1);
-		stmt.setInt(6, 1);
-		stmt.execute();
-		stmt.close();
-		
-		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, format.parse("3/18/2015"), SessionType.IA, clinicians, Semester.Fall, 0);
-		
+		SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday, DateRangeValidator.parseDate("3/18/2015"), SessionType.IA, clinicians, Semester.Fall, IAWeektype.A);
 		List<Integer> otherClinicians = new ArrayList<Integer>();
 		otherClinicians.add(1);
-		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, format.parse("3/16/2015"), SessionType.EC, otherClinicians, Semester.Fall, 0);
-		
+		SessionBean otherSession = new SessionBean(1, 10, 1, Weekday.Monday, DateRangeValidator.parseDate("3/16/2015"), SessionType.EC, otherClinicians, Semester.Fall, IAWeektype.A);
+		sessionsDAO.insertSession(session);
+		sessionsDAO.insertSession(otherSession);
 		sessionsDAO.deleteSession(session);
 		
-		stmt = conn.prepareStatement("SELECT id, startTime, duration, weekday, sDate, sType FROM Sessions");
-		stmt.execute();
-		ResultSet results = stmt.getResultSet();
-		results.next();
-		int id = results.getInt("id");
-		int startTime = results.getInt("startTime");
-		int duration = results.getInt("duration");
-		String weekday = results.getString("weekday");
-		Date date = results.getDate("sDate");
-		int type = results.getInt("sType");
-		stmt.close();
-		
-		List<Integer> actualClinicians = new ArrayList<Integer>();
-		
-		stmt = conn.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
-		stmt.setInt(1, 1);
-		stmt.execute();
-		results = stmt.getResultSet();
-		results.next();
-		actualClinicians.add(results.getInt("clinicianID"));
-		stmt.close();
-		
-		SessionBean actualSession = new SessionBean(id, startTime, duration, Weekday.valueOf(weekday), date, SessionType.values()[type], actualClinicians, Semester.Fall, 0);
-		assertEquals(otherSession, actualSession);
+		List<SessionBean> actualSessions = sessionsDAO.loadSessions();
+		List<SessionBean> expectedSessions = new ArrayList<SessionBean>();
+		expectedSessions.add(otherSession);
+		assertEquals(expectedSessions, actualSessions);
 	}
 	
 	@Test
 	public void testInvalidECSessions() throws ParseException, SQLException{
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		sessionsDAO.insertSession(new SessionBean(0, 20, 1, Weekday.Monday, format.parse("03/17/2015"), 
-				SessionType.EC, new ArrayList<Integer>(), Semester.Fall, 0)); 
+		sessionsDAO.insertSession(new SessionBean(0, 20, 1, Weekday.Monday, DateRangeValidator.parseDate("03/17/2015"), 
+				SessionType.EC, new ArrayList<Integer>(), Semester.Fall, IAWeektype.A)); 
 		
 		List<SessionBean> invalidSessions = sessionsDAO.getInvalidECSessions(Semester.Fall.ordinal(), 2015);
 		assertNotEquals(0, invalidSessions.size());
@@ -218,9 +117,8 @@ public class SessionsDAOTest {
 	@Test
 	public void testInvalidIASessions() throws ParseException, SQLException{
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy"); 
-		sessionsDAO.insertSession(new SessionBean(1, 16, 1, Weekday.Monday, format.parse("03/17/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Fall, 0));
+		sessionsDAO.insertSession(new SessionBean(1, 16, 1, Weekday.Monday, DateRangeValidator.parseDate("03/17/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Fall, IAWeektype.A));
 		
 		List<SessionBean> invalidSessions = sessionsDAO.getInvalidIASessions(Semester.Fall, 2015);
 		assertNotEquals(0, invalidSessions.size()); 
@@ -229,11 +127,10 @@ public class SessionsDAOTest {
 	@Test
 	public void testWeeklyECSessionConstraintViolation() throws SQLException, ParseException {
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		sessionsDAO.insertSession(new SessionBean(0, 8, 1, Weekday.Monday, format.parse("03/16/2015"), 
-				SessionType.EC, Arrays.asList(0), Semester.Spring, 1)); 
-		sessionsDAO.insertSession(new SessionBean(1, 16, 1, Weekday.Wednesday, format.parse("03/18/2015"), 
-				SessionType.EC, Arrays.asList(0), Semester.Spring, 1)); 
+		sessionsDAO.insertSession(new SessionBean(0, 8, 1, Weekday.Monday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.EC, Arrays.asList(0), Semester.Spring, IAWeektype.B)); 
+		sessionsDAO.insertSession(new SessionBean(1, 16, 1, Weekday.Wednesday, DateRangeValidator.parseDate("03/18/2015"), 
+				SessionType.EC, Arrays.asList(0), Semester.Spring, IAWeektype.B)); 
 		
 		List<String> invalidSessions = sessionsDAO.getWeeklyECSessionConstraintViolation(Semester.Spring, 2015);
 		assertEquals(1, invalidSessions.size());
@@ -242,11 +139,10 @@ public class SessionsDAOTest {
 	@Test
 	public void testDailyIASessionConstraintViolation() throws SQLException, ParseException {
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		sessionsDAO.insertSession(new SessionBean(0, 11, 1, Weekday.Monday, format.parse("03/16/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Spring, 1)); 
-		sessionsDAO.insertSession(new SessionBean(1, 15, 1, Weekday.Monday, format.parse("03/16/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Spring, 1)); 
+		sessionsDAO.insertSession(new SessionBean(0, 11, 1, Weekday.Monday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Spring, IAWeektype.B)); 
+		sessionsDAO.insertSession(new SessionBean(1, 15, 1, Weekday.Monday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Spring, IAWeektype.B)); 
 		
 		List<String> invalidSessions = sessionsDAO.getDailyIASessionConstraintViolation(Semester.Spring, 2015);
 		assertEquals(1, invalidSessions.size());
@@ -255,11 +151,10 @@ public class SessionsDAOTest {
 	@Test
 	public void testAlternatingIAFridayConstraintViolation() throws SQLException, ParseException {
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		sessionsDAO.insertSession(new SessionBean(0, 15, 1, Weekday.Friday, format.parse("03/16/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Fall, 1)); 
-		sessionsDAO.insertSession(new SessionBean(1, 15, 1, Weekday.Friday, format.parse("03/16/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Spring, 1)); 
+		sessionsDAO.insertSession(new SessionBean(0, 15, 1, Weekday.Friday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Fall, IAWeektype.B)); 
+		sessionsDAO.insertSession(new SessionBean(1, 15, 1, Weekday.Friday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Spring, IAWeektype.B)); 
 		
 		List<String> invalidSessions = sessionsDAO.getAlternatingIAFridayConstraintViolation(Semester.Fall, 2015);
 		assertEquals(1, invalidSessions.size());
@@ -268,17 +163,12 @@ public class SessionsDAOTest {
 	@Test
 	public void testNoonECConstraintViolation() throws SQLException, ParseException {
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
-		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
-		sessionsDAO.insertSession(new SessionBean(0, 12, 1, Weekday.Friday, format.parse("03/16/2015"), 
-				SessionType.EC, Arrays.asList(0), Semester.Fall, 1)); 
-		sessionsDAO.insertSession(new SessionBean(1, 13, 1, Weekday.Friday, format.parse("03/16/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Fall, 1)); 
+		sessionsDAO.insertSession(new SessionBean(0, 12, 1, Weekday.Friday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.EC, Arrays.asList(0), Semester.Fall, IAWeektype.B)); 
+		sessionsDAO.insertSession(new SessionBean(1, 13, 1, Weekday.Friday, DateRangeValidator.parseDate("03/16/2015"), 
+				SessionType.IA, Arrays.asList(0), Semester.Fall, IAWeektype.B)); 
 		
 		List<String> invalidSessions = sessionsDAO.getNoonECConstraintViolation(Semester.Fall, 2015);
 		assertEquals(1, invalidSessions.size());
 	}
-	
-	
-	
-	
 }

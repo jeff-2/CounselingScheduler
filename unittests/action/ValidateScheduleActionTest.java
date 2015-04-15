@@ -20,6 +20,7 @@ import org.junit.Test;
 import utils.Logger;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
+import bean.IAWeektype;
 import bean.Semester;
 import bean.SessionBean;
 import bean.SessionType;
@@ -92,9 +93,9 @@ public class ValidateScheduleActionTest {
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		sessionsDAO.insertSession(new SessionBean(10000, 11, 1, Weekday.Monday, format.parse("03/14/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Fall, 1)); 
+				SessionType.IA, Arrays.asList(0), Semester.Fall, IAWeektype.B)); 
 		sessionsDAO.insertSession(new SessionBean(101000, 13, 1, Weekday.Monday, format.parse("03/14/2015"), 
-				SessionType.IA, Arrays.asList(0), Semester.Fall, 1)); 
+				SessionType.IA, Arrays.asList(0), Semester.Fall, IAWeektype.B)); 
 	}
 	
 	private void generateValidSchedule() throws ParseException, SQLException {
