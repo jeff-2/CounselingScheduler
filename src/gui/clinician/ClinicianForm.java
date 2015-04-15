@@ -7,12 +7,12 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -20,6 +20,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 
@@ -27,14 +28,13 @@ import net.miginfocom.swing.MigLayout;
 import validator.DateRangeValidator;
 import validator.InvalidDateRangeException;
 import action.ClinicianPreferencesAction;
-import bean.CalendarBean;
+import action.ImportClinicianMeetingsAction;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.OperatingHours;
 import bean.Semester;
 import bean.TimeAwayBean;
 import bean.Weekday;
-import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
@@ -53,18 +53,22 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private JLabel nameLabel, preferenceFormLabel, periodLabel, timeAwayLabel;
 	private JScrollPane timeAwayPane, commitmentsPane;
 	private JList<TimeAwayBean> timeAway;
-	private JList<CommitmentBean> commitments;
+	private JList<String> commitments;
+	private List<List<CommitmentBean>> commitmentList;
 	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
 	private JTextField commitmentDescription;
 	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
-	private JLabel commitmentHourLabel, commitmentDayLabel, commitmentDescriptionLabel;
+	private JTextArea timeAwayDescription, ecPreferencesDescription, conflictsDescription;
+	private JLabel commitmentStartTimeLabel, commitmentEndTimeLabel, commitmentFrequencyLabel, commitmentDayLabel, commitmentDescriptionLabel, externalCommitmentLabel;
 	private JLabel timeLabel, rankLabel;
 	private JLabel morningLabel, noonLabel, afternoonLabel;
+	private JLabel ecPreferencesLabel, conflictsLabel, iaTimesLabel, ecTimesLabel;
 	private JButton addTimeAwayButton, removeTimeAwayButton;
 	private JButton addCommitmentButton, removeCommitmentButton;
 	private JButton clearButton, submitButton;
-	private JComboBox<String> daysOfWeekBox, operatingHoursBox;
+	private JComboBox<String> daysOfWeekBox, startTimeBox, endTimeBox, frequencyBox;
 	private JComboBox<Integer> morningRankBox, noonRankBox, afternoonRankBox;
+	private JCheckBox externalCommitment;
 	private JTextField nameField;
 	private static final int NAME_LENGTH = 20;
 	private Semester semester;
@@ -82,6 +86,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		this.year = year;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		commitmentList = new ArrayList<List<CommitmentBean>>();
 		initializeComponents();
 		initializeFrame();
 	}
@@ -119,14 +124,42 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private void initializeLabels() {
 		nameLabel = new JLabel("NAME:");
 		preferenceFormLabel = new JLabel(semester.name() + " " + year + " IA/EC Preference Form");
-		periodLabel = new JLabel("This covers the period from " + DateRangeValidator.formatDate(startDate) + "-" + DateRangeValidator.formatDate(endDate));
+		periodLabel = new JLabel("This covers the period from " + DateRangeValidator.formatDateLong(startDate) + " through " + DateRangeValidator.formatDateLong(endDate) + ", " + year + ".");
 		timeAwayLabel = new JLabel(semester.name() + " Semester " + year + " \"Time Away\" Plans");
+		timeAwayDescription = new JTextArea("Please list the dates/days/times etc. that you know you will be away from the Center. Please include VACATIONS, CONFERENCES, SICK DAYS, JURY DUTY or any other circumstances that will take you out of the Center.");
+		timeAwayDescription.setLineWrap(true);
+		timeAwayDescription.setWrapStyleWord(true);
+		timeAwayDescription.setSize(880, 200);
+		timeAwayDescription.setEditable(false);
+		timeAwayDescription.setBackground(this.getBackground());
+		timeAwayDescription.setFont(periodLabel.getFont());
 		timeAwayNameLabel = new JLabel("Description");
 		timeAwayStartDateLabel = new JLabel("Start Date");
 		timeAwayEndDateLabel = new JLabel("End Date");
-		commitmentHourLabel = new JLabel("Hour");
-		commitmentDayLabel = new JLabel("Day");
-		commitmentDescriptionLabel = new JLabel("Description");
+		conflictsLabel = new JLabel("Initial Appointment / Emergency Coverage Conflicts");
+		iaTimesLabel = new JLabel("We offer IAs at 11:00 a.m., 1:00 p.m., 2:00 p.m. and 3:00 p.m. during the " + semester + " Semester.");
+		ecTimesLabel = new JLabel("1-Hour Emergency Coverage shifts are at 8:00 a.m., Noon, and 4:00 p.m. every day.");
+		conflictsDescription = new JTextArea("Please indicate \"impossible\" shift times due to other activities, such as groups and meetings/committees. You do not need to list vacation/conferences again, since you have already listed them above.");
+		conflictsDescription.setLineWrap(true);
+		conflictsDescription.setWrapStyleWord(true);
+		conflictsDescription.setSize(880, 200);
+		conflictsDescription.setEditable(false);
+		conflictsDescription.setBackground(this.getBackground());
+		conflictsDescription.setFont(periodLabel.getFont());
+		commitmentStartTimeLabel = new JLabel("Start Time");
+		commitmentEndTimeLabel = new JLabel("End Time");
+		commitmentFrequencyLabel = new JLabel("Frequency");
+		externalCommitmentLabel = new JLabel("External");
+		commitmentDayLabel = new JLabel("Day of Week");
+		commitmentDescriptionLabel = new JLabel("Activity or Meeting");
+		ecPreferencesLabel = new JLabel("E.C. Preferences");
+		ecPreferencesDescription = new JTextArea("Please rank your preferences for E.C. shifts. We will try to take your preferences into account but we cannot guarantee they will be reflected in your schedule.");
+		ecPreferencesDescription.setLineWrap(true);
+		ecPreferencesDescription.setWrapStyleWord(true);
+		ecPreferencesDescription.setSize(780, 200);
+		ecPreferencesDescription.setEditable(false);
+		ecPreferencesDescription.setBackground(this.getBackground());
+		ecPreferencesDescription.setFont(periodLabel.getFont());
 		timeLabel = new JLabel("Time");
 		rankLabel = new JLabel("Rank");
 		morningLabel = new JLabel("8:00am");
@@ -143,10 +176,10 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		addTimeAwayButton.addActionListener(this);
 		removeTimeAwayButton = new JButton("Remove Time Away");
 		removeTimeAwayButton.addActionListener(this);
-		addCommitmentButton = new JButton("Add Commitment");
+		addCommitmentButton = new JButton("Add Conflict");
 		addCommitmentButton.setName("addCommitmentButton");
 		addCommitmentButton.addActionListener(this);
-		removeCommitmentButton = new JButton("Remove Commitment");
+		removeCommitmentButton = new JButton("Remove Conflict");
 		removeCommitmentButton.addActionListener(this);
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(this);
@@ -162,8 +195,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		timeAway = new JList<TimeAwayBean>();
 		timeAway.setModel(new DefaultListModel<TimeAwayBean>());
 		timeAwayPane = new JScrollPane(timeAway);
-		commitments = new JList<CommitmentBean>();
-		commitments.setModel(new DefaultListModel<CommitmentBean>());
+		commitments = new JList<String>();
+		commitments.setModel(new DefaultListModel<String>());
 		commitmentsPane = new JScrollPane(commitments);
 	}
 	
@@ -171,11 +204,24 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 * Initialize combo boxes.
 	 */
 	private void initializeComboBoxes() {
-		operatingHoursBox = new JComboBox<String>();
-		operatingHoursBox.setName("operatingHoursBox");
+		startTimeBox = new JComboBox<String>();
+		startTimeBox.setName("startTimeBox");
+		endTimeBox = new JComboBox<String>();
+		endTimeBox.setName("endTimeBox");
 		for (String hour : OperatingHours.getOperatingHours()) {
-			operatingHoursBox.addItem(hour);
+			startTimeBox.addItem(hour);
+			String midHour = hour.replaceAll(":00", ":30");
+			startTimeBox.addItem(midHour);
+			endTimeBox.addItem(hour);
+			endTimeBox.addItem(midHour);
 		}
+		frequencyBox = new JComboBox<String>();
+		frequencyBox.setName("frequencyBox");
+		frequencyBox.addItem("Weekly");
+		frequencyBox.addItem("Biweekly");
+		frequencyBox.addItem("Monthly");
+		externalCommitment = new JCheckBox();
+		externalCommitment.setSelected(false);
 		
 		daysOfWeekBox = new JComboBox<String>();
 		daysOfWeekBox.setName("daysOfWeekBox");
@@ -199,7 +245,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 * Initialize frame.
 	 */
 	private void initializeFrame() {
-		panel.setPreferredSize(new Dimension(600, 600));
+		panel.setPreferredSize(new Dimension(900, 800));
 		
 		panel.add(nameLabel);
 		panel.add(nameField, "wrap, align center");
@@ -224,6 +270,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 */
 	private void addTimeAwayComponents() {
 		panel.add(timeAwayLabel, "align center, span, wrap");
+		panel.add(timeAwayDescription, "align center, span, wrap");
 		panel.add(timeAwayNameLabel);
 		panel.add(timeAwayName);
 		panel.add(timeAwayStartDateLabel);
@@ -239,10 +286,20 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 * Adds the commitment components.
 	 */
 	private void addCommitmentComponents() {
-		panel.add(commitmentHourLabel);
-		panel.add(operatingHoursBox);
+		panel.add(conflictsLabel, "align center, span, wrap");
+		panel.add(iaTimesLabel, "align center, span, wrap");
+		panel.add(ecTimesLabel, "align center, span, wrap");
+		panel.add(conflictsDescription, "align center, span, wrap");
+		panel.add(commitmentStartTimeLabel);
+		panel.add(startTimeBox);
+		panel.add(commitmentEndTimeLabel);
+		panel.add(endTimeBox);
 		panel.add(commitmentDayLabel);
 		panel.add(daysOfWeekBox);
+		panel.add(commitmentFrequencyLabel);
+		panel.add(frequencyBox);
+		panel.add(externalCommitmentLabel);
+		panel.add(externalCommitment);
 		panel.add(commitmentDescriptionLabel);
 		panel.add(commitmentDescription, "wrap");
 		panel.add(commitmentsPane, "grow, span, wrap");
@@ -254,6 +311,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 * Adds the preference components.
 	 */
 	private void addPreferenceComponents() {
+		panel.add(ecPreferencesLabel, "align center, span, wrap");
+		panel.add(ecPreferencesDescription, "align center, span, wrap");
 		panel.add(timeLabel);
 		panel.add(morningLabel);
 		panel.add(noonLabel);
@@ -326,38 +385,17 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		
 		ClinicianPreferencesDAO clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
 		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank,afternoonRank);
-		ClinicianPreferencesBean existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);
-		
+		ClinicianPreferencesBean existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);	
 
-		CalendarDAO calendarDAO = new CalendarDAO(conn);
-		CalendarBean calendar = calendarDAO.loadCalendar();
-
-		List<CommitmentBean> cmts = toCommitmentList(commitments.getModel());
 		List<CommitmentBean> allCommitments = new ArrayList<CommitmentBean>();
 
-		for (CommitmentBean commitment: cmts) {
-			
-			Calendar calStart = Calendar.getInstance();
-			calStart.setTime(calendar.getStartDate());
-			Calendar calEnd = Calendar.getInstance();
-			calEnd.setTime(calendar.getEndDate());
-			
-			int dayOfWeek = Weekday.valueOf(Weekday.dayName(commitment.getDate())).ordinal() + 2;
-			calStart.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-			if (calStart.getTime().before(calendar.getStartDate())) {
-				calStart.add(Calendar.DATE, 7);
-			}
-			
-			while (!calStart.after(calEnd)) {
-			    Date currentDate = calStart.getTime();
-			    allCommitments.add(new CommitmentBean(commitment.getClinicianID(), commitment.getStartHour(), commitment.getEndHour(), currentDate, commitment.getDescription()));
-			    calStart.add(Calendar.DATE, 7);
+		for (List<CommitmentBean> list : commitmentList) {
+			for (CommitmentBean commitment: list) {
+				allCommitments.add(commitment);
 			}
 		}
 		
-		
-		ClinicianPreferencesAction action = new ClinicianPreferencesAction(preferences, 
-				allCommitments, toTimeAwayList(timeAway.getModel()), conn);
+		ClinicianPreferencesAction action = new ClinicianPreferencesAction(preferences, allCommitments, toTimeAwayList(timeAway.getModel()), conn);
 		if (existing == null) {
 			action.insertPreferences();
 		} else {
@@ -376,14 +414,6 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			    "Successfully inserted clinician preferences!",
 			    "SUCCESS",
 			    JOptionPane.INFORMATION_MESSAGE);
-	}
-	
-	private static List<CommitmentBean> toCommitmentList(ListModel<CommitmentBean> model) {
-		List<CommitmentBean> cmts = new ArrayList<CommitmentBean>();
-		for (int i = 0; i < model.getSize(); i++) {
-			cmts.add(model.getElementAt(i));
-		}
-		return cmts;
 	}
 	
 	private static List<TimeAwayBean> toTimeAwayList(ListModel<TimeAwayBean> model) {
@@ -442,8 +472,16 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private void addCommitment() {
 		String description = commitmentDescription.getText().trim();
 		String dayOfWeek = ((String)daysOfWeekBox.getSelectedItem());
-		String hourOfDay = ((String)operatingHoursBox.getSelectedItem());
+		String startTime = ((String)startTimeBox.getSelectedItem());
+		String endTime = ((String)endTimeBox.getSelectedItem());
+		String frequency = ((String)frequencyBox.getSelectedItem());
+		boolean isExternal = externalCommitment.isSelected();
 		
+		String commitmentString = "";
+		if (isExternal) {
+			commitmentString += "External ";
+		}
+		commitmentString += "Meeting: " + description + " "  + frequency + " on " + dayOfWeek + " from " + startTime + " to " + endTime;
 		
 		if (description.isEmpty()) {
 			JOptionPane.showMessageDialog(this,
@@ -455,13 +493,65 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		
 		commitmentDescription.setText("");
 		
-		DefaultListModel<CommitmentBean> model = (DefaultListModel<CommitmentBean>) commitments.getModel();
-
-		Calendar cal = Calendar.getInstance();
-		int weekDay = Weekday.valueOf(dayOfWeek).ordinal();
-		cal.set(Calendar.DAY_OF_WEEK, weekDay + 2);
-		Date date = cal.getTime();
-		model.add(model.size(), new CommitmentBean(-1, OperatingHours.toInt(hourOfDay), OperatingHours.toInt(hourOfDay) + 1, date, description));
+		DefaultListModel<String> model = (DefaultListModel<String>) commitments.getModel();
+		
+		startTime = startTime.replaceAll(" ", "");
+		endTime = endTime.replaceAll(" ", "");
+		// give half hour for travel before/after
+		if (isExternal) {
+			if (startTime.contains(":30")) {
+				startTime = startTime.replaceAll(":30", ":00");
+			} else {
+				// decrement hour, and set to :30
+				int hour = Integer.parseInt(startTime.substring(0, startTime.indexOf(":"))) - 1;
+				if (hour == 11) {
+					startTime = startTime.replaceAll("pm", "am");
+				}
+				startTime = hour + ":30" + startTime.substring(startTime.indexOf('m') - 1);
+			}
+			if (endTime.contains(":30")) {
+				// increment hour and set to :00
+				int hour = Integer.parseInt(endTime.substring(0, endTime.indexOf(":"))) + 1;
+				if (hour == 12) {
+					endTime = endTime.replaceAll("am", "pm");
+				} else if (hour > 12) {
+					hour -= 12;
+				}
+				endTime = hour + ":00" + endTime.substring(endTime.indexOf('m') - 1);
+			} else {
+				endTime = endTime.replaceAll(":00", ":30");
+			}
+		}
+		
+		int startHour = parseTime(startTime, false);
+		int endHour = parseTime(endTime, true);
+		List<CommitmentBean> list = new ArrayList<CommitmentBean>();
+		// from start date to end date, go through and add commitments for these
+		List<Date> meetingDates;
+		if (frequency.equals("Weekly")) {
+			meetingDates = ImportClinicianMeetingsAction.getMeetingDatesWeekly(startDate, endDate, 7, dayOfWeek);
+		} else if (frequency.equals("Biweekly")) {
+			meetingDates = ImportClinicianMeetingsAction.getMeetingDatesWeekly(startDate, endDate, 14, dayOfWeek);
+		} else {
+			meetingDates = ImportClinicianMeetingsAction.getMeetingDatesMonthly(startDate, endDate, 1, dayOfWeek);
+		}
+		for (Date meetingDate : meetingDates) {
+			list.add(new CommitmentBean(-1, startHour, endHour, meetingDate, description));
+		}
+		commitmentList.add(list);
+		model.add(model.size(), commitmentString);
+	}
+	
+	private int parseTime(String timeString, boolean roundUp) {
+		int colonIndex = timeString.indexOf(":");
+		int time = Integer.parseInt(timeString.substring(0, colonIndex));
+		if (roundUp && timeString.contains(":30")) {
+			time = (Integer.parseInt(timeString.substring(0, colonIndex)) + 1);
+		}
+		if (timeString.contains("pm") && time < 12) {
+			time += 12;
+		}
+		return time;
 	}
 	
 	/**
@@ -481,8 +571,9 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private void removeCommitment() {
 		int index = commitments.getSelectedIndex();
 		if (index >= 0) {
-			DefaultListModel<CommitmentBean> oldModel = (DefaultListModel<CommitmentBean>) commitments.getModel();
+			DefaultListModel<String> oldModel = (DefaultListModel<String>) commitments.getModel();
 			oldModel.remove(index);
+			commitmentList.remove(index);
 		}
 	}
 	
@@ -495,7 +586,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		timeAwayStartDate.setText("");
 		timeAwayEndDate.setText("");
 		commitmentDescription.setText("");
-		((DefaultListModel<CommitmentBean>)commitments.getModel()).clear();
+		((DefaultListModel<String>)commitments.getModel()).clear();
+		commitmentList.clear();
 		((DefaultListModel<TimeAwayBean>)timeAway.getModel()).clear();
 		this.repaint();
 	}

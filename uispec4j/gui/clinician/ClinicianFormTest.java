@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.uispec4j.Button;
+import org.uispec4j.CheckBox;
 import org.uispec4j.ComboBox;
 import org.uispec4j.TextBox;
 import org.uispec4j.Trigger;
@@ -113,8 +114,64 @@ public class ClinicianFormTest extends UISpecTestCase {
 		assertEquals("", nameField.getText());
 	}
 	
-	public void testInsertClinicianForm() throws Exception {
-		insertData();
+	public void testInsertClinicianFormExternal() throws Exception {
+		insertData("Biweekly", true);
+		
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
+		
+		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		expectedCommitments.add(new CommitmentBean(0, 7, 10, DateRangeValidator.parseDate("3/25/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 7, 10, DateRangeValidator.parseDate("4/8/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 7, 10, DateRangeValidator.parseDate("4/22/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 9, 12, DateRangeValidator.parseDate("3/30/2015"), "other desc"));
+		expectedCommitments.add(new CommitmentBean(0, 9, 12, DateRangeValidator.parseDate("4/13/2015"), "other desc"));
+		expectedCommitments.add(new CommitmentBean(0, 9, 12, DateRangeValidator.parseDate("4/27/2015"), "other desc"));
+		
+		assertEquals(preferences, actualPreferences);
+		assertEquals(expectedCommitments, actualCommitments);
+		assertEquals(timeAway, actualTimeAway);
+	}
+	
+	public void testInsertClinicianFormBiweekly() throws Exception {
+		insertData("Biweekly", false);
+		
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
+		
+		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		expectedCommitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("3/25/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/8/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/22/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("3/30/2015"), "other desc"));
+		expectedCommitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/13/2015"), "other desc"));
+		expectedCommitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/27/2015"), "other desc"));
+		
+		assertEquals(preferences, actualPreferences);
+		assertEquals(expectedCommitments, actualCommitments);
+		assertEquals(timeAway, actualTimeAway);
+	}
+	
+	public void testInsertClinicianFormMonthly() throws Exception {
+		insertData("Monthly", false);
+		
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
+		
+		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		expectedCommitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/1/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("4/6/2015"), "other desc"));
+		
+		assertEquals(preferences, actualPreferences);
+		assertEquals(expectedCommitments, actualCommitments);
+		assertEquals(timeAway, actualTimeAway);
+	}
+	
+	public void testInsertClinicianFormWeekly() throws Exception {
+		insertData("Weekly", false);
 		
 		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
 		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
@@ -125,7 +182,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		assertEquals(timeAway, actualTimeAway);
 	}
 	
-	private void insertData() throws Exception {
+	private void insertData(String frequency, boolean isExternal) throws Exception {
 		Window window = this.getMainWindow();
 		TextBox nameField = window.getTextBox("nameField");
 		nameField.setText("Jeff");
@@ -150,18 +207,36 @@ public class ClinicianFormTest extends UISpecTestCase {
 		TextBox commitmentDescription = window.getTextBox("commitmentDescription");
 		commitmentDescription.setText("desc");
 		
-		ComboBox operatingHoursBox = window.getComboBox("operatingHoursBox");
-		operatingHoursBox.select("8:00 am");
+		ComboBox startTimeBox = window.getComboBox("startTimeBox");
+		startTimeBox.select("8:00 am");
+		
+		ComboBox endTimeBox = window.getComboBox("endTimeBox");
+		endTimeBox.select("9:00 am");
 		
 		ComboBox daysOfWeekBox = window.getComboBox("daysOfWeekBox");
 		daysOfWeekBox.select("Wednesday");
+		
+		ComboBox frequencyBox = window.getComboBox("frequencyBox");
+		frequencyBox.select(frequency);
+		
+		if (isExternal) {
+			CheckBox checkBox = window.getCheckBox();
+			checkBox.select();
+		}
 		
 		Button addCommitmentButton = window.getButton("addCommitmentButton");
 		addCommitmentButton.click();
 		
 		commitmentDescription.setText("other desc");
-		operatingHoursBox.select("10:00 am");
+		startTimeBox.select("10:00 am");
+		endTimeBox.select("11:00 am");
 		daysOfWeekBox.select("Monday");
+		frequencyBox.select(frequency);
+		
+		if (isExternal) {
+			CheckBox checkBox = window.getCheckBox();
+			checkBox.select();
+		}
 		addCommitmentButton.click();
 		
 		ComboBox morningRankBox = window.getComboBox("morningRankBox");
@@ -178,7 +253,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 	}
 	
 	public void testCancelUpdateClinicianForm() throws Exception {
-		insertData();
+		insertData("Weekly", false);
 		Window window = this.getMainWindow();
 		Button submitButton = window.getButton("submitButton");
 		
@@ -202,7 +277,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 	}
 	
 	public void testUpdateClinicianForm() throws Exception {
-		insertData();
+		insertData("Weekly", false);
 		Window window = this.getMainWindow();
 		Button submitButton = window.getButton("submitButton");
 		submitButton.click();
@@ -261,11 +336,17 @@ public class ClinicianFormTest extends UISpecTestCase {
 		TextBox commitmentDescription = window.getTextBox("commitmentDescription");
 		commitmentDescription.setText("pear");
 		
-		ComboBox operatingHoursBox = window.getComboBox("operatingHoursBox");
-		operatingHoursBox.select("3:00 pm");
+		ComboBox startTimeBox = window.getComboBox("startTimeBox");
+		startTimeBox.select("3:00 pm");
+		
+		ComboBox endTimeBox = window.getComboBox("endTimeBox");
+		endTimeBox.select("4:00 pm");
 		
 		ComboBox daysOfWeekBox = window.getComboBox("daysOfWeekBox");
 		daysOfWeekBox.select("Wednesday");
+		
+		ComboBox frequencyBox = window.getComboBox("frequencyBox");
+		frequencyBox.select("Weekly");
 		
 		Button addCommitmentButton = window.getButton("addCommitmentButton");
 		addCommitmentButton.click();

@@ -88,57 +88,61 @@ public class ImportClinicianMeetingsAction {
 						excelRow.put(titles.get(j), cell.getStringCellValue());
 					}
 				}
-				List<Date> meetingDates = getMeetingDates(excelRow, endDate);
-				String startTime = (String)excelRow.get("Start Time");
-				int sTime = parseTime(startTime, false);
-				if (sTime == -1) {
-					workbook.close();
-					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(startTime, "Start Time"));
-				}
-				String endTime = (String)excelRow.get("End Time");
-				int eTime = parseTime(endTime, true);
-				if (eTime == -1) {
-					workbook.close();
-					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(endTime, "End Time"));
-				}
-				String meetingName = (String)excelRow.get("Meeting");
-				if (meetingName == null || meetingName.isEmpty()) {
-					workbook.close();
-					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(meetingName, "Meeting"));
-				}
-				String staffMembers = (String)excelRow.get("Staff Members");
-				if (staffMembers == null || staffMembers.isEmpty()) {
-					workbook.close();
-					throw new InvalidExcelFormatException(formatInvalidExcelFormatString(staffMembers, "Staff Members"));
-				}
-				staffMembers = staffMembers.replaceAll(" ", "");
-				if (staffMembers.equalsIgnoreCase("ALL")) {
-					List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
-					for (Date meetingDate : meetingDates) {
-						for (ClinicianBean clinician: clinicians) {
-							int clinicianID = clinician.getClinicianID();
-							CommitmentBean commitment = new CommitmentBean(clinicianID, sTime, eTime, meetingDate, meetingName);
-							commitmentsDAO.insert(commitment);
-						}
-					}
-				} else {
-					staffMembers = staffMembers.replaceAll("[\\[()\\]]", "");
-					String [] staff = staffMembers.split(",");
-					for (Date meetingDate : meetingDates) {
-						for (String staffMember : staff) {
-							int clinicianID = clinicianDAO.getClinicianID(staffMember);
-							if (clinicianID != -1) {
-								CommitmentBean commitment = new CommitmentBean(clinicianID, sTime, eTime, meetingDate, meetingName);
-								commitmentsDAO.insert(commitment);
-							}
-						}
-					}
-				}
+				parseRowAndInsertMeetings(excelRow, endDate);
 			}
 			workbook.close();
 			file.close();
 		} catch (IOException e) {
 			e.printStackTrace();
+		}
+	}
+	
+	private void parseRowAndInsertMeetings(Map<String, Object> excelRow, Date endDate) throws InvalidExcelFormatException, SQLException {
+		List<Date> meetingDates = getMeetingDates(excelRow, endDate);
+		String startTime = (String)excelRow.get("Start Time");
+		int sTime = parseTime(startTime, false);
+		if (sTime == -1) {
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(startTime, "Start Time"));
+		}
+		String endTime = (String)excelRow.get("End Time");
+		int eTime = parseTime(endTime, true);
+		if (eTime == -1) {
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(endTime, "End Time"));
+		}
+		String meetingName = (String)excelRow.get("Meeting");
+		if (meetingName == null || meetingName.isEmpty()) {
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(meetingName, "Meeting"));
+		}
+		String staffMembers = (String)excelRow.get("Staff Members");
+		if (staffMembers == null || staffMembers.isEmpty()) {
+			throw new InvalidExcelFormatException(formatInvalidExcelFormatString(staffMembers, "Staff Members"));
+		}
+		insertMeetings(meetingDates, staffMembers, sTime, eTime, meetingName);
+	}
+	
+	private void insertMeetings(List<Date> meetingDates, String staffMembers, int sTime, int eTime, String meetingName) throws SQLException {
+		staffMembers = staffMembers.replaceAll(" ", "");
+		if (staffMembers.equalsIgnoreCase("ALL")) {
+			List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
+			for (Date meetingDate : meetingDates) {
+				for (ClinicianBean clinician: clinicians) {
+					int clinicianID = clinician.getClinicianID();
+					CommitmentBean commitment = new CommitmentBean(clinicianID, sTime, eTime, meetingDate, meetingName);
+					commitmentsDAO.insert(commitment);
+				}
+			}
+		} else {
+			staffMembers = staffMembers.replaceAll("[\\[()\\]]", "");
+			String [] staff = staffMembers.split(",");
+			for (Date meetingDate : meetingDates) {
+				for (String staffMember : staff) {
+					int clinicianID = clinicianDAO.getClinicianID(staffMember);
+					if (clinicianID != -1) {
+						CommitmentBean commitment = new CommitmentBean(clinicianID, sTime, eTime, meetingDate, meetingName);
+						commitmentsDAO.insert(commitment);
+					}
+				}
+			}
 		}
 	}
 	
@@ -193,7 +197,7 @@ public class ImportClinicianMeetingsAction {
 	 * @param day the day of the week
 	 * @return the meeting dates at the specified frequency from start date to end date on the day specified
 	 */
-	private List<Date> getMeetingDatesWeekly(Date startDate, Date endDate, int daysBetweenMeetings, String day) {
+	public static List<Date> getMeetingDatesWeekly(Date startDate, Date endDate, int daysBetweenMeetings, String day) {
 		List<Date> dates = new ArrayList<Date>();
 		Calendar calStart = Calendar.getInstance();
 		calStart.setTime(startDate);
@@ -202,6 +206,9 @@ public class ImportClinicianMeetingsAction {
 		
 		int dayOfWeek = Weekday.valueOf(day).toCalendarWeekday();
 		calStart.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+		if (calStart.getTime().before(startDate)) {
+			calStart.add(Calendar.DATE, 7);
+		}
 		
 		while (!calStart.after(calEnd)) {
 		    Date currentDate = calStart.getTime();
@@ -220,7 +227,7 @@ public class ImportClinicianMeetingsAction {
 	 * @param day the day of the week
 	 * @return the meeting dates monthly for the specified day of the week
 	 */
-	private List<Date> getMeetingDatesMonthly(Date startDate, Date endDate, int dayOfMonth, String day) {
+	public static List<Date> getMeetingDatesMonthly(Date startDate, Date endDate, int dayOfMonth, String day) {
 		List<Date> dates = new ArrayList<Date>();
 		Calendar calStart = Calendar.getInstance();
 		calStart.setTime(startDate);
@@ -240,16 +247,16 @@ public class ImportClinicianMeetingsAction {
 		calStart.add(Calendar.WEEK_OF_MONTH, dayOfMonth - 1);
 		
 		while (!calStart.after(calEnd)) {
-			 Date currentDate = calStart.getTime();
-			 dates.add(currentDate);
-			 calStart.add(Calendar.MONTH, 1);
-			 calStart.set(Calendar.DATE, calStart.getActualMinimum(Calendar.DAY_OF_MONTH));
-			 prev = calStart.getTime();
-			 calStart.set(Calendar.DAY_OF_WEEK, dayOfWeek);
-			 if (calStart.getTime().before(prev)) {
-				 calStart.add(Calendar.DATE, 7);
-			 }
-			 calStart.add(Calendar.WEEK_OF_MONTH, dayOfMonth - 1);
+			Date currentDate = calStart.getTime();
+			dates.add(currentDate);
+			calStart.add(Calendar.MONTH, 1);
+			calStart.set(Calendar.DATE, calStart.getActualMinimum(Calendar.DAY_OF_MONTH));
+			prev = calStart.getTime();
+			calStart.set(Calendar.DAY_OF_WEEK, dayOfWeek);
+			if (calStart.getTime().before(prev)) {
+			 calStart.add(Calendar.DATE, 7);
+			}
+			calStart.add(Calendar.WEEK_OF_MONTH, dayOfMonth - 1);
 		}
 
 		return dates;

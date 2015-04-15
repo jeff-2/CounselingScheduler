@@ -13,10 +13,12 @@ import java.util.Date;
 public class DateRangeValidator {
 	
 	private static final SimpleDateFormat dateFormat;
+	private static final SimpleDateFormat longDateFormat;
 	
 	static {
 		dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		dateFormat.setLenient(false);
+		longDateFormat = new SimpleDateFormat("EEEEEEEEE, MMMMMMMM, d");
 	}
 	
 	/**
@@ -26,6 +28,15 @@ public class DateRangeValidator {
 	 */
 	public static String formatDate(Date date) {
 		return dateFormat.format(date);
+	}
+	
+	/**
+	 * Formats the date as a string in Day Of Week, Month, Date
+	 * @param date
+	 * @return date formatted as string
+	 */
+	public static String formatDateLong(Date date) {
+		return longDateFormat.format(date);
 	}
 	
 	/**
