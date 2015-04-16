@@ -7,8 +7,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -29,15 +35,19 @@ import validator.DateRangeValidator;
 import validator.InvalidDateRangeException;
 import action.ClinicianPreferencesAction;
 import action.ImportClinicianMeetingsAction;
+import bean.CalendarBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.OperatingHours;
 import bean.Semester;
 import bean.TimeAwayBean;
 import bean.Weekday;
+import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
+import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
+import dao.TimeAwayDAO;
 
 /**
  * The Class ClinicianForm.
@@ -74,11 +84,15 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private Semester semester;
 	private int year;
 	private Date startDate, endDate;
+	private boolean isAdmin;
+	private JLabel iaHoursLabel, ecHoursLabel;
+	private JTextField iaHours, ecHours;
+	private String clinicianName;
 
 	/**
 	 * Instantiates a new clinician form.
 	 */
-	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate) {
+	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate, boolean isAdmin) {
 		super("Clinician Input Form");
 		panel = new JPanel();
 		panel.setLayout(new MigLayout("gap rel", "grow"));
@@ -86,9 +100,24 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		this.year = year;
 		this.startDate = startDate;
 		this.endDate = endDate;
+		this.isAdmin = isAdmin;
 		commitmentList = new ArrayList<List<CommitmentBean>>();
 		initializeComponents();
 		initializeFrame();
+	}
+	
+	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate, boolean isAdmin, String name) {
+		this(semester, year, startDate, endDate, isAdmin);
+		this.clinicianName = name;
+		
+		if (isAdmin) {
+			try {
+				loadPreferences();
+			} catch (SQLException e) {
+				// TODO: show dialog or something
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -116,6 +145,12 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		timeAwayEndDate.setName("timeAwayEndDate");
 		commitmentDescription = new JTextField(7);
 		commitmentDescription.setName("commitmentDescription");
+		if (isAdmin) {
+			iaHours = new JTextField(7);
+			iaHours.setName("iaHours");
+			ecHours = new JTextField(7);
+			ecHours.setName("ecHours");
+		}
 	}
 	
 	/**
@@ -165,6 +200,10 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		morningLabel = new JLabel("8:00am");
 		noonLabel = new JLabel("12:00pm");
 		afternoonLabel = new JLabel("4:00pm");
+		if (isAdmin) {
+			iaHoursLabel = new JLabel("IA Hours Assigned");
+			ecHoursLabel = new JLabel("EC Hours Assigned");
+		}
 	}
 	
 	/**
@@ -255,6 +294,9 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		addTimeAwayComponents();
 		addCommitmentComponents();
 		addPreferenceComponents();
+		if (isAdmin) {
+			addAdminComponents();
+		}
 		
 		panel.add(clearButton);
 		panel.add(submitButton, "wrap");
@@ -322,6 +364,13 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		panel.add(noonRankBox);
 		panel.add(afternoonRankBox, "wrap");
 	}
+	
+	private void addAdminComponents() {
+		panel.add(iaHoursLabel);
+		panel.add(iaHours);
+		panel.add(ecHoursLabel);
+		panel.add(ecHours, "wrap");
+	}
 
 
 	/* (non-Javadoc)
@@ -383,8 +432,53 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			return;
 		}
 		
+		int iaNumHours, ecNumHours;
+		if (isAdmin) {
+			String myIAHours = iaHours.getText();
+			if (myIAHours.isEmpty()) {
+				JOptionPane.showMessageDialog(this,
+					    "You must enter the assigned number of IA hours",
+					    "Adding clinician ec preferences",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			try {
+				iaNumHours = Integer.parseInt(myIAHours);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this,
+					    "You must enter a valid integer for the assigned number of IA hours.",
+					    "Adding clinician ec preferences",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			String myECHours = ecHours.getText();
+			if (myECHours.isEmpty()) {
+				JOptionPane.showMessageDialog(this,
+					    "You must enter the assigned number of EC hours.",
+					    "Adding clinician ec preferences",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			try {
+				ecNumHours = Integer.parseInt(myECHours);
+			} catch (NumberFormatException e) {
+				JOptionPane.showMessageDialog(this,
+					    "You must enter a valid integer for the assigned number of EC hours.",
+					    "Adding clinician ec preferences",
+					    JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+			
+		} else {
+			// load values from calendar
+			CalendarDAO calendarDAO = new CalendarDAO(conn);
+			CalendarBean calendar = calendarDAO.loadCalendar();
+			iaNumHours = calendar.getIaMinHours();
+			ecNumHours = calendar.getEcMinHours();
+		}
+		
 		ClinicianPreferencesDAO clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank,afternoonRank);
+		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank, afternoonRank, iaNumHours, ecNumHours);
 		ClinicianPreferencesBean existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);	
 
 		List<CommitmentBean> allCommitments = new ArrayList<CommitmentBean>();
@@ -590,5 +684,158 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		commitmentList.clear();
 		((DefaultListModel<TimeAwayBean>)timeAway.getModel()).clear();
 		this.repaint();
+	}
+	
+	private class Commitment {
+		int id;
+		int startHour;
+		int endHour;
+		String description;
+		Weekday dayOfWeek;
+		
+		public Commitment(int id, int sHour, int eHour, String desc, Weekday day) {
+			this.id = id;
+			startHour = sHour;
+			endHour = eHour;
+			description = desc;
+			dayOfWeek = day;
+		}
+		
+		public int getId() {
+			return id;
+		}
+
+		public void setId(int id) {
+			this.id = id;
+		}
+
+		public int getStartHour() {
+			return startHour;
+		}
+
+		public void setStartHour(int startHour) {
+			this.startHour = startHour;
+		}
+
+		public int getEndHour() {
+			return endHour;
+		}
+
+		public void setEndHour(int endHour) {
+			this.endHour = endHour;
+		}
+
+		public String getDescription() {
+			return description;
+		}
+
+		public void setDescription(String description) {
+			this.description = description;
+		}
+
+		public Weekday getDayOfWeek() {
+			return dayOfWeek;
+		}
+
+		public void setDayOfWeek(Weekday dayOfWeek) {
+			this.dayOfWeek = dayOfWeek;
+		}
+	}
+	
+	private List<List<CommitmentBean>> getCommitmentList(List<CommitmentBean> commitments) {
+		Map<Commitment, List<CommitmentBean>> map = new HashMap<Commitment, List<CommitmentBean>>();
+		for (CommitmentBean commitment : commitments) {
+			Date date = commitment.getDate();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			int day = calendar.get(Calendar.DAY_OF_WEEK);
+			Weekday dayOfWeek = Weekday.values()[day - 2];
+			Commitment current = new Commitment(commitment.getClinicianID(), commitment.getStartHour(), commitment.getEndHour(), commitment.getDescription(), dayOfWeek);
+			if (map.containsKey(current)) {
+				List<CommitmentBean> list = map.get(current);
+				list.add(commitment);
+			} else {
+				List<CommitmentBean> list = new ArrayList<CommitmentBean>();
+				list.add(commitment);
+				map.put(current, list);
+			}
+		}
+		List<List<CommitmentBean>> commitmentList = new ArrayList<List<CommitmentBean>>();
+		for (List<CommitmentBean> list : map.values()) {
+			Collections.sort(list, new Comparator<CommitmentBean>() {
+				@Override
+				public int compare(CommitmentBean arg0, CommitmentBean arg1) {
+					return arg0.getDate().compareTo(arg1.getDate());
+				}
+			});
+			commitmentList.add(list);
+		}
+		return commitmentList;
+	}
+	
+	private List<String> getCommitmentStrings(List<List<CommitmentBean>> commitmentList) {
+		List<String> commitmentStrings = new ArrayList<String>();
+		for (List<CommitmentBean> list : commitmentList) {
+			CommitmentBean b1 = list.get(0);
+
+			String frequency = null;
+			if (list.size() == 2) {
+				CommitmentBean b2 = list.get(1);
+				long diff = b2.getDate().getTime() - b1.getDate().getTime();
+				long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+				if (days == 7) {
+					frequency = "Weekly";
+				} else if (days == 14) {
+					frequency = "Biweekly";
+				} else {
+					frequency = "Monthly";
+				}
+			}
+			Date date = b1.getDate();
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(date);
+			int day = calendar.get(Calendar.DAY_OF_WEEK);
+			Weekday dayOfWeek = Weekday.values()[day - 2];
+
+			String commitmentString;
+			if (frequency != null) {
+				commitmentString = "Meeting: " + b1.getDescription() + " "  + frequency + " on " + dayOfWeek + " from " + b1.getStartHour() + " to " + b1.getEndHour();
+			} else {
+				int year = calendar.get(Calendar.YEAR);
+				commitmentString = "Meeting: " + b1.getDescription() + " on " + DateRangeValidator.formatDateLong(date) + ", " + year +  " from " + b1.getStartHour() + " to " + b1.getEndHour();;
+			}
+			commitmentStrings.add(commitmentString);
+			continue;
+		}
+		
+		return commitmentStrings;
+	}
+	
+	private void loadPreferences() throws SQLException {
+		Connection conn = ConnectionFactory.getInstance();
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
+		TimeAwayDAO timeAwayDAO = new TimeAwayDAO(conn);
+		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		int clinicianID = clinicianDAO.getClinicianID(clinicianName);
+		List<CommitmentBean> cmtList = commitmentsDAO.loadCommitments(clinicianID);
+		commitmentList = getCommitmentList(cmtList);
+		List<String> commitmentStrings = getCommitmentStrings(commitmentList);
+		DefaultListModel<String> commitmentsModel = (DefaultListModel<String>)commitments.getModel();
+		for (String commitment : commitmentStrings) {
+			commitmentsModel.addElement(commitment);
+		}
+		List<TimeAwayBean> timesAway = timeAwayDAO.loadTimeAway(clinicianID);
+		ClinicianPreferencesBean preferences = clinicianPreferencesDAO.loadClinicianPreferences(clinicianID);
+		nameField.setText(clinicianName);
+		DefaultListModel<TimeAwayBean> timeAwayModel = (DefaultListModel<TimeAwayBean>)timeAway.getModel();
+		for (TimeAwayBean timeAway : timesAway) {
+			timeAwayModel.addElement(timeAway);
+		}
+		morningRankBox.setSelectedIndex(preferences.getMorningRank() - 1);
+		noonRankBox.setSelectedIndex(preferences.getNoonRank() - 1);
+		afternoonRankBox.setSelectedIndex(preferences.getAfternoonRank() - 1);
+		iaHours.setText("" + preferences.getIAHours());
+		ecHours.setText("" + preferences.getECHours());
 	}
 }

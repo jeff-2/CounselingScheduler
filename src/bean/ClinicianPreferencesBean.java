@@ -20,8 +20,14 @@ public class ClinicianPreferencesBean {
 	/** The afternoon rank. */
 	private int afternoonRank;
 	
-	/** Ranking in order */
+	/**  Ranking in order. */
 	private int[] ranking;
+	
+	/** The ia hours. */
+	private int iaHours;
+	
+	/** The ec hours. */
+	private int ecHours;
 
 	/**
 	 * Creates a clinician's coverage for emergence coverage sessions.
@@ -30,8 +36,10 @@ public class ClinicianPreferencesBean {
 	 * @param morning ranking, between 1 and 3, cannot overlap with others
 	 * @param noon ranking, between 1 and 3, cannot overlap with others
 	 * @param afternoon ranking, between 1 and 3, cannot overlap with others
+	 * @param iaHrs the ia hrs
+	 * @param ecHrs the ec hrs
 	 */
-	public ClinicianPreferencesBean(int id, int morning, int noon, int afternoon) {
+	public ClinicianPreferencesBean(int id, int morning, int noon, int afternoon, int iaHrs, int ecHrs) {
 		clinicianID = id;
 		morningRank = morning;
 		noonRank = noon;
@@ -40,6 +48,8 @@ public class ClinicianPreferencesBean {
 		ranking[morning] = 1;
 		ranking[noon] = 2;
 		ranking[afternoon] = 3;
+		iaHours = iaHrs;
+		ecHours = ecHrs;
 	}
 	
 	/**
@@ -118,11 +128,49 @@ public class ClinicianPreferencesBean {
 	}
 	
 	/**
-	 * Returns the time by ranking where morning = 1, noon = 2, and afternoon = 3
+	 * Returns the time by ranking where morning = 1, noon = 2, and afternoon = 3.
+	 *
 	 * @param rank 1-3
+	 * @return the ranking
 	 */
 	public int getRanking(int rank) {
 		return ranking[rank];
+	}
+	
+	/**
+	 * Gets the IA hours.
+	 *
+	 * @return the IA hours
+	 */
+	public int getIAHours() {
+		return iaHours;
+	}
+	
+	/**
+	 * Sets the IA hours.
+	 *
+	 * @param hours the new IA hours
+	 */
+	public void setIAHours(int hours) {
+		iaHours = hours;
+	}
+	
+	/**
+	 * Gets the EC hours.
+	 *
+	 * @return the EC hours
+	 */
+	public int getECHours() {
+		return ecHours;
+	}
+	
+	/**
+	 * Sets the EC hours.
+	 *
+	 * @param hours the new EC hours
+	 */
+	public void setECHours(int hours) {
+		ecHours = hours;
 	}
 	
 	/* (non-Javadoc)
@@ -140,6 +188,12 @@ public class ClinicianPreferencesBean {
 		}
 		ClinicianPreferencesBean preference = (ClinicianPreferencesBean)other;
 		return morningRank == preference.morningRank && noonRank == preference.noonRank 
-				&& afternoonRank == preference.afternoonRank && clinicianID == preference.clinicianID;
+				&& afternoonRank == preference.afternoonRank && clinicianID == preference.clinicianID
+				&& iaHours == preference.iaHours && ecHours == preference.ecHours;
+	}
+	
+	public String toString() {
+		return "morningRank:" + morningRank + " noonRank:" + noonRank + " afternoonRank:" + afternoonRank
+				+ " clinicianID:" + clinicianID + " iaHours:" + iaHours + " ecHours:" + ecHours;
 	}
 }

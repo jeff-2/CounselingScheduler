@@ -30,11 +30,13 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void insert(ClinicianPreferencesBean preferences) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement("INSERT INTO ClinicianPreferences (id, morningRank, noonRank, afternoonRank) VALUES (?, ?, ?, ?)");
+		PreparedStatement stmt = connection.prepareStatement("INSERT INTO ClinicianPreferences (id, morningRank, noonRank, afternoonRank, iaHours, ecHours) VALUES (?, ?, ?, ?, ?, ?)");
 		stmt.setInt(1, preferences.getClinicianID());
 		stmt.setInt(2, preferences.getMorningRank());
 		stmt.setInt(3, preferences.getNoonRank());
 		stmt.setInt(4, preferences.getAfternoonRank());
+		stmt.setInt(5, preferences.getIAHours());
+		stmt.setInt(6, preferences.getECHours());
 		stmt.execute();
 		stmt.close();
 	}
@@ -47,7 +49,7 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public ClinicianPreferencesBean loadClinicianPreferences(int clinicianID) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement("SELECT morningRank, noonRank, afternoonRank FROM ClinicianPreferences WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("SELECT morningRank, noonRank, afternoonRank, iaHours, ecHours FROM ClinicianPreferences WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -58,7 +60,9 @@ public class ClinicianPreferencesDAO extends DAO {
 		int morningRank = results.getInt("morningRank");
 		int noonRank = results.getInt("noonRank");
 		int afternoonRank = results.getInt("afternoonRank");
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank, afternoonRank);
+		int iaHours = results.getInt("iaHours");
+		int ecHours = results.getInt("ecHours");
+		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank, afternoonRank, iaHours, ecHours);
 		stmt.close();
 		
 		return preferences;
@@ -71,11 +75,13 @@ public class ClinicianPreferencesDAO extends DAO {
 	 * @throws SQLException the SQL exception
 	 */
 	public void update(ClinicianPreferencesBean preferences) throws SQLException {
-		PreparedStatement stmt = connection.prepareStatement("UPDATE ClinicianPreferences SET morningRank = ?, noonRank = ?, afternoonRank = ? WHERE id = ?");
+		PreparedStatement stmt = connection.prepareStatement("UPDATE ClinicianPreferences SET morningRank = ?, noonRank = ?, afternoonRank = ?, iaHours = ?, ecHours = ? WHERE id = ?");
 		stmt.setInt(1, preferences.getMorningRank());
 		stmt.setInt(2, preferences.getNoonRank());
 		stmt.setInt(3, preferences.getAfternoonRank());
-		stmt.setInt(4, preferences.getClinicianID());
+		stmt.setInt(4, preferences.getIAHours());
+		stmt.setInt(5, preferences.getECHours());
+		stmt.setInt(6, preferences.getClinicianID());
 		stmt.executeUpdate();
 		stmt.close();
 	}

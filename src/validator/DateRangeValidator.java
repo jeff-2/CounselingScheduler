@@ -18,7 +18,7 @@ public class DateRangeValidator {
 	static {
 		dateFormat = new SimpleDateFormat("MM/dd/yyyy");
 		dateFormat.setLenient(false);
-		longDateFormat = new SimpleDateFormat("EEEEEEEEE, MMMMMMMM, d");
+		longDateFormat = new SimpleDateFormat("EEEEEEEEE, MMMMMMMM d");
 	}
 	
 	/**

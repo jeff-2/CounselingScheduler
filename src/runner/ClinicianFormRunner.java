@@ -28,7 +28,7 @@ public class ClinicianFormRunner {
 		try {
 			CalendarDAO calendarDAO = new CalendarDAO(ConnectionFactory.getInstance());
 			CalendarBean calendarBean = calendarDAO.loadCalendar();
-			new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), calendarBean.getStartDate(), calendarBean.getEndDate());
+			new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), calendarBean.getStartDate(), calendarBean.getEndDate(), false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

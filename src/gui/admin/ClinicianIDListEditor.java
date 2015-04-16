@@ -1,11 +1,14 @@
 package gui.admin;
 
+import gui.clinician.ClinicianForm;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
@@ -21,7 +24,9 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import bean.CalendarBean;
 import bean.ClinicianBean;
+import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import net.miginfocom.swing.MigLayout;
@@ -66,6 +71,8 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * JButton for removing the currently selected clinican ID in the list
 	 */
 	private JButton removeButton;
+	
+	private JButton editButton;
 
 	/**
 	 * JList storing the current list of Clinicians
@@ -134,7 +141,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 */
 	private void initializeFrame() {
 		// Set preferred size
-		this.panel.setPreferredSize( new Dimension( 400, 480 ) );
+		this.panel.setPreferredSize(new Dimension(480, 480));
 		// Set exit behavior
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// Add label and full name field for new clinicians
@@ -152,7 +159,11 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.removeButton = new JButton("Remove Clinician");
 		this.removeButton.setName("removeButton");
 		this.removeButton.addActionListener(this);
-		this.panel.add(removeButton, "gap unrelated, wrap 15px");
+		this.panel.add(removeButton, "gapleft 30");
+		this.editButton = new JButton("Edit Clinician Preferences");
+		this.editButton.setName("editButton");
+		this.editButton.addActionListener(this);
+		this.panel.add(editButton, "gapleft 30, wrap 15px");
 		// Add list & scrollpane
 		this.clinicianList = new JList<ClinicianBean>();
 		this.populateClinicianList();
@@ -183,11 +194,19 @@ implements ActionListener, KeyListener, ListSelectionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == this.addButton) {
+		if (e.getSource() == this.addButton) {
 			this.addNewClinicianID();			
-		}
-		if(e.getSource() == this.removeButton) {
+		} else if (e.getSource() == this.removeButton) {
 			this.removeClinicianID();
+		} else if (e.getSource() == this.editButton) {
+			CalendarDAO calendarDAO;
+			try {
+				calendarDAO = new CalendarDAO(ConnectionFactory.getInstance());
+				CalendarBean calendarBean = calendarDAO.loadCalendar();
+				new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), calendarBean.getStartDate(), calendarBean.getEndDate(), true, clinicianList.getSelectedValue().getName());
+			} catch (SQLException e1) {
+				handleDBException(e1);
+			}
 		}
 		this.updateButtonStatus();
 	}
@@ -202,6 +221,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
+		this.editButton.setEnabled(!noListSelection);
 	}
 
 	/**

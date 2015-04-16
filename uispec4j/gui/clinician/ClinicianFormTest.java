@@ -78,7 +78,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
 		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
 		
-		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 35, 44);
 		commitments = new ArrayList<CommitmentBean>();
 		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("3/25/2015"), "desc"));
 		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/1/2015"), "desc"));
@@ -114,7 +114,22 @@ public class ClinicianFormTest extends UISpecTestCase {
 		assertEquals("", nameField.getText());
 	}
 	
-	public void testInsertClinicianFormExternal() throws Exception {
+	public void testInsertClinicianFormExternalB() throws Exception {
+		insertData("Monthly", true);
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
+		
+		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		expectedCommitments.add(new CommitmentBean(0, 7, 10, DateRangeValidator.parseDate("4/1/2015"), "desc"));
+		expectedCommitments.add(new CommitmentBean(0, 9, 12, DateRangeValidator.parseDate("4/6/2015"), "other desc"));
+		
+		assertEquals(preferences, actualPreferences);
+		assertEquals(expectedCommitments, actualCommitments);
+		assertEquals(timeAway, actualTimeAway);
+	}
+	
+	public void testInsertClinicianFormExternalA() throws Exception {
 		insertData("Biweekly", true);
 		
 		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO.loadClinicianPreferences(0);
@@ -301,7 +316,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		List<CommitmentBean> actualCommitments = commitmentsDAO.loadCommitments(0);
 		List<TimeAwayBean> actualTimeAway = timeAwayDao.loadTimeAway(0);
 		
-		ClinicianPreferencesBean otherPreferences = new ClinicianPreferencesBean(0, 3, 1, 2);
+		ClinicianPreferencesBean otherPreferences = new ClinicianPreferencesBean(0, 3, 1, 2, 35, 44);
 		List<CommitmentBean> otherCommitments = new ArrayList<CommitmentBean>();
 		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("3/25/2015"), "pear"));
 		otherCommitments.add(new CommitmentBean(0, 15, 16, DateRangeValidator.parseDate("4/1/2015"), "pear"));

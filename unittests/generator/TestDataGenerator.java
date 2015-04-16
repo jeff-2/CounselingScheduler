@@ -140,30 +140,30 @@ public class TestDataGenerator {
 	
 	private void generateStandardClinicianPreferencesData() throws SQLException {
 		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(0, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(1, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(2, 3, 2, 1));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(3, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(4, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(5, 1, 3, 2));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(6, 2, 3, 1));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(7, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(8, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(9, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(10, 2, 3, 1));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(11, 1, 3, 2));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(12, 1, 3, 2));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(13, 3, 2, 1));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(14, 3, 2, 1));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(15, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(16, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(17, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(18, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(19, 1, 3, 2));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(20, 3, 2, 1));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(21, 1, 2, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(22, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(23, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(0, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(1, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(2, 3, 2, 1, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(3, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(4, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(5, 1, 3, 2, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(6, 2, 3, 1, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(7, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(8, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(9, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(10, 2, 3, 1, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(11, 1, 3, 2, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(12, 1, 3, 2, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(13, 3, 2, 1, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(14, 3, 2, 1, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(15, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(16, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(17, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(18, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(19, 1, 3, 2, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(20, 3, 2, 1, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(21, 1, 2, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(22, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(23, 1, 2, 3, 35, 44));
 	}
 	
 	private void generateStandardCommitmentsData() throws SQLException, ParseException {

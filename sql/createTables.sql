@@ -13,6 +13,8 @@ CREATE TABLE ClinicianPreferences (
 	morningRank int NOT NULL,
 	noonRank int NOT NULL,
 	afternoonRank int NOT NULL,
+	iaHours int NOT NULL,
+	ecHours int NOT NULL,
 	PRIMARY KEY (id)
 );
 

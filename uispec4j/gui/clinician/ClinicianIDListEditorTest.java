@@ -204,4 +204,24 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		expectedClinicians.remove(beanB);
 		assertEquals(clinicians, expectedClinicians);
 	}
+	
+	public void testLoadClinicianPreferences() {
+		
+	}
+	
+	public void testUpdateClinicianPreferences() {
+		
+	}
+	
+	public void testUpdateWithMissingIAHours() {
+		
+	}
+	
+	public void testUpdateWithMissingECHours() {
+		
+	}
+	
+	public void testLoadEmptyPreferences() {
+		
+	}
 }

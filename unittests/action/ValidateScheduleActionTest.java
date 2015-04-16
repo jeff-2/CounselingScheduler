@@ -106,8 +106,8 @@ public class ValidateScheduleActionTest {
 		clinicianDAO.insert(new ClinicianBean(1, "Ryan"));
 		
 		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(0, 2, 1, 3));
-		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(1, 1, 2, 3));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(0, 2, 1, 3, 35, 44));
+		clinicianPreferencesDAO.insert(new ClinicianPreferencesBean(1, 1, 2, 3, 35, 44));
 		
 		FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
 		fillScheduleAction.fillSchedule();

@@ -39,7 +39,7 @@ public class ClinicianPreferencesDAOTest {
 	
 	@Test
 	public void testInsertValidClinicianPreferences() throws Exception {
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 5, 10);
 		clinicianPreferencesDAO.insert(preferences);
 		
 		ClinicianPreferencesBean actual = clinicianPreferencesDAO.loadClinicianPreferences(preferences.getClinicianID());
@@ -48,7 +48,7 @@ public class ClinicianPreferencesDAOTest {
 	
 	@Test(expected=SQLException.class)
 	public void testInsertDuplicateClinicianPreferences() throws Exception {
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 5, 10);
 		clinicianPreferencesDAO.insert(preferences);
 		clinicianPreferencesDAO.insert(preferences);
 	}
@@ -61,19 +61,18 @@ public class ClinicianPreferencesDAOTest {
 	
 	@Test
 	public void testUpdateClinicianPreferences() throws Exception {
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 5, 10);
 		clinicianPreferencesDAO.insert(preferences);
 		
-		ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 3, 2, 1);
+		ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 3, 2, 1, 6, 8);
 		clinicianPreferencesDAO.update(expected);
 		ClinicianPreferencesBean actual = clinicianPreferencesDAO.loadClinicianPreferences(preferences.getClinicianID());
-		
 		assertEquals(expected, actual);
 	}
 	
 	@Test
 	public void testDeleteValidClinician() throws Exception {
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 7, 15);
 		clinicianPreferencesDAO.insert(preferences);
 		
 		clinicianPreferencesDAO.delete(preferences.getClinicianID());

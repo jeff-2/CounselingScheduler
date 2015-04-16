@@ -1,5 +1,6 @@
 package bean;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import validator.DateRangeValidator;
@@ -114,7 +115,12 @@ public class TimeAwayBean {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
-		return description + ": " + DateRangeValidator.formatDate(startDate) + "-" + DateRangeValidator.formatDate(endDate);
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(startDate);
+		int yearStart = calendar.get(Calendar.YEAR);
+		calendar.setTime(endDate);
+		int yearEnd = calendar.get(Calendar.YEAR);
+		return description + ": " + DateRangeValidator.formatDateLong(startDate) +  ", " + yearStart + " to " + DateRangeValidator.formatDateLong(endDate) + ", " + yearEnd;
 	}
 	
 	/* (non-Javadoc)

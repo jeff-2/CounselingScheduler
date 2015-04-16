@@ -53,7 +53,7 @@ public class ClinicianPreferencesActionTest {
 		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
 		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
 		
-		preferences = new ClinicianPreferencesBean(0, 1, 2, 3);
+		preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 5, 10);
 		commitments = new ArrayList<CommitmentBean>();
 		commitments.add(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/1/2015"), "desc"));
 		commitments.add(new CommitmentBean(0, 10, 11, DateRangeValidator.parseDate("3/30/2015"), "other desc"));
@@ -75,7 +75,7 @@ public class ClinicianPreferencesActionTest {
 		
 		action.insertPreferences();
 		
-		ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2, 1);
+		ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2, 1, 5,10);
 		List<CommitmentBean> cmts = new ArrayList<CommitmentBean>();
 		cmts.add(new CommitmentBean(0, 11, 12, DateRangeValidator.parseDate("3/31/2015"), "apple"));
 		cmts.add(new CommitmentBean(0, 14, 15, DateRangeValidator.parseDate("4/2/2015"), "pear"));
