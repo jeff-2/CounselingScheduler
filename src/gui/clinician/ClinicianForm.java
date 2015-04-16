@@ -92,7 +92,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	/**
 	 * Instantiates a new clinician form.
 	 */
-	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate, boolean isAdmin) {
+	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate, boolean isAdmin, String name) {
 		super("Clinician Input Form");
 		panel = new JPanel();
 		panel.setLayout(new MigLayout("gap rel", "grow"));
@@ -101,23 +101,20 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.isAdmin = isAdmin;
+		this.clinicianName = name;
 		commitmentList = new ArrayList<List<CommitmentBean>>();
 		initializeComponents();
-		initializeFrame();
-	}
-	
-	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate, boolean isAdmin, String name) {
-		this(semester, year, startDate, endDate, isAdmin);
-		this.clinicianName = name;
-		
 		if (isAdmin) {
 			try {
 				loadPreferences();
 			} catch (SQLException e) {
-				// TODO: show dialog or something
-				e.printStackTrace();
+				JOptionPane.showMessageDialog(this,
+						"Failed to connect to the remote SQL database; please contact the network administrator.",
+						"Database connection error",
+						JOptionPane.ERROR_MESSAGE);
 			}
 		}
+		initializeFrame();
 	}
 	
 	/**
@@ -214,11 +211,13 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		addTimeAwayButton.setName("addTimeAwayButton");
 		addTimeAwayButton.addActionListener(this);
 		removeTimeAwayButton = new JButton("Remove Time Away");
+		removeTimeAwayButton.setName("removeTimeAwayButton");
 		removeTimeAwayButton.addActionListener(this);
 		addCommitmentButton = new JButton("Add Conflict");
 		addCommitmentButton.setName("addCommitmentButton");
 		addCommitmentButton.addActionListener(this);
 		removeCommitmentButton = new JButton("Remove Conflict");
+		removeCommitmentButton.setName("removeCommitmentButton");
 		removeCommitmentButton.addActionListener(this);
 		clearButton = new JButton("Clear");
 		clearButton.addActionListener(this);
@@ -232,9 +231,11 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 */
 	private void initializeScrollPanes() {
 		timeAway = new JList<TimeAwayBean>();
+		timeAway.setName("timeAway");
 		timeAway.setModel(new DefaultListModel<TimeAwayBean>());
 		timeAwayPane = new JScrollPane(timeAway);
 		commitments = new JList<String>();
+		commitments.setName("commitments");
 		commitments.setModel(new DefaultListModel<String>());
 		commitmentsPane = new JScrollPane(commitments);
 	}
@@ -301,7 +302,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		panel.add(clearButton);
 		panel.add(submitButton, "wrap");
 		
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.getContentPane().add(panel);
 		this.pack();
 		this.setVisible(true);
@@ -438,7 +439,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			if (myIAHours.isEmpty()) {
 				JOptionPane.showMessageDialog(this,
 					    "You must enter the assigned number of IA hours",
-					    "Adding clinician ec preferences",
+					    "Adding clinician ia preferences",
 					    JOptionPane.ERROR_MESSAGE);
 				return;
 			}

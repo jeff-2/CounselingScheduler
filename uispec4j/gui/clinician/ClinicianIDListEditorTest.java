@@ -2,14 +2,20 @@ package gui.clinician;
 
 import generator.TestDataGenerator;
 
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JFrame;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.uispec4j.Button;
+import org.uispec4j.ComboBox;
 import org.uispec4j.Key;
 import org.uispec4j.ListBox;
 import org.uispec4j.TextBox;
@@ -20,10 +26,16 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
-import bean.ClinicianBean;
 import runner.ClinicianIDListRunner;
+import bean.ClinicianBean;
+import bean.ClinicianPreferencesBean;
+import bean.CommitmentBean;
+import bean.TimeAwayBean;
 import dao.ClinicianDAO;
+import dao.ClinicianPreferencesDAO;
+import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
+import dao.TimeAwayDAO;
 
 public class ClinicianIDListEditorTest extends UISpecTestCase {
 
@@ -205,23 +217,219 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		assertEquals(clinicians, expectedClinicians);
 	}
 	
-	public void testLoadClinicianPreferences() {
-		
+	public void testLoadClinicianPreferences() throws ParseException, SQLException {
+		gen.generateStandardDataset();
+		Window window = this.getMainWindow();
+		ListBox cliniciansBox = window.getListBox();
+		cliniciansBox.select("Denise");
+		Button editButton = window.getButton("editButton");
+		WindowInterceptor
+		.init(editButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(final Window window) {
+				assertEquals(window.getTitle(), "Clinician Input Form");
+				ComboBox morningRankBox = window.getComboBox("morningRankBox");
+				morningRankBox.selectionEquals("2");
+				ComboBox noonRankBox = window.getComboBox("noonRankBox");
+				noonRankBox.selectionEquals("1");
+				ComboBox afternoonRankBox = window.getComboBox("afternoonRankBox");
+				afternoonRankBox.selectionEquals("3");
+				TextBox nameField = window.getTextBox("nameField");
+				assertEquals("Denise", nameField.getText());
+				TextBox iaHours = window.getTextBox("iaHours");
+				assertEquals("35", iaHours.getText());
+				TextBox ecHours = window.getTextBox("ecHours");
+				assertEquals("44", ecHours.getText());
+				ListBox timeAway = window.getListBox("timeAway");
+				timeAway.contentEquals("Unspecified: Sunday, March 1, 2015 to Tuesday, March 3, 2015");
+				ListBox commitments = window.getListBox("commitments");
+				commitments.contentEquals("Meeting: Some commitment on Thursday, April 9, 2015 from 11 to 12");
+				return new Trigger() {
+					@Override
+			        public void run() throws Exception {
+						((JFrame)window.getAwtContainer()).dispatchEvent(new WindowEvent((JFrame)window.getAwtContainer(), WindowEvent.WINDOW_CLOSING));
+			        }
+				};
+			}
+		})
+		.run();
 	}
 	
-	public void testUpdateClinicianPreferences() {
-		
+	public void testUpdateClinicianPreferences() throws ParseException, SQLException {
+		gen.generateStandardDataset();
+		Window window = this.getMainWindow();
+		ListBox cliniciansBox = window.getListBox();
+		cliniciansBox.select("Denise");
+		Button editButton = window.getButton("editButton");
+		WindowInterceptor
+		.init(editButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(final Window window) {
+				assertEquals(window.getTitle(), "Clinician Input Form");
+				ComboBox morningRankBox = window.getComboBox("morningRankBox");
+				morningRankBox.select("1");
+				ComboBox noonRankBox = window.getComboBox("noonRankBox");
+				noonRankBox.select("2");
+				ComboBox afternoonRankBox = window.getComboBox("afternoonRankBox");
+				afternoonRankBox.select("3");
+				TextBox nameField = window.getTextBox("nameField");
+				assertEquals("Denise", nameField.getText());
+				TextBox iaHours = window.getTextBox("iaHours");
+				iaHours.setText("15");
+				TextBox ecHours = window.getTextBox("ecHours");
+				ecHours.setText("24");
+				ListBox timeAway = window.getListBox("timeAway");
+				timeAway.select("Unspecified: Sunday, March 1, 2015 to Tuesday, March 3, 2015");
+				Button removeTimeAwayButton = window.getButton("removeTimeAwayButton");
+				removeTimeAwayButton.click();
+				ListBox commitments = window.getListBox("commitments");
+				commitments.select("Meeting: Some commitment on Thursday, April 9, 2015 from 11 to 12");
+				Button removeCommitmentButton = window.getButton("removeCommitmentButton");
+				removeCommitmentButton.click();
+				Button submitButton = window.getButton("submitButton");
+				WindowInterceptor
+				.init(submitButton.triggerClick())
+				.process(new WindowHandler() {
+					@Override
+					public Trigger process(Window arg0) throws Exception {
+						assertEquals(arg0.getTitle(), "Update clinician preferences");
+						return arg0.getButton("YES").triggerClick();
+					}
+				})
+				.process(new WindowHandler() {
+					@Override
+					public Trigger process(Window arg0) throws Exception {
+						assertEquals(arg0.getTitle(), "SUCCESS");
+						return arg0.getButton("OK").triggerClick();
+					}
+				})
+				.run();
+				return new Trigger() {
+					@Override
+			        public void run() throws Exception {
+						((JFrame)window.getAwtContainer()).dispatchEvent(new WindowEvent((JFrame)window.getAwtContainer(), WindowEvent.WINDOW_CLOSING));
+			        }
+				};
+			}
+		})
+		.run();
+		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
+		TimeAwayDAO timeAwayDAO = new TimeAwayDAO(conn);
+		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		List<CommitmentBean> cmtList = commitmentsDAO.loadCommitments(4);
+		List<TimeAwayBean> timesAway = timeAwayDAO.loadTimeAway(4);
+		ClinicianPreferencesBean preferences = clinicianPreferencesDAO.loadClinicianPreferences(4);
+		List<CommitmentBean> expectedCMTList = new ArrayList<CommitmentBean>();
+		List<TimeAwayBean> expectedTimesAway = new ArrayList<TimeAwayBean>();
+		ClinicianPreferencesBean expectedPreferences = new ClinicianPreferencesBean(4, 1, 2, 3, 15, 24);
+		assertEquals(expectedCMTList, cmtList);
+		assertEquals(expectedTimesAway, timesAway);
+		assertEquals(expectedPreferences, preferences);
 	}
 	
-	public void testUpdateWithMissingIAHours() {
-		
+	public void testUpdateWithMissingIAHours() throws ParseException, SQLException {
+		gen.generateStandardDataset();
+		Window window = this.getMainWindow();
+		ListBox cliniciansBox = window.getListBox();
+		cliniciansBox.select("Denise");
+		Button editButton = window.getButton("editButton");
+		WindowInterceptor
+		.init(editButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(final Window window) {
+				assertEquals(window.getTitle(), "Clinician Input Form");
+				TextBox iaHours = window.getTextBox("iaHours");
+				iaHours.setText("");
+				Button submitButton = window.getButton("submitButton");
+				WindowInterceptor
+				.init(submitButton.triggerClick())
+				.process(new WindowHandler() {
+					@Override
+					public Trigger process(Window arg0) throws Exception {
+						assertEquals(arg0.getTitle(), "Adding clinician ia preferences");
+						return arg0.getButton("OK").triggerClick();
+					}
+				}).run();
+				return new Trigger() {
+					@Override
+			        public void run() throws Exception {
+						((JFrame)window.getAwtContainer()).dispatchEvent(new WindowEvent((JFrame)window.getAwtContainer(), WindowEvent.WINDOW_CLOSING));
+			        }
+				};
+			}
+		})
+		.run();
 	}
 	
-	public void testUpdateWithMissingECHours() {
-		
+	public void testUpdateWithMissingECHours() throws ParseException, SQLException {
+		gen.generateStandardDataset();
+		Window window = this.getMainWindow();
+		ListBox cliniciansBox = window.getListBox();
+		cliniciansBox.select("Denise");
+		Button editButton = window.getButton("editButton");
+		WindowInterceptor
+		.init(editButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(final Window window) {
+				assertEquals(window.getTitle(), "Clinician Input Form");
+				TextBox ecHours = window.getTextBox("ecHours");
+				ecHours.setText("");
+				Button submitButton = window.getButton("submitButton");
+				WindowInterceptor
+				.init(submitButton.triggerClick())
+				.process(new WindowHandler() {
+					@Override
+					public Trigger process(Window arg0) throws Exception {
+						assertEquals(arg0.getTitle(), "Adding clinician ec preferences");
+						return arg0.getButton("OK").triggerClick();
+					}
+				}).run();
+				return new Trigger() {
+					@Override
+			        public void run() throws Exception {
+						((JFrame)window.getAwtContainer()).dispatchEvent(new WindowEvent((JFrame)window.getAwtContainer(), WindowEvent.WINDOW_CLOSING));
+			        }
+				};
+			}
+		})
+		.run();
 	}
 	
-	public void testLoadEmptyPreferences() {
-		
+	public void testLoadEmptyPreferences() throws ParseException, SQLException {
+		gen.generateStandardDataset();
+		Window window = this.getMainWindow();
+		ListBox cliniciansBox = window.getListBox();
+		cliniciansBox.select("Eric");
+		Button editButton = window.getButton("editButton");
+		WindowInterceptor
+		.init(editButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(final Window window) {
+				assertEquals(window.getTitle(), "Clinician Input Form");
+				ComboBox morningRankBox = window.getComboBox("morningRankBox");
+				morningRankBox.selectionEquals("2");
+				ComboBox noonRankBox = window.getComboBox("noonRankBox");
+				noonRankBox.selectionEquals("1");
+				ComboBox afternoonRankBox = window.getComboBox("afternoonRankBox");
+				afternoonRankBox.selectionEquals("3");
+				TextBox nameField = window.getTextBox("nameField");
+				assertEquals("Eric", nameField.getText());
+				TextBox iaHours = window.getTextBox("iaHours");
+				assertEquals("35", iaHours.getText());
+				TextBox ecHours = window.getTextBox("ecHours");
+				assertEquals("44", ecHours.getText());
+				ListBox timeAway = window.getListBox("timeAway");
+				timeAway.contentEquals("");
+				ListBox commitments = window.getListBox("commitments");
+				commitments.contentEquals("");
+				return new Trigger() {
+					@Override
+			        public void run() throws Exception {
+						((JFrame)window.getAwtContainer()).dispatchEvent(new WindowEvent((JFrame)window.getAwtContainer(), WindowEvent.WINDOW_CLOSING));
+			        }
+				};
+			}
+		})
+		.run();
 	}
 }
