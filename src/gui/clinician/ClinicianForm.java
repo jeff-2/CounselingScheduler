@@ -5,16 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -28,26 +20,21 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
 
 import net.miginfocom.swing.MigLayout;
+import validator.ClinicianFormValidator;
 import validator.DateRangeValidator;
-import validator.InvalidDateRangeException;
-import action.ClinicianPreferencesAction;
-import action.ImportClinicianMeetingsAction;
-import bean.CalendarBean;
+import action.ClinicianFormAction;
+import action.ClinicianLoadPreferencesAction;
+import action.InvalidFormDataException;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
+import bean.DateRange;
 import bean.OperatingHours;
 import bean.Semester;
 import bean.TimeAwayBean;
 import bean.Weekday;
-import dao.CalendarDAO;
-import dao.ClinicianDAO;
-import dao.ClinicianPreferencesDAO;
-import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
-import dao.TimeAwayDAO;
 
 /**
  * The Class ClinicianForm.
@@ -56,50 +43,54 @@ import dao.TimeAwayDAO;
  */
 public class ClinicianForm extends JFrame implements ActionListener {
 
-	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5377691259929030865L;
 	
 	private JPanel panel;
-	private JLabel nameLabel, preferenceFormLabel, periodLabel, timeAwayLabel;
 	private JScrollPane timeAwayPane, commitmentsPane;
 	private JList<TimeAwayBean> timeAway;
 	private JList<String> commitments;
-	private List<List<CommitmentBean>> commitmentList;
 	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
-	private JTextField commitmentDescription;
+	private JTextField commitmentDescription, nameField;
+	private JTextField iaHours, ecHours;
+	private JLabel nameLabel, preferenceFormLabel, periodLabel, timeAwayLabel;
 	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
-	private JTextArea timeAwayDescription, ecPreferencesDescription, conflictsDescription;
-	private JLabel commitmentStartTimeLabel, commitmentEndTimeLabel, commitmentFrequencyLabel, commitmentDayLabel, commitmentDescriptionLabel, externalCommitmentLabel;
+	private JLabel commitmentStartTimeLabel, commitmentEndTimeLabel, commitmentFrequencyLabel;
+	private JLabel commitmentDayLabel, commitmentDescriptionLabel, externalCommitmentLabel;
 	private JLabel timeLabel, rankLabel;
 	private JLabel morningLabel, noonLabel, afternoonLabel;
 	private JLabel ecPreferencesLabel, conflictsLabel, iaTimesLabel, ecTimesLabel;
+	private JLabel iaHoursLabel, ecHoursLabel;
+	private JTextArea timeAwayDescription, ecPreferencesDescription, conflictsDescription;
 	private JButton addTimeAwayButton, removeTimeAwayButton;
 	private JButton addCommitmentButton, removeCommitmentButton;
 	private JButton clearButton, submitButton;
 	private JComboBox<String> daysOfWeekBox, startTimeBox, endTimeBox, frequencyBox;
 	private JComboBox<Integer> morningRankBox, noonRankBox, afternoonRankBox;
 	private JCheckBox externalCommitment;
-	private JTextField nameField;
-	private static final int NAME_LENGTH = 20;
+	
+	private List<List<CommitmentBean>> commitmentList;
 	private Semester semester;
 	private int year;
-	private Date startDate, endDate;
+	private DateRange dateRange;
 	private boolean isAdmin;
-	private JLabel iaHoursLabel, ecHoursLabel;
-	private JTextField iaHours, ecHours;
 	private String clinicianName;
 
 	/**
 	 * Instantiates a new clinician form.
+	 *
+	 * @param semester the semester
+	 * @param year the year
+	 * @param dateRange the date range
+	 * @param isAdmin the is admin
+	 * @param name the name
 	 */
-	public ClinicianForm(Semester semester, int year, Date startDate, Date endDate, boolean isAdmin, String name) {
+	public ClinicianForm(Semester semester, int year, DateRange dateRange, boolean isAdmin, String name) {
 		super("Clinician Input Form");
 		panel = new JPanel();
 		panel.setLayout(new MigLayout("gap rel", "grow"));
 		this.semester = semester;
 		this.year = year;
-		this.startDate = startDate;
-		this.endDate = endDate;
+		this.dateRange = dateRange;
 		this.isAdmin = isAdmin;
 		this.clinicianName = name;
 		commitmentList = new ArrayList<List<CommitmentBean>>();
@@ -108,10 +99,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			try {
 				loadPreferences();
 			} catch (SQLException e) {
-				JOptionPane.showMessageDialog(this,
-						"Failed to connect to the remote SQL database; please contact the network administrator.",
-						"Database connection error",
-						JOptionPane.ERROR_MESSAGE);
+				displayDBErrorMessage(e);
 			}
 		}
 		initializeFrame();
@@ -132,7 +120,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 * Initialize text fields.
 	 */
 	private void initializeTextFields() {
-		nameField = new JTextField(NAME_LENGTH);
+		nameField = new JTextField(20);
 		nameField.setName("nameField");
 		timeAwayName = new JTextField(7);
 		timeAwayName.setName("timeAwayName");
@@ -156,9 +144,11 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private void initializeLabels() {
 		nameLabel = new JLabel("NAME:");
 		preferenceFormLabel = new JLabel(semester.name() + " " + year + " IA/EC Preference Form");
-		periodLabel = new JLabel("This covers the period from " + DateRangeValidator.formatDateLong(startDate) + " through " + DateRangeValidator.formatDateLong(endDate) + ", " + year + ".");
+		periodLabel = new JLabel("This covers the period from " + DateRangeValidator.formatDateLong(dateRange.getStartDate())
+				+ " through " + DateRangeValidator.formatDateLong(dateRange.getEndDate()) + ", " + year + ".");
 		timeAwayLabel = new JLabel(semester.name() + " Semester " + year + " \"Time Away\" Plans");
-		timeAwayDescription = new JTextArea("Please list the dates/days/times etc. that you know you will be away from the Center. Please include VACATIONS, CONFERENCES, SICK DAYS, JURY DUTY or any other circumstances that will take you out of the Center.");
+		timeAwayDescription = new JTextArea("Please list the dates/days/times etc. that you know you will be away from the Center." + 
+		" Please include VACATIONS, CONFERENCES, SICK DAYS, JURY DUTY or any other circumstances that will take you out of the Center.");
 		timeAwayDescription.setLineWrap(true);
 		timeAwayDescription.setWrapStyleWord(true);
 		timeAwayDescription.setSize(880, 200);
@@ -171,7 +161,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		conflictsLabel = new JLabel("Initial Appointment / Emergency Coverage Conflicts");
 		iaTimesLabel = new JLabel("We offer IAs at 11:00 a.m., 1:00 p.m., 2:00 p.m. and 3:00 p.m. during the " + semester + " Semester.");
 		ecTimesLabel = new JLabel("1-Hour Emergency Coverage shifts are at 8:00 a.m., Noon, and 4:00 p.m. every day.");
-		conflictsDescription = new JTextArea("Please indicate \"impossible\" shift times due to other activities, such as groups and meetings/committees. You do not need to list vacation/conferences again, since you have already listed them above.");
+		conflictsDescription = new JTextArea("Please indicate \"impossible\" shift times due to other activities, such as groups and meetings/committees."
+				+ " You do not need to list vacation/conferences again, since you have already listed them above.");
 		conflictsDescription.setLineWrap(true);
 		conflictsDescription.setWrapStyleWord(true);
 		conflictsDescription.setSize(880, 200);
@@ -185,7 +176,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		commitmentDayLabel = new JLabel("Day of Week");
 		commitmentDescriptionLabel = new JLabel("Activity or Meeting");
 		ecPreferencesLabel = new JLabel("E.C. Preferences");
-		ecPreferencesDescription = new JTextArea("Please rank your preferences for E.C. shifts. We will try to take your preferences into account but we cannot guarantee they will be reflected in your schedule.");
+		ecPreferencesDescription = new JTextArea("Please rank your preferences for E.C. shifts. We will try to take your preferences"
+				+ " into account but we cannot guarantee they will be reflected in your schedule.");
 		ecPreferencesDescription.setLineWrap(true);
 		ecPreferencesDescription.setWrapStyleWord(true);
 		ecPreferencesDescription.setSize(780, 200);
@@ -366,6 +358,9 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		panel.add(afternoonRankBox, "wrap");
 	}
 	
+	/**
+	 * Adds the admin components.
+	 */
 	private void addAdminComponents() {
 		panel.add(iaHoursLabel);
 		panel.add(iaHours);
@@ -385,10 +380,9 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			try {
 				submit();
 			} catch (SQLException e1) {
-				JOptionPane.showMessageDialog(this,
-					    "An error occurred accessing the database. Please contact your system administrator. " + e1.getMessage(),
-					    "Error accessing database",
-					    JOptionPane.ERROR_MESSAGE);
+				displayDBErrorMessage(e1);
+			} catch (InvalidFormDataException e1) {
+				displayFormDataErrorMessage(e1);
 			}
 		} else if (e.getSource() == addTimeAwayButton) {
 			addTimeAway();
@@ -402,121 +396,62 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Validates field in clinician form and submits clinician preferences and other entered data.
+	 * Validates the data in the form and submits if valid, otherwise displays error message for invalid field.
+	 * If preferences already set for this clinician, prompts if you wish to overwrite these preferences.
 	 *
 	 * @throws SQLException the SQL exception
+	 * @throws InvalidFormDataException the invalid form data exception
 	 */
-	private void submit() throws SQLException {
-		
+	private void submit() throws SQLException, InvalidFormDataException {
 		String clinicianName = nameField.getText().trim();
 		int morningRank = ((Integer)morningRankBox.getSelectedItem()).intValue();
 		int noonRank = ((Integer)noonRankBox.getSelectedItem()).intValue();
 		int afternoonRank = ((Integer)afternoonRankBox.getSelectedItem()).intValue();
-		
-		Connection conn = ConnectionFactory.getInstance();
-		ClinicianDAO clinicianDao = new ClinicianDAO(conn);
-		
-		int clinicianID = clinicianDao.getClinicianID(clinicianName);
-		if (clinicianID == -1) {
-			JOptionPane.showMessageDialog(this,
-				    "You must enter in a valid clinician name. ",
-				    "Adding invalid clinician name",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		if (morningRank == noonRank || afternoonRank == morningRank || noonRank == afternoonRank) {
-			JOptionPane.showMessageDialog(this,
-				    "You must enter unique ranks for each time preference.",
-				    "Adding clinician ec preferences",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		int iaNumHours, ecNumHours;
+		String myIAHours = null;
+		String myECHours = null;
 		if (isAdmin) {
-			String myIAHours = iaHours.getText();
-			if (myIAHours.isEmpty()) {
-				JOptionPane.showMessageDialog(this,
-					    "You must enter the assigned number of IA hours",
-					    "Adding clinician ia preferences",
-					    JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			try {
-				iaNumHours = Integer.parseInt(myIAHours);
-			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this,
-					    "You must enter a valid integer for the assigned number of IA hours.",
-					    "Adding clinician ec preferences",
-					    JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			String myECHours = ecHours.getText();
-			if (myECHours.isEmpty()) {
-				JOptionPane.showMessageDialog(this,
-					    "You must enter the assigned number of EC hours.",
-					    "Adding clinician ec preferences",
-					    JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			try {
-				ecNumHours = Integer.parseInt(myECHours);
-			} catch (NumberFormatException e) {
-				JOptionPane.showMessageDialog(this,
-					    "You must enter a valid integer for the assigned number of EC hours.",
-					    "Adding clinician ec preferences",
-					    JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-			
-		} else {
-			// load values from calendar
-			CalendarDAO calendarDAO = new CalendarDAO(conn);
-			CalendarBean calendar = calendarDAO.loadCalendar();
-			iaNumHours = calendar.getIaMinHours();
-			ecNumHours = calendar.getEcMinHours();
+			myIAHours = iaHours.getText();
+			myECHours = ecHours.getText();
 		}
 		
-		ClinicianPreferencesDAO clinicianPreferencesDao = new ClinicianPreferencesDAO(conn);
-		ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(clinicianID, morningRank, noonRank, afternoonRank, iaNumHours, ecNumHours);
-		ClinicianPreferencesBean existing = clinicianPreferencesDao.loadClinicianPreferences(clinicianID);	
-
-		List<CommitmentBean> allCommitments = new ArrayList<CommitmentBean>();
-
-		for (List<CommitmentBean> list : commitmentList) {
-			for (CommitmentBean commitment: list) {
-				allCommitments.add(commitment);
-			}
-		}
-		
-		ClinicianPreferencesAction action = new ClinicianPreferencesAction(preferences, allCommitments, toTimeAwayList(timeAway.getModel()), conn);
-		if (existing == null) {
-			action.insertPreferences();
-		} else {
+		ClinicianPreferencesBean preferences = ClinicianFormValidator.validatePreferences(clinicianName, morningRank, noonRank, afternoonRank, myIAHours, myECHours, isAdmin);
+		Connection conn = ConnectionFactory.getInstance();
+		ClinicianFormAction action = new ClinicianFormAction(conn, preferences, commitmentList, timeAway.getModel());
+		boolean isUpdate = action.willOverwritePreferences();
+		if (isUpdate) {
 			int result = JOptionPane.showConfirmDialog(this,
 				    "Are you sure you wish to update your preferences? Your prior preferences will be overwritten.",
 				    "Update clinician preferences",
 				    JOptionPane.YES_NO_OPTION);
-			if (result == JOptionPane.YES_OPTION) {
-				action.updatePreferences();
-			} else if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION) {
+			if (result == JOptionPane.NO_OPTION || result == JOptionPane.CLOSED_OPTION || result == JOptionPane.CANCEL_OPTION) {
 				return;
 			}
 		}
-		
-		JOptionPane.showMessageDialog(this,
-			    "Successfully inserted clinician preferences!",
-			    "SUCCESS",
-			    JOptionPane.INFORMATION_MESSAGE);
+		action.submit(isUpdate);
 	}
 	
-	private static List<TimeAwayBean> toTimeAwayList(ListModel<TimeAwayBean> model) {
-		List<TimeAwayBean> tsAway = new ArrayList<TimeAwayBean>();
-		for (int i = 0; i < model.getSize(); i++) {
-			tsAway.add(model.getElementAt(i));
-		}
-		return tsAway;
+	/**
+	 * Displays a helpful db error message.
+	 *
+	 * @param e the SQLException
+	 */
+	private void displayDBErrorMessage(SQLException e) {
+		JOptionPane.showMessageDialog(this,
+			    e.getMessage(),
+			    "Context",
+			    JOptionPane.ERROR_MESSAGE);
+	}
+	
+	/**
+	 * Displays a helpful form data error message.
+	 *
+	 * @param e the InvalidFormDataException
+	 */
+	private void displayFormDataErrorMessage(InvalidFormDataException e) {
+		JOptionPane.showMessageDialog(this,
+			    e.getMessage(),
+			    e.getContext(),
+			    JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
@@ -527,38 +462,16 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		String startDate = timeAwayStartDate.getText().trim();
 		String endDate = timeAwayEndDate.getText().trim();
 		
-		if (name.isEmpty()) {
-			JOptionPane.showMessageDialog(this,
-				    "You must enter in a description. ",
-				    "Adding invalid time away description",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
 		try {
-			DateRangeValidator.validate(startDate, endDate);
-		} catch (InvalidDateRangeException e) {
-			JOptionPane.showMessageDialog(this,
-				    "Cannot add the time away to the list. " +
-				    e.getMessage(),
-				    "Adding invalid time away",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
+			TimeAwayBean timeAwayBean = ClinicianFormValidator.validateTimeAway(name, startDate, endDate);
+			DefaultListModel<TimeAwayBean> model = (DefaultListModel<TimeAwayBean>) timeAway.getModel();
+			model.add(model.size(), timeAwayBean);
+			timeAwayName.setText("");
+			timeAwayStartDate.setText("");
+			timeAwayEndDate.setText("");
+		} catch (InvalidFormDataException e) {
+			displayFormDataErrorMessage(e);
 		}
-
-		timeAwayName.setText("");
-		timeAwayStartDate.setText("");
-		timeAwayEndDate.setText("");
-
-		Date start, end;
-		DefaultListModel<TimeAwayBean> model = (DefaultListModel<TimeAwayBean>) timeAway.getModel();
-		try {
-			start = DateRangeValidator.parseDate(startDate);
-			end = DateRangeValidator.parseDate(endDate);
-		} catch (ParseException e) {
-			throw new RuntimeException("Should never happen");
-		}
-		model.add(model.size(), new TimeAwayBean(-1, name, start, end));
 	}
 	
 	/**
@@ -572,81 +485,20 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		String frequency = ((String)frequencyBox.getSelectedItem());
 		boolean isExternal = externalCommitment.isSelected();
 		
-		String commitmentString = "";
-		if (isExternal) {
-			commitmentString += "External ";
-		}
-		commitmentString += "Meeting: " + description + " "  + frequency + " on " + dayOfWeek + " from " + startTime + " to " + endTime;
-		
-		if (description.isEmpty()) {
-			JOptionPane.showMessageDialog(this,
-				    "You must enter in a description. ",
-				    "Adding invalid commitment description",
-				    JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
-		commitmentDescription.setText("");
-		
-		DefaultListModel<String> model = (DefaultListModel<String>) commitments.getModel();
-		
-		startTime = startTime.replaceAll(" ", "");
-		endTime = endTime.replaceAll(" ", "");
-		// give half hour for travel before/after
-		if (isExternal) {
-			if (startTime.contains(":30")) {
-				startTime = startTime.replaceAll(":30", ":00");
-			} else {
-				// decrement hour, and set to :30
-				int hour = Integer.parseInt(startTime.substring(0, startTime.indexOf(":"))) - 1;
-				if (hour == 11) {
-					startTime = startTime.replaceAll("pm", "am");
-				}
-				startTime = hour + ":30" + startTime.substring(startTime.indexOf('m') - 1);
+		try {
+			String commitmentString = "";
+			if (isExternal) {
+				commitmentString += "External ";
 			}
-			if (endTime.contains(":30")) {
-				// increment hour and set to :00
-				int hour = Integer.parseInt(endTime.substring(0, endTime.indexOf(":"))) + 1;
-				if (hour == 12) {
-					endTime = endTime.replaceAll("am", "pm");
-				} else if (hour > 12) {
-					hour -= 12;
-				}
-				endTime = hour + ":00" + endTime.substring(endTime.indexOf('m') - 1);
-			} else {
-				endTime = endTime.replaceAll(":00", ":30");
-			}
+			commitmentString += "Meeting: " + description + " "  + frequency + " on " + dayOfWeek + " from " + startTime + " to " + endTime;
+			List<CommitmentBean> list = ClinicianFormValidator.validateCommitment(dateRange, description, startTime, endTime, dayOfWeek, frequency, isExternal);
+			commitmentDescription.setText("");
+			commitmentList.add(list);
+			DefaultListModel<String> model = (DefaultListModel<String>) commitments.getModel();
+			model.add(model.size(), commitmentString);
+		} catch (InvalidFormDataException e) {
+			displayFormDataErrorMessage(e);
 		}
-		
-		int startHour = parseTime(startTime, false);
-		int endHour = parseTime(endTime, true);
-		List<CommitmentBean> list = new ArrayList<CommitmentBean>();
-		// from start date to end date, go through and add commitments for these
-		List<Date> meetingDates;
-		if (frequency.equals("Weekly")) {
-			meetingDates = ImportClinicianMeetingsAction.getMeetingDatesWeekly(startDate, endDate, 7, dayOfWeek);
-		} else if (frequency.equals("Biweekly")) {
-			meetingDates = ImportClinicianMeetingsAction.getMeetingDatesWeekly(startDate, endDate, 14, dayOfWeek);
-		} else {
-			meetingDates = ImportClinicianMeetingsAction.getMeetingDatesMonthly(startDate, endDate, 1, dayOfWeek);
-		}
-		for (Date meetingDate : meetingDates) {
-			list.add(new CommitmentBean(-1, startHour, endHour, meetingDate, description));
-		}
-		commitmentList.add(list);
-		model.add(model.size(), commitmentString);
-	}
-	
-	private int parseTime(String timeString, boolean roundUp) {
-		int colonIndex = timeString.indexOf(":");
-		int time = Integer.parseInt(timeString.substring(0, colonIndex));
-		if (roundUp && timeString.contains(":30")) {
-			time = (Integer.parseInt(timeString.substring(0, colonIndex)) + 1);
-		}
-		if (timeString.contains("pm") && time < 12) {
-			time += 12;
-		}
-		return time;
 	}
 	
 	/**
@@ -687,147 +539,24 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		this.repaint();
 	}
 	
-	private class Commitment {
-		int id;
-		int startHour;
-		int endHour;
-		String description;
-		Weekday dayOfWeek;
-		
-		public Commitment(int id, int sHour, int eHour, String desc, Weekday day) {
-			this.id = id;
-			startHour = sHour;
-			endHour = eHour;
-			description = desc;
-			dayOfWeek = day;
-		}
-		
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public int getStartHour() {
-			return startHour;
-		}
-
-		public void setStartHour(int startHour) {
-			this.startHour = startHour;
-		}
-
-		public int getEndHour() {
-			return endHour;
-		}
-
-		public void setEndHour(int endHour) {
-			this.endHour = endHour;
-		}
-
-		public String getDescription() {
-			return description;
-		}
-
-		public void setDescription(String description) {
-			this.description = description;
-		}
-
-		public Weekday getDayOfWeek() {
-			return dayOfWeek;
-		}
-
-		public void setDayOfWeek(Weekday dayOfWeek) {
-			this.dayOfWeek = dayOfWeek;
-		}
-	}
-	
-	private List<List<CommitmentBean>> getCommitmentList(List<CommitmentBean> commitments) {
-		Map<Commitment, List<CommitmentBean>> map = new HashMap<Commitment, List<CommitmentBean>>();
-		for (CommitmentBean commitment : commitments) {
-			Date date = commitment.getDate();
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			int day = calendar.get(Calendar.DAY_OF_WEEK);
-			Weekday dayOfWeek = Weekday.values()[day - 2];
-			Commitment current = new Commitment(commitment.getClinicianID(), commitment.getStartHour(), commitment.getEndHour(), commitment.getDescription(), dayOfWeek);
-			if (map.containsKey(current)) {
-				List<CommitmentBean> list = map.get(current);
-				list.add(commitment);
-			} else {
-				List<CommitmentBean> list = new ArrayList<CommitmentBean>();
-				list.add(commitment);
-				map.put(current, list);
-			}
-		}
-		List<List<CommitmentBean>> commitmentList = new ArrayList<List<CommitmentBean>>();
-		for (List<CommitmentBean> list : map.values()) {
-			Collections.sort(list, new Comparator<CommitmentBean>() {
-				@Override
-				public int compare(CommitmentBean arg0, CommitmentBean arg1) {
-					return arg0.getDate().compareTo(arg1.getDate());
-				}
-			});
-			commitmentList.add(list);
-		}
-		return commitmentList;
-	}
-	
-	private List<String> getCommitmentStrings(List<List<CommitmentBean>> commitmentList) {
-		List<String> commitmentStrings = new ArrayList<String>();
-		for (List<CommitmentBean> list : commitmentList) {
-			CommitmentBean b1 = list.get(0);
-
-			String frequency = null;
-			if (list.size() == 2) {
-				CommitmentBean b2 = list.get(1);
-				long diff = b2.getDate().getTime() - b1.getDate().getTime();
-				long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-				if (days == 7) {
-					frequency = "Weekly";
-				} else if (days == 14) {
-					frequency = "Biweekly";
-				} else {
-					frequency = "Monthly";
-				}
-			}
-			Date date = b1.getDate();
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(date);
-			int day = calendar.get(Calendar.DAY_OF_WEEK);
-			Weekday dayOfWeek = Weekday.values()[day - 2];
-
-			String commitmentString;
-			if (frequency != null) {
-				commitmentString = "Meeting: " + b1.getDescription() + " "  + frequency + " on " + dayOfWeek + " from " + b1.getStartHour() + " to " + b1.getEndHour();
-			} else {
-				int year = calendar.get(Calendar.YEAR);
-				commitmentString = "Meeting: " + b1.getDescription() + " on " + DateRangeValidator.formatDateLong(date) + ", " + year +  " from " + b1.getStartHour() + " to " + b1.getEndHour();;
-			}
-			commitmentStrings.add(commitmentString);
-			continue;
-		}
-		
-		return commitmentStrings;
-	}
-	
+	/**
+	 * Loads the preferences for the clinician with clinicianName from the database and populates this form with them.
+	 *
+	 * @throws SQLException the SQL exception
+	 */
 	private void loadPreferences() throws SQLException {
 		Connection conn = ConnectionFactory.getInstance();
-		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
-		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
-		TimeAwayDAO timeAwayDAO = new TimeAwayDAO(conn);
-		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
-		int clinicianID = clinicianDAO.getClinicianID(clinicianName);
-		List<CommitmentBean> cmtList = commitmentsDAO.loadCommitments(clinicianID);
-		commitmentList = getCommitmentList(cmtList);
-		List<String> commitmentStrings = getCommitmentStrings(commitmentList);
+		ClinicianLoadPreferencesAction action = new ClinicianLoadPreferencesAction(conn, clinicianName);
+		ClinicianPreferencesBean preferences = action.loadClinicianPreferences();
+		List<TimeAwayBean> timesAway = action.loadTimesAway();
+		commitmentList = action.loadCommitments();
+		List<String> commitmentStrings = action.loadCommitmentDescriptions(commitmentList);
+		
+		// populate form with data
 		DefaultListModel<String> commitmentsModel = (DefaultListModel<String>)commitments.getModel();
 		for (String commitment : commitmentStrings) {
 			commitmentsModel.addElement(commitment);
 		}
-		List<TimeAwayBean> timesAway = timeAwayDAO.loadTimeAway(clinicianID);
-		ClinicianPreferencesBean preferences = clinicianPreferencesDAO.loadClinicianPreferences(clinicianID);
 		nameField.setText(clinicianName);
 		DefaultListModel<TimeAwayBean> timeAwayModel = (DefaultListModel<TimeAwayBean>)timeAway.getModel();
 		for (TimeAwayBean timeAway : timesAway) {

@@ -24,12 +24,13 @@ import javax.swing.JTextField;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import net.miginfocom.swing.MigLayout;
 import bean.CalendarBean;
 import bean.ClinicianBean;
+import bean.DateRange;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
-import net.miginfocom.swing.MigLayout;
 
 /**
  * A GUI element for adding and removing clinicians from the clinician ID list. 
@@ -203,7 +204,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 			try {
 				calendarDAO = new CalendarDAO(ConnectionFactory.getInstance());
 				CalendarBean calendarBean = calendarDAO.loadCalendar();
-				new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), calendarBean.getStartDate(), calendarBean.getEndDate(), true, clinicianList.getSelectedValue().getName());
+				new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), new DateRange(calendarBean.getStartDate(), calendarBean.getEndDate()), true, clinicianList.getSelectedValue().getName());
 			} catch (SQLException e1) {
 				handleDBException(e1);
 			}

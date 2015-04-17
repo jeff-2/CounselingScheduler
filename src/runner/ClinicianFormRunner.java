@@ -1,12 +1,13 @@
 package runner;
 
-import java.sql.SQLException;
-
 import gui.clinician.ClinicianForm;
+
+import java.sql.SQLException;
 
 import javax.swing.UIManager;
 
 import bean.CalendarBean;
+import bean.DateRange;
 import dao.CalendarDAO;
 import dao.ConnectionFactory;
 
@@ -28,7 +29,7 @@ public class ClinicianFormRunner {
 		try {
 			CalendarDAO calendarDAO = new CalendarDAO(ConnectionFactory.getInstance());
 			CalendarBean calendarBean = calendarDAO.loadCalendar();
-			new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), calendarBean.getStartDate(), calendarBean.getEndDate(), false, "");
+			new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), new DateRange(calendarBean.getStartDate(), calendarBean.getEndDate()), false, "");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

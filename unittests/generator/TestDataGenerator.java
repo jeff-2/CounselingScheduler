@@ -169,6 +169,7 @@ public class TestDataGenerator {
 	private void generateStandardCommitmentsData() throws SQLException, ParseException {
 		CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
 		commitmentsDAO.insert(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/1/2015"), "Doctor's appointment"));
+		commitmentsDAO.insert(new CommitmentBean(0, 8, 9, DateRangeValidator.parseDate("4/8/2015"), "Doctor's appointment"));
 		commitmentsDAO.insert(new CommitmentBean(0, 11, 12, DateRangeValidator.parseDate("4/3/2015"), "Staff meeting"));
 		commitmentsDAO.insert(new CommitmentBean(1, 14, 15, DateRangeValidator.parseDate("3/30/2015"), "Staff meeting"));
 		commitmentsDAO.insert(new CommitmentBean(2, 10, 11, DateRangeValidator.parseDate("3/30/2015"), "Dropping off child at school"));

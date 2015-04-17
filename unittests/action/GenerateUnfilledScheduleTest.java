@@ -71,7 +71,6 @@ public class GenerateUnfilledScheduleTest {
 
 	@After
 	public void cleanUp() throws Exception {
-		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
 		gen.clearTables();
 	}
 }

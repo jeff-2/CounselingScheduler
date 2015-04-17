@@ -4,6 +4,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import bean.DateRange;
+
 /**
  * The Class DateRangeValidator.
  * 
@@ -71,14 +73,16 @@ public class DateRangeValidator {
 	 * @param endDate the end date
 	 * @throws InvalidDateRangeException the invalid date range exception
 	 */
-	public static void validate(String startDate, String endDate) throws InvalidDateRangeException {
+	public static DateRange validate(String startDate, String endDate) throws InvalidDateRangeException {
+		Date lower, upper;
 		try {
-			Date lower = parseDate(startDate);
-			Date upper = parseDate(endDate);
+			lower = parseDate(startDate);
+			upper = parseDate(endDate);
 			if (lower.after(upper))
 				throw new InvalidDateRangeException("The start date must be before the end date.");
 		} catch (ParseException e) {
 			throw new InvalidDateRangeException(e.getMessage());
 		}
+		return new DateRange(lower, upper);
 	}
 }

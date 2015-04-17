@@ -296,13 +296,6 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 						return arg0.getButton("YES").triggerClick();
 					}
 				})
-				.process(new WindowHandler() {
-					@Override
-					public Trigger process(Window arg0) throws Exception {
-						assertEquals(arg0.getTitle(), "SUCCESS");
-						return arg0.getButton("OK").triggerClick();
-					}
-				})
 				.run();
 				return new Trigger() {
 					@Override
