@@ -12,6 +12,7 @@ import org.junit.Before;
 import org.uispec4j.Button;
 import org.uispec4j.CheckBox;
 import org.uispec4j.ComboBox;
+import org.uispec4j.ListBox;
 import org.uispec4j.TextBox;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpecTestCase;
@@ -104,14 +105,56 @@ public class ClinicianFormTest extends UISpecTestCase {
 
 	/**
 	 * Tests whether the clear button clears the field
+	 * @throws Exception 
 	 */
-	public void testClearField() {
+	public void testClearField() throws Exception {
 		Window window = this.getMainWindow();
+		
+		enterData("Biweekly", true);
 		TextBox nameField = window.getTextBox("nameField");
 		nameField.setText("Random Text");
+		TextBox timeAwayName = window.getTextBox("timeAwayName");
+		timeAwayName.setText("some desc");
+		TextBox timeAwayStartDate = window.getTextBox("timeAwayStartDate");
+		timeAwayStartDate.setText("1/3/1970");
+		TextBox timeAwayEndDate = window.getTextBox("timeAwayEndDate");
+		timeAwayEndDate.setText("1/12/1970");
+		TextBox commitmentDescription = window.getTextBox("commitmentDescription");
+		commitmentDescription.setText("desc");
+		ComboBox startTimeBox = window.getComboBox("startTimeBox");
+		startTimeBox.select("9:00 am");
+		ComboBox endTimeBox = window.getComboBox("endTimeBox");
+		endTimeBox.select("10:00 am");
+		ComboBox daysOfWeekBox = window.getComboBox("daysOfWeekBox");
+		daysOfWeekBox.select("Wednesday");
+		ComboBox frequencyBox = window.getComboBox("frequencyBox");
+		frequencyBox.select("Monthly");
+		ComboBox morningRankBox = window.getComboBox("morningRankBox");
+		morningRankBox.select("1");
+		ComboBox noonRankBox = window.getComboBox("noonRankBox");
+		noonRankBox.select("2");
+		ComboBox afternoonRankBox = window.getComboBox("afternoonRankBox");
+		afternoonRankBox.select("3");
+		
 		Button clearButton = window.getButton("Clear");
 		clearButton.click();
 		assertEquals("", nameField.getText());
+		assertEquals("", timeAwayName.getText());
+		assertEquals("", timeAwayStartDate.getText());
+		assertEquals("", timeAwayEndDate.getText());
+		assertEquals("", commitmentDescription.getText());
+		daysOfWeekBox.selectionEquals("Monday");
+		startTimeBox.selectionEquals("8:00 am");
+		endTimeBox.selectionEquals("8:00 am");
+		daysOfWeekBox.selectionEquals("Monday");
+		frequencyBox.selectionEquals("Weekly");
+		morningRankBox.selectionEquals("1");
+		noonRankBox.selectionEquals("1");
+		afternoonRankBox.selectionEquals("1");
+		ListBox timeAway = window.getListBox("timeAway");
+		timeAway.contentEquals("");
+		ListBox commitments = window.getListBox("commitments");
+		commitments.contentEquals("");
 	}
 	
 	public void testInsertClinicianFormExternalB() throws Exception {
@@ -197,7 +240,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 		assertEquals(timeAway, actualTimeAway);
 	}
 	
-	private void insertData(String frequency, boolean isExternal) throws Exception {
+	private void enterData(String frequency, boolean isExternal) throws Exception {
 		Window window = this.getMainWindow();
 		TextBox nameField = window.getTextBox("nameField");
 		nameField.setText("Jeff");
@@ -262,7 +305,12 @@ public class ClinicianFormTest extends UISpecTestCase {
 		
 		ComboBox afternoonRankBox = window.getComboBox("afternoonRankBox");
 		afternoonRankBox.select("3");
+	}
+	
+	private void insertData(String frequency, boolean isExternal) throws Exception {
+		enterData(frequency, isExternal);
 		
+		Window window = this.getMainWindow();
 		Button submitButton = window.getButton("submitButton");
 		submitButton.click();
 	}

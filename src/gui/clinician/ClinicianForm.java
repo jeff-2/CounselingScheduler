@@ -1,6 +1,7 @@
 package gui.clinician;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -111,6 +112,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	private void initializeComponents() {
 		initializeTextFields();
 		initializeLabels();
+		initializeTextAreas();
 		initializeButtons();
 		initializeScrollPanes();
 		initializeComboBoxes();
@@ -147,28 +149,12 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		periodLabel = new JLabel("This covers the period from " + DateRangeValidator.formatDateLong(dateRange.getStartDate())
 				+ " through " + DateRangeValidator.formatDateLong(dateRange.getEndDate()) + ", " + year + ".");
 		timeAwayLabel = new JLabel(semester.name() + " Semester " + year + " \"Time Away\" Plans");
-		timeAwayDescription = new JTextArea("Please list the dates/days/times etc. that you know you will be away from the Center." + 
-		" Please include VACATIONS, CONFERENCES, SICK DAYS, JURY DUTY or any other circumstances that will take you out of the Center.");
-		timeAwayDescription.setLineWrap(true);
-		timeAwayDescription.setWrapStyleWord(true);
-		timeAwayDescription.setSize(880, 200);
-		timeAwayDescription.setEditable(false);
-		timeAwayDescription.setBackground(this.getBackground());
-		timeAwayDescription.setFont(periodLabel.getFont());
 		timeAwayNameLabel = new JLabel("Description");
 		timeAwayStartDateLabel = new JLabel("Start Date");
 		timeAwayEndDateLabel = new JLabel("End Date");
 		conflictsLabel = new JLabel("Initial Appointment / Emergency Coverage Conflicts");
 		iaTimesLabel = new JLabel("We offer IAs at 11:00 a.m., 1:00 p.m., 2:00 p.m. and 3:00 p.m. during the " + semester + " Semester.");
 		ecTimesLabel = new JLabel("1-Hour Emergency Coverage shifts are at 8:00 a.m., Noon, and 4:00 p.m. every day.");
-		conflictsDescription = new JTextArea("Please indicate \"impossible\" shift times due to other activities, such as groups and meetings/committees."
-				+ " You do not need to list vacation/conferences again, since you have already listed them above.");
-		conflictsDescription.setLineWrap(true);
-		conflictsDescription.setWrapStyleWord(true);
-		conflictsDescription.setSize(880, 200);
-		conflictsDescription.setEditable(false);
-		conflictsDescription.setBackground(this.getBackground());
-		conflictsDescription.setFont(periodLabel.getFont());
 		commitmentStartTimeLabel = new JLabel("Start Time");
 		commitmentEndTimeLabel = new JLabel("End Time");
 		commitmentFrequencyLabel = new JLabel("Frequency");
@@ -176,14 +162,6 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		commitmentDayLabel = new JLabel("Day of Week");
 		commitmentDescriptionLabel = new JLabel("Activity or Meeting");
 		ecPreferencesLabel = new JLabel("E.C. Preferences");
-		ecPreferencesDescription = new JTextArea("Please rank your preferences for E.C. shifts. We will try to take your preferences"
-				+ " into account but we cannot guarantee they will be reflected in your schedule.");
-		ecPreferencesDescription.setLineWrap(true);
-		ecPreferencesDescription.setWrapStyleWord(true);
-		ecPreferencesDescription.setSize(780, 200);
-		ecPreferencesDescription.setEditable(false);
-		ecPreferencesDescription.setBackground(this.getBackground());
-		ecPreferencesDescription.setFont(periodLabel.getFont());
 		timeLabel = new JLabel("Time");
 		rankLabel = new JLabel("Rank");
 		morningLabel = new JLabel("8:00am");
@@ -193,6 +171,36 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			iaHoursLabel = new JLabel("IA Hours Assigned");
 			ecHoursLabel = new JLabel("EC Hours Assigned");
 		}
+	}
+	
+	/**
+	 * Initialize text areas.
+	 */
+	private void initializeTextAreas() {
+		Font font = nameLabel.getFont();
+		timeAwayDescription = new JTextArea("Please list the dates/days/times etc. that you know you will be away from the Center." + 
+				" Please include VACATIONS, CONFERENCES, SICK DAYS, JURY DUTY or any other circumstances that will take you out of the Center.");
+		initializeTextArea(timeAwayDescription, font);
+		conflictsDescription = new JTextArea("Please indicate \"impossible\" shift times due to other activities, such as groups and meetings/committees."
+				+ " You do not need to list vacation/conferences again, since you have already listed them above.");
+		initializeTextArea(conflictsDescription, font);
+		ecPreferencesDescription = new JTextArea("Please rank your preferences for E.C. shifts. We will try to take your preferences"
+				+ " into account but we cannot guarantee they will be reflected in your schedule.");
+		initializeTextArea(ecPreferencesDescription, font);
+	}
+	
+	/**
+	 * Setup textarea to mimic jlabel
+	 * @param textArea
+	 * @param font
+	 */
+	private void initializeTextArea(JTextArea textArea, Font font) {
+		textArea.setLineWrap(true);
+		textArea.setWrapStyleWord(true);
+		textArea.setSize(780, 200);
+		textArea.setEditable(false);
+		textArea.setBackground(getBackground());
+		textArea.setFont(font);
 	}
 	
 	/**
@@ -241,8 +249,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		endTimeBox = new JComboBox<String>();
 		endTimeBox.setName("endTimeBox");
 		for (String hour : OperatingHours.getOperatingHours()) {
-			startTimeBox.addItem(hour);
 			String midHour = hour.replaceAll(":00", ":30");
+			startTimeBox.addItem(hour);
 			startTimeBox.addItem(midHour);
 			endTimeBox.addItem(hour);
 			endTimeBox.addItem(midHour);
@@ -437,8 +445,8 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 */
 	private void displayDBErrorMessage(SQLException e) {
 		JOptionPane.showMessageDialog(this,
-			    e.getMessage(),
-			    "Context",
+				"Failed to connect to the remote SQL database; please contact the network administrator.",
+				"Database connection error",
 			    JOptionPane.ERROR_MESSAGE);
 	}
 	
@@ -466,9 +474,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			TimeAwayBean timeAwayBean = ClinicianFormValidator.validateTimeAway(name, startDate, endDate);
 			DefaultListModel<TimeAwayBean> model = (DefaultListModel<TimeAwayBean>) timeAway.getModel();
 			model.add(model.size(), timeAwayBean);
-			timeAwayName.setText("");
-			timeAwayStartDate.setText("");
-			timeAwayEndDate.setText("");
+			clearTimeAwayFields();
 		} catch (InvalidFormDataException e) {
 			displayFormDataErrorMessage(e);
 		}
@@ -492,10 +498,10 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			}
 			commitmentString += "Meeting: " + description + " "  + frequency + " on " + dayOfWeek + " from " + startTime + " to " + endTime;
 			List<CommitmentBean> list = ClinicianFormValidator.validateCommitment(dateRange, description, startTime, endTime, dayOfWeek, frequency, isExternal);
-			commitmentDescription.setText("");
 			commitmentList.add(list);
 			DefaultListModel<String> model = (DefaultListModel<String>) commitments.getModel();
 			model.add(model.size(), commitmentString);
+			clearCommitmentFields();
 		} catch (InvalidFormDataException e) {
 			displayFormDataErrorMessage(e);
 		}
@@ -529,14 +535,34 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 */
 	private void clearFields() {
 		nameField.setText("");
+		clearTimeAwayFields();
+		((DefaultListModel<TimeAwayBean>)timeAway.getModel()).clear();
+		clearCommitmentFields();
+		((DefaultListModel<String>)commitments.getModel()).clear();
+		commitmentList.clear();
+		clearPreferenceFields();
+		this.repaint();
+	}
+	
+	private void clearTimeAwayFields() {
 		timeAwayName.setText("");
 		timeAwayStartDate.setText("");
 		timeAwayEndDate.setText("");
+	}
+	
+	private void clearCommitmentFields() {
 		commitmentDescription.setText("");
-		((DefaultListModel<String>)commitments.getModel()).clear();
-		commitmentList.clear();
-		((DefaultListModel<TimeAwayBean>)timeAway.getModel()).clear();
-		this.repaint();
+		externalCommitment.setSelected(false);
+		daysOfWeekBox.setSelectedIndex(0);
+		startTimeBox.setSelectedIndex(0);
+		endTimeBox.setSelectedIndex(0);
+		frequencyBox.setSelectedIndex(0);
+	}
+	
+	private void clearPreferenceFields() {
+		morningRankBox.setSelectedIndex(0);
+		noonRankBox.setSelectedIndex(0);
+		afternoonRankBox.setSelectedIndex(0);
 	}
 	
 	/**
