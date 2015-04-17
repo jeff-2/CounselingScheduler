@@ -142,12 +142,12 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 */
 	private void initializeFrame() {
 		// Set preferred size
-		this.panel.setPreferredSize(new Dimension(480, 480));
+		this.panel.setPreferredSize(new Dimension(550, 550));
 		// Set exit behavior
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// Add label and full name field for new clinicians
 		this.newFullnameLabel = new JLabel("New Clinician Name:");
-		this.panel.add(newFullnameLabel, "gapleft 30");
+		this.panel.add(newFullnameLabel, "align label");
 		this.newFullnameField = new JTextField();
 		this.newFullnameField.setName("newFullnameField");
 		this.newFullnameField.addKeyListener(this);
@@ -156,15 +156,15 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.addButton = new JButton("Add Clinician");
 		this.addButton.setName("addButton");
 		this.addButton.addActionListener(this);
-		this.panel.add(addButton, "gapleft 30");
+		this.panel.add(addButton, "split 3, align center, span, sizegroup bttn");
 		this.removeButton = new JButton("Remove Clinician");
 		this.removeButton.setName("removeButton");
 		this.removeButton.addActionListener(this);
-		this.panel.add(removeButton, "gapleft 30");
+		this.panel.add(removeButton, "gapleft 15, sizegroup bttn");
 		this.editButton = new JButton("Edit Clinician Preferences");
 		this.editButton.setName("editButton");
 		this.editButton.addActionListener(this);
-		this.panel.add(editButton, "gapleft 30, wrap 15px");
+		this.panel.add(editButton, "gapleft 15, sizegroup bttn, wrap");
 		// Add list & scrollpane
 		this.clinicianList = new JList<ClinicianBean>();
 		this.populateClinicianList();
