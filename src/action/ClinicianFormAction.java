@@ -2,7 +2,6 @@ package action;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ListModel;
@@ -40,14 +39,6 @@ public class ClinicianFormAction {
 	 * @throws SQLException the SQL exception
 	 */
 	public void submit(boolean isUpdate) throws SQLException, InvalidFormDataException {
-
-		List<CommitmentBean> allCommitments = new ArrayList<CommitmentBean>();
-
-		for (List<CommitmentBean> list : commitments) {
-			for (CommitmentBean commitment: list) {
-				allCommitments.add(commitment);
-			}
-		}
 		
 		if (isUpdate) {
 			updatePreferences();

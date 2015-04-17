@@ -144,7 +144,7 @@ public class ClinicianLoadPreferencesAction {
 				commitmentString = "Meeting: " + b1.getDescription() + " "  + frequency + " on " + dayOfWeek + " from " + b1.getStartHour() + " to " + b1.getEndHour();
 			} else {
 				int year = calendar.get(Calendar.YEAR);
-				commitmentString = "Meeting: " + b1.getDescription() + " on " + DateRangeValidator.formatDateLong(date) + ", " + year +  " from " + b1.getStartHour() + " to " + b1.getEndHour();;
+				commitmentString = "Meeting: " + b1.getDescription() + " on " + DateRangeValidator.formatDateLong(date) + ", " + year +  " from " + b1.getStartHour() + " to " + b1.getEndHour();
 			}
 			commitmentStrings.add(commitmentString);
 			continue;

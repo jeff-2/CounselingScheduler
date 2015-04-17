@@ -29,6 +29,38 @@ public enum Weekday {
 		return format.format(d);
 	}
 	
+	/**
+	 * Returns true if the name of a weekday is contained in the given string
+	 * @param value
+	 * @return
+	 */
+	public static boolean isContainedIn(String value) {
+		for (Weekday w : Weekday.values()) {
+			if (value.contains(w.name())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Returns true if the provided value is equal to the name of a weekday
+	 * @param value
+	 * @return
+	 */
+	public static boolean contains(String value) {
+		for (Weekday w : Weekday.values()) {
+			if (w.name().equals(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Converts this ordinal to the int constant used with calendar to represent weekdays
+	 * @return
+	 */
 	public int toCalendarWeekday() {
 		return ordinal() + 2;
 	}

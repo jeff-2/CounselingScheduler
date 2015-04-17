@@ -34,8 +34,13 @@ import dao.CommitmentsDAO;
  */
 public class ImportClinicianMeetingsAction {
 	
+	/** The commitments dao. */
 	private CommitmentsDAO commitmentsDAO;
+	
+	/** The clinician dao. */
 	private ClinicianDAO clinicianDAO;
+	
+	/** The excel file. */
 	private File excelFile;
 	
 	/**
@@ -97,6 +102,15 @@ public class ImportClinicianMeetingsAction {
 		}
 	}
 	
+	
+	/**
+	 * Parses the excel row provided and inserts meeting corresponding to the meeting details specified in this row into the database.
+	 *
+	 * @param excelRow the excel row
+	 * @param endDate the end date
+	 * @throws InvalidExcelFormatException the invalid excel format exception
+	 * @throws SQLException the SQL exception
+	 */
 	private void parseRowAndInsertMeetings(Map<String, Object> excelRow, Date endDate) throws InvalidExcelFormatException, SQLException {
 		List<Date> meetingDates = getMeetingDates(excelRow, endDate);
 		String startTime = (String)excelRow.get("Start Time");
@@ -120,6 +134,16 @@ public class ImportClinicianMeetingsAction {
 		insertMeetings(meetingDates, staffMembers, sTime, eTime, meetingName);
 	}
 	
+	/**
+	 * Inserts meetings for the provided dates and staffMembers at the provided time with the given meeting name into the database.
+	 *
+	 * @param meetingDates the meeting dates
+	 * @param staffMembers the staff members
+	 * @param sTime the s time
+	 * @param eTime the e time
+	 * @param meetingName the meeting name
+	 * @throws SQLException the SQL exception
+	 */
 	private void insertMeetings(List<Date> meetingDates, String staffMembers, int sTime, int eTime, String meetingName) throws SQLException {
 		staffMembers = staffMembers.replaceAll(" ", "");
 		if (staffMembers.equalsIgnoreCase("ALL")) {
@@ -355,14 +379,11 @@ public class ImportClinicianMeetingsAction {
 		List<Date> meetingDates = new ArrayList<Date>();
 		days = days.replaceAll(" ", "");
 		String[] daysSpecified = days.split(",");
-		
 		for (String daySpecified : daysSpecified) {
-			if (!(daySpecified.contains(Weekday.Monday.name()) || daySpecified.contains(Weekday.Tuesday.name()) || daySpecified.contains(Weekday.Wednesday.name()) || 
-					daySpecified.contains(Weekday.Thursday.name()) || daySpecified.contains(Weekday.Friday.name()))) {
+			if (!Weekday.isContainedIn(daySpecified)) {
 				throw new InvalidExcelFormatException(formatInvalidExcelFormatString(daySpecified, "Days"));
 			}
-			if (!(daySpecified.equals(Weekday.Monday.name()) || daySpecified.equals(Weekday.Tuesday.name()) || daySpecified.equals(Weekday.Wednesday.name()) || 
-					daySpecified.equals(Weekday.Thursday.name()) || daySpecified.equals(Weekday.Friday.name()))) {
+			if (!Weekday.contains(daySpecified)) {
 				
 				int dayOfMonth = parseMonthlySpecifier(daySpecified);
 				
