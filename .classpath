@@ -8,6 +8,7 @@
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/uispec4j-2.5-SNAPSHOT-jdk7.jar"/>
 	<classpathentry kind="lib" path="lib/sqljdbc4.jar"/>
+	<classpathentry kind="lib" path="lib/gurobi.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="lib" path="lib/poi-3.11-20141221.jar"/>
 	<classpathentry kind="lib" path="lib/poi-ooxml-3.11-20141221.jar"/>
