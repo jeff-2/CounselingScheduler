@@ -145,7 +145,7 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 		
 		if(e.getSource() == this.print) {
 			try {
-				ECScheduleViewFrame frame = new ECScheduleViewFrame(new ECScheduleComponent(cells));
+				ECScheduleViewFrame frame = new ECScheduleViewFrame();
 				frame.printSchedule();
 			} catch (SQLException e1) {
 				e1.printStackTrace();

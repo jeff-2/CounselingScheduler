@@ -8,3 +8,14 @@ or .tgz (Linux 32/64 bit) file associated with your system, and follow
 the installation instructions in the quick-start guides at:
 
 http://www.gurobi.com/documentation/6.0/
+
+---
+
+In Eclipse:
+
+1) Add lib/gurobi.jar to your build path
+
+2) djust your Run Configuration to include the 
+following Environment Variable:
+
+PATH  <the /bin directory of your Gurobi installation, e.g. C:\gurobi603\win64\bin>
