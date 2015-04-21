@@ -11,6 +11,7 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -24,6 +25,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	
 	private static final long serialVersionUID = -7813470335774759257L;
 	private List<List<List<String>>> weekACells, weekBCells;
+	private List<Integer> pageBreaks = null;
 
 	public IAScheduleComponent(List<List<List<String>>> weekACells, List<List<List<String>>> weekBCells) {
 		this.weekACells = weekACells;
@@ -58,6 +60,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 
 	private void buildGrid(Graphics2D g) {
 		
+		// TODO: change string displayed
 		g.drawString("IA Schedule - Spring 2015", 300, 50);
 		g.drawString("Week A", 350, 75);
 		int xoffset = 50;
@@ -119,20 +122,75 @@ public class IAScheduleComponent extends JComponent implements Printable {
 		Graphics2D g2d = (Graphics2D)g;      
 		g2d.translate(pf.getImageableX(), pf.getImageableY());
 		double scale = pf.getImageableWidth()/this.getWidth();
-		((Graphics2D)g).scale(scale, scale);
-
-		// Now print the window and its visible contents 
-		this.printAll(g);
-		((Graphics2D)g).scale(1/scale, 1/scale);
+		g2d.scale(scale, scale);
+		
+		if (pageBreaks == null) {
+			pageBreaks = new ArrayList<Integer>();
+			int height = (int)pf.getImageableHeight();
+			int ht = 0;
+			int row = 0;
+			for (List<List<String>> grid : weekACells) {
+				int maxHt = 0;
+				for (List<String> cell : grid) {
+					maxHt = Math.max(maxHt, 30 + cell.size() * 20);
+				}
+				if (ht + maxHt > height) {
+					pageBreaks.add(row);
+					ht = 0;
+				}
+				ht += maxHt;
+				row++;
+			}
+			
+			pageBreaks.add(row);
+			ht = 0;
+			for (List<List<String>> grid : weekBCells) {
+				int maxHt = 0;
+				for (List<String> cell : grid) {
+					maxHt = Math.max(maxHt, 30 + cell.size() * 20);
+				}
+				if (ht + maxHt > height) {
+					pageBreaks.add(row);
+					ht = 0;
+				}
+				ht += maxHt;
+				row++;
+			}
+		}
+		
+		if (page > pageBreaks.size()) {
+			return NO_SUCH_PAGE;
+		}
+		
+		int start = (page == 0) ? 0 : pageBreaks.get(page - 1);
+		int end = (page == pageBreaks.size()) ? weekACells.size() + weekBCells.size() : pageBreaks.get(page);
+		
+		int xoffset = 50;
+		int yoffset = 100;
+		int [] cols = new int[] {25, 75, 175, 275, 375, 475, 575};
+		String [] rowLabels = new String[] {"", "11:00", "NOON", "1:00", "2:00", "3:00"};
+		if (start < weekACells.size()) {
+			g.drawString("Week A", 350, 75);
+			for (int i = start; i < end && i < weekACells.size(); i++) {
+				yoffset = drawRow(g2d, xoffset, yoffset, rowLabels[i], weekACells.get(i), cols);
+			}
+		}
+		
+		if (start >= weekACells.size()) {
+			g.drawString("Week B", 350, 75);
+			for (int i = start - weekACells.size(); i < end - weekACells.size(); i++) {
+				yoffset = drawRow(g2d, xoffset, yoffset, rowLabels[i], weekBCells.get(i), cols);
+			}
+		}
 		return PAGE_EXISTS;
 	}
 	
 	private BufferedImage getImageFromPanel(Component component) {
 		int height = requiredHeight();
-        BufferedImage image = new BufferedImage(700, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(600, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, 700, height);
+        g2d.fillRect(0, 0, 600, height);
         g2d.setColor(Color.BLACK);
         this.buildGrid(g2d);
         g2d.dispose();

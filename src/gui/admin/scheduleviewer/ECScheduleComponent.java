@@ -26,11 +26,13 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	private static final long serialVersionUID = 6604353427809987021L;
 	private String title;
 	private List<List<List<String>>> cells;
+	private static final int [] cols = new int[] {25, 75, 175, 275, 375, 475, 575};
+	private int [] pageBreaks = null;
 	
 	public ECScheduleComponent(List<List<List<String>>> cells) {
 		title = "Title";
 		this.cells = cells;
-		this.setPreferredSize(new Dimension(700, 175 + cells.size() * 250));
+		this.setPreferredSize(new Dimension(600, 175 + cells.size() * 250));
 	}
 
 	public void paint (Graphics g1) {
@@ -40,7 +42,6 @@ public class ECScheduleComponent extends JComponent implements Printable {
 		int x = 0; 
 		int y = 75;
 		g.drawString(title, 250, 50);
-		int [] cols = new int[] {25, 75, 175, 275, 375, 475, 575};
 		for(List<List<String>> grid : cells) {
 			for (List<String> row : grid) {
 				y = drawRow(g, x, y, row, cols);
@@ -79,19 +80,45 @@ public class ECScheduleComponent extends JComponent implements Printable {
 		Graphics2D g2d = (Graphics2D)g;      
 		g2d.translate(pf.getImageableX(), pf.getImageableY());
 		double scale = pf.getImageableWidth()/this.getWidth();
-		((Graphics2D)g).scale(scale, scale);
+		g2d.scale(scale, scale);
+		
+		g2d.drawString(title, 250, 50);
+		if (pageBreaks == null) {
+            int numBreaks = getHeight()/(int)pf.getImageableHeight();
+            int numPerPage = cells.size()/numBreaks;
+            pageBreaks = new int[numBreaks];
+            for (int b=0; b<numBreaks; b++) {
+                pageBreaks[b] = (b + 1) * numPerPage;
+            }
+        }
+		
+		if (page > pageBreaks.length) {
+			return NO_SUCH_PAGE;
+		}
+		
+		int start = (page == 0) ? 0 : pageBreaks[page-1];
+        int end   = (page == pageBreaks.length) ? cells.size() : pageBreaks[page];
 
-		/* Now print the window and its visible contents */
-		this.printAll(g);
-		((Graphics2D)g).scale(1/scale, 1/scale);
+        if (start == end) {
+        	return NO_SUCH_PAGE;
+        }
+        int x = 0;
+        int y = 75;
+        for (int i = start; i < end; i++) {
+        	List<List<String>> grid = cells.get(i);
+        	for (List<String> cell : grid) {
+        		y = drawRow(g2d, x, y, cell, cols);
+        	}
+        	y += 25;
+        }
 		return PAGE_EXISTS;
 	}
 
 	private BufferedImage getImageFromPanel(Component component) {
-        BufferedImage image = new BufferedImage(700, 175 + cells.size() * 250, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(600, 175 + cells.size() * 250, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, 700, 175 + cells.size() * 250);
+        g2d.fillRect(0, 0, 600, 175 + cells.size() * 250);
         g2d.setColor(Color.BLACK);
         this.print(g2d);
         g2d.dispose();

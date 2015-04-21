@@ -101,7 +101,7 @@ public class ScheduleDAO extends DAO {
 			schedule = loadIAScheduleType(0);
 		}
 		else if(scheduleType == 1) { //week B of IA sessions
-			schedule = loadIAScheduleType(1);
+			schedule = loadIAScheduleType(0);
 		}
 		else if(scheduleType == 2) { //All weeks of EC sessions
 			schedule = loadAllECSessions();

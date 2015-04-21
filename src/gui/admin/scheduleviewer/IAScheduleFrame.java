@@ -126,15 +126,10 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.print) {
+			IAScheduleViewFrame frame;
 			try {
-				/*
-				IAScheduleViewFrameDeprecated frame;
-				frame = new IAScheduleViewFrameDeprecated(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray());
+				frame = new IAScheduleViewFrame(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray());
 				frame.printSchedule();
-				*/
-				IAScheduleViewFrame frame = new IAScheduleViewFrame();
-				frame.printSchedule();
-				
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
