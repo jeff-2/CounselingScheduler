@@ -187,10 +187,10 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	
 	private BufferedImage getImageFromPanel(Component component) {
 		int height = requiredHeight();
-        BufferedImage image = new BufferedImage(600, height, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(700, height, BufferedImage.TYPE_INT_RGB);
         Graphics2D g2d = image.createGraphics();
         g2d.setColor(Color.WHITE);
-        g2d.fillRect(0, 0, 600, height);
+        g2d.fillRect(0, 0, 700, height);
         g2d.setColor(Color.BLACK);
         this.buildGrid(g2d);
         g2d.dispose();
