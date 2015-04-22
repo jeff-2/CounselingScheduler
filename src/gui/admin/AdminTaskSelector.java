@@ -20,6 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import bean.Schedule;
 import dao.ConnectionFactory;
 import action.FillScheduleAction;
 import action.GenerateUnfilledScheduleAction;
@@ -102,16 +103,20 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	 * JButton for running the currently-selected item
 	 */
 	private JButton runButton;
+	
+	private Schedule schedule;
 
 	/**
 	 * Create an empty client ID list
+	 * @throws SQLException 
 	 */
-	public AdminTaskSelector() {
+	public AdminTaskSelector() throws SQLException {
 		super("Select Admin Task");
 		this.panel = new JPanel(new MigLayout("gap rel 0", "grow"));
 		this.initializeFrame();
 		this.setCloseBehavior();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
+		schedule = new Schedule(ConnectionFactory.getInstance());
 	}
 
 
@@ -275,7 +280,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 
 	private void viewIASchedule() {
 		try {
-			IAScheduleFrame frame = new IAScheduleFrame();
+			IAScheduleFrame frame = new IAScheduleFrame(schedule);
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this,
 					"SQLException when attempting to view schedule",
@@ -287,7 +292,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 
 	private void viewECSchedule() {
 		try {
-			ECScheduleFrame frame = new ECScheduleFrame();
+			ECScheduleFrame frame = new ECScheduleFrame(schedule);
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(this,
 					"SQLException when attempting to view schedule",

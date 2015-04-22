@@ -30,6 +30,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import bean.ECScheduleWeekBean;
+import bean.Schedule;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
@@ -54,15 +55,17 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	private JButton resetButton;
 	private JPanel controlPanel;
 	private JFileChooser fileChooser;
+	private Schedule schedule;
 	
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
 	 */
-	public ECScheduleFrame() throws SQLException {
+	public ECScheduleFrame(Schedule s) throws SQLException {
 		super("View EC Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
+		this.schedule = s;
 		this.scrollPanel = new JScrollPane();
 
 		// Initialize menu
@@ -97,7 +100,7 @@ public class ECScheduleFrame extends JFrame implements ActionListener {
 	 * @throws SQLException 
 	 */
 	private void loadEditableSchedule() throws SQLException {
-		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(dao);
+		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean.getECScheduleWeekBeans(schedule);
 		Vector<String> clinicianNames = clinicianDao.loadClinicianNames();
 		ecComponents = new ArrayList<>();
 		

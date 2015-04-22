@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -52,6 +53,11 @@ public class Schedule {
 	private CalendarBean calendar;
 	private List<HolidayBean> holidays;
 	private List<SessionBean> sessions;
+	private List<Week> weeks;
+	
+	private List<SessionNameBean> ecSessions;
+	private List<SessionNameBean> iaSessionsA;
+	private List<SessionNameBean> iaSessionsB;
 	
 	/**
 	 * Maps clinician IDs to instances of the Clinician class.
@@ -97,6 +103,11 @@ public class Schedule {
 		setHolidays(holidayDAO.loadHolidays());
 		setSessions(sessionsDAO.loadSessions());
 		this.calendar = calendarDAO.loadCalendar();
+		
+		weeks = Week.getSemesterWeeks(calendar);
+		ecSessions = new ArrayList<SessionNameBean>();
+		iaSessionsA = new ArrayList<SessionNameBean>();
+		iaSessionsB = new ArrayList<SessionNameBean>();
 	}
 	
 	public Schedule loadScheduleFromDB() throws SQLException {
@@ -118,8 +129,6 @@ public class Schedule {
 		Schedule schedule = loadScheduleFromDB();
 		ScheduleProgram.assignClinicians(schedule);
 		
-		List<Week> weeks = Week.getSemesterWeeks(calendar);
-		
 		// Initial fill of ia and ec
 		for (int i = 0; i < weeks.size(); i++) {
 			ec.add(new HashMap<SessionBean, Clinician>());
@@ -134,9 +143,10 @@ public class Schedule {
 			}
 			sessionsByClinician.put(c, weekBeans);
 		}
+		
 
-		// The important part
 		for (SessionBean sb : sessions) {
+			// Fills the 3 maps
 			List<Integer> clinicianIDs = sb.getClinicians();
 			int weekNum = weeks.indexOf(Week.getWeek(sb.getDate(), calendar));
 			// Handle ia/ec
@@ -151,9 +161,36 @@ public class Schedule {
 				// This is an EC session.
 				ec.get(weekNum).put(sb, clinicians.get(clinicianIDs.get(0)));
 			}
-			// Fill sessionsByClinician
+			// Fill sessionsByClinician and the SessionNameBean lists
 			for (Integer id : clinicianIDs) {
-				sessionsByClinician.get(clinicians.get(id)).get(weekNum).addSession(sb);
+				Clinician c = clinicians.get(id);
+				ClinicianBean cb = c.getClinicianBean();
+				sessionsByClinician.get(c).get(weekNum).addSession(sb);
+				if (sb.getType() == SessionType.IA && sb.getWeekType() == IAWeektype.A) {
+					iaSessionsA.add(new SessionNameBean(
+							cb.getName(),
+							sb.getStartTime(),
+							sb.getDayOfWeek(),
+							sb.getDate(),
+							0,
+							sb.getID()));
+				} else if (sb.getType() == SessionType.IA && sb.getWeekType() == IAWeektype.B) {
+					iaSessionsB.add(new SessionNameBean(
+							cb.getName(),
+							sb.getStartTime(),
+							sb.getDayOfWeek(),
+							sb.getDate(),
+							1,
+							sb.getID()));
+				} else {
+					ecSessions.add(new SessionNameBean(
+							cb.getName(),
+							sb.getStartTime(),
+							sb.getDayOfWeek(),
+							sb.getDate(),
+							sb.getWeekType() == IAWeektype.A ? 0 : 1,
+							sb.getID()));
+				}
 			}
 		}
 		
@@ -198,6 +235,100 @@ public class Schedule {
 
 	public HashMap<Clinician, List<ClinicianWeekBean>> getMapOfCliniciansToSessions() {
 		return sessionsByClinician;
+	}
+	
+	public List<SessionNameBean> getECSessions() {
+		return ecSessions;
+	}
+
+	public List<SessionNameBean> getIASessionsA() {
+		return iaSessionsA;
+	}
+	
+	public List<SessionNameBean> getIASessionsB() {
+		return iaSessionsB;
+	}
+
+	/**
+	 * Replaces the current clinician assignment for the given EC session with
+	 * the specified clinician.
+	 * 
+	 * @param d Date of the EC session
+	 * @param time Start time of the EC session
+	 * @param clinicianName Name of the Clinician we should assign the session to
+	 */
+	public void editEC(Date d, int time, String clinicianName) {
+		Clinician c = nameToClinician(clinicianName);
+		
+		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		for (SessionBean sb : ec.get(weekNum).keySet()) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+				ec.get(weekNum).put(sb, c);
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Adds the specified clinician to the specified IA session.
+	 * 
+	 * @param d Date of the IA session
+	 * @param time Start time of the IA session
+	 * @param clinicianName Name of the Clinician we should assigne the session to
+	 */
+	public void addIAClinician(Date d, int time, String clinicianName) {
+		Clinician c = nameToClinician(clinicianName);
+		
+		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		for (SessionBean sb : ia.get(weekNum).keySet()) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+				ia.get(weekNum).get(sb).add(c);
+				break;
+			}
+		}
+	}
+	
+	/**
+	 * Removes the specified clinician from the specified session. Returns
+	 * whether the remove was successful (Returns false if the clinician was
+	 * not in the list of assigned clinicians for the specified session, or
+	 * if the specified session does not exist).
+	 * 
+	 * @param d Date of the IA session
+	 * @param time Start time fo the IA session
+	 * @param clinicianName Name of the specified Clinician
+	 * @return boolean - whether the remove was successful
+	 */
+	public boolean removeIAClinician(Date d, int time, String clinicianName) {
+		Clinician c = nameToClinician(clinicianName);
+		
+		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		for (SessionBean sb : ia.get(weekNum).keySet()) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+				if (ia.get(weekNum).get(sb).contains(c)) {
+					ia.get(weekNum).get(sb).remove(c);
+					return true;
+				} else {
+					return false;
+				}
+			}
+		}		
+		return false;
+	}
+	
+	/**
+	 * Helper method to get instance of Clinician class from the clinician's name
+	 * 
+	 * @param name Name of clinician
+	 * @return Clinician object assosiated with clinician name
+	 */
+	private Clinician nameToClinician(String name) {
+		for (Clinician c : clinicians.values()) {
+			if (c.getClinicianBean().getName().equals(name)) {
+				return c;
+			}
+		}
+		return null;
 	}
 	
 	
