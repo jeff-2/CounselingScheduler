@@ -2,6 +2,13 @@ package bean;
 
 import java.util.List;
 
+/**
+ * Contains all the information for a clinician, from ClinicianBean,
+ * ClinicianPreferencesBean, CommitmentBeans, and TimeAwayBeans.
+ * 
+ * @author dlit2, lim92, ramusa2
+ *
+ */
 public class Clinician {
 	
 	private ClinicianBean clinicianBean;

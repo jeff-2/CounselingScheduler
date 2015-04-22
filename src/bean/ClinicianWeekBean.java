@@ -3,6 +3,12 @@ package bean;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Stores the list of sessionBeans for a given week.
+ * 
+ * @author dtli2, lim92, ramusa2
+ *
+ */
 public class ClinicianWeekBean {
 
 	private List<SessionBean> sessions;

@@ -5,12 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 
 import linearprogram.ScheduleProgram;
 import linearprogram.Week;
@@ -23,15 +18,44 @@ import dao.HolidayDAO;
 import dao.SessionsDAO;
 import dao.TimeAwayDAO;
 
+/**
+ * Contains all information pertaining to a schedule. This class is used first
+ * to pull all the information from the database for the assignment algorithm.
+ * Then, runs the assignment algorithm and fills 3 HashMaps containing the 
+ * assignments organized by week, session, session type, and clinician. The
+ * contents of these maps can be used for any post-assignment processes.
+ * 
+ * @author dtli2, lim92, ramusa2
+ *
+ */
 public class Schedule {
 
+	/**
+	 * Each list element of ec represents a single week. The HashMap for each
+	 * week maps EC sessions to their assigned clinician.
+	 */
 	private List<HashMap<SessionBean, Clinician>> ec;
+	
+	/**
+	 * Each list element of ia represents a single week. THe HashMap for each
+	 * week maps IA sessions to a list of their assigned clinicians.
+	 */
 	private List<HashMap<SessionBean, List<Clinician>>> ia;
-	private HashMap<Clinician, List<ClinicianWeekBean>> x;
+	
+	/**
+	 * Each clinician maps to a list containing all the sessions that clinician
+	 * is assigned to. This list is organized by week, via the ClinicianWeekBean
+	 * class.
+	 */
+	private HashMap<Clinician, List<ClinicianWeekBean>> sessionsByClinician;
 	
 	private CalendarBean calendar;
 	private List<HolidayBean> holidays;
-	private List<SessionBean> sessions;	
+	private List<SessionBean> sessions;
+	
+	/**
+	 * Maps clinician IDs to instances of the Clinician class.
+	 */
 	private HashMap<Integer, Clinician> clinicians;
 	
 	protected Connection conn;
@@ -40,6 +64,14 @@ public class Schedule {
 		this.conn = conn;
 	}
 	
+	/**
+	 * Pulls everything from the database needed to run the scheduling algorithm,
+	 * including the list of holidays, pre-assignment session slots, properties of
+	 * the calendar, the list of all clinicians, and each clinician's preferences,
+	 * commitments, and time away.
+	 * 
+	 * @throws SQLException
+	 */
 	private void initialLoader() throws SQLException {
 		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
 		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
@@ -54,7 +86,7 @@ public class Schedule {
 		
 		List<ClinicianBean> clinicianBeans = clinicianDAO.loadClinicians();
 		
-		for(ClinicianBean cb : clinicianBeans) {
+		for (ClinicianBean cb : clinicianBeans) {
 			int clinicianID = cb.getClinicianID();
 			clinicians.put(cb.getClinicianID(), new Clinician(cb,
 					clinicianPreferencesDAO.loadClinicianPreferences(clinicianID),
@@ -73,6 +105,15 @@ public class Schedule {
 		return schedule;
 	}
 	
+	/**
+	 * Runs the scheduling algorithm (assigning clinicians) and fills the
+	 * 3 schedule mappings (ec, ia, sessionsByClinician) based on the
+	 * assignments given by ScheduleProgram, which adds the assignments to
+	 * this "sessions" List.
+	 * 
+	 * @return instance of Schedule class containing everything.
+	 * @throws SQLException
+	 */
 	public Schedule loadScheduleFromDBAndAssignClinicians() throws SQLException {
 		Schedule schedule = loadScheduleFromDB();
 		ScheduleProgram.assignClinicians(schedule);
@@ -91,7 +132,7 @@ public class Schedule {
 			for (int i = 0; i < weeks.size(); i++) {
 				weekBeans.add(new ClinicianWeekBean());
 			}
-			x.put(c, weekBeans);
+			sessionsByClinician.put(c, weekBeans);
 		}
 
 		// The important part
@@ -110,9 +151,9 @@ public class Schedule {
 				// This is an EC session.
 				ec.get(weekNum).put(sb, clinicians.get(clinicianIDs.get(0)));
 			}
-			// Handle x
+			// Fill sessionsByClinician
 			for (Integer id : clinicianIDs) {
-				x.get(clinicians.get(id)).get(weekNum).addSession(sb);
+				sessionsByClinician.get(clinicians.get(id)).get(weekNum).addSession(sb);
 			}
 		}
 		
@@ -146,4 +187,18 @@ public class Schedule {
 		}
 		return new ArrayList<Clinician>(c);
 	}
+
+	public List<HashMap<SessionBean, Clinician>> getECScheduleMap() {
+		return ec;
+	}
+
+	public List<HashMap<SessionBean, List<Clinician>>> getIAScheduleMap() {
+		return ia;
+	}
+
+	public HashMap<Clinician, List<ClinicianWeekBean>> getMapOfCliniciansToSessions() {
+		return sessionsByClinician;
+	}
+	
+	
 }
