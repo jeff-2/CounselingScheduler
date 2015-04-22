@@ -3,7 +3,9 @@ package action;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import utils.Logger;
 import bean.CalendarBean;
@@ -57,91 +59,92 @@ public class ValidateScheduleAction {
 	/**
 	 * Checks whether the IA schedule conflicts with the clinicians' regular commitments
 	 * @param sch a schedule
-	 * @return list of clinicians with those conflict
+	 * @return set of clinicians with those conflict
 	 */
-	private List<Clinician> validateIAScheduleConflicts(Schedule sch) {
+	private Set<Clinician> validateIAScheduleConflicts(Schedule sch) {
 		//TODO validateIAScheduleConflicts
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 	
 	/**
 	 * Checks whether the EC schedule conflicts with the clinicians' regular commitments as well as times away
 	 * @param sch a schedule
-	 * @return list of clinicians with those conflict
+	 * @return set of clinicians with those conflict
 	 */
-	private List<Clinician> validateECScheduleConflicts(Schedule sch) {
+	private Set<Clinician> validateECScheduleConflicts(Schedule sch) {
 		//TODO validateECScheduleConflicts
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 
 	/**
 	 * Checks whether a clinician is assigned to a noon EC session and an 1:00 IA session on the same day
 	 * @param sch a schedule
-	 * @return list of clinicians with those conflict
+	 * @return set of clinicians with those conflict
 	 */
-	private List<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
+	private Set<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
 		// TODO validateSameDayNoonECIAConflicts
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 	
 	/**
 	 * Checks whether a clinician is assigned a group therapy session after 5:00 and a 8:00 EC the next morning
 	 * @param sch a schedule
-	 * @return list of clinicians with those conflict
+	 * @return set of clinicians with those conflict
 	 */
-	private List<Clinician> validateAfternoonTherapyMorningECConflicts(Schedule sch) {
+	private Set<Clinician> validateAfternoonTherapyMorningECConflicts(Schedule sch) {
 		// TODO validateAfternoonTherapyMorningECConflicts
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 
 	/**
 	 * Checks whether a clinician is assigned to a 4:00 EC session and an 8:00 meeting the next morning
 	 * @param sch a schedule
-	 * @return list of clinicians with those conflict
+	 * @return set of clinicians with those conflict
 	 */
-	private List<Clinician> validateMorningMeetingAfternoonECConflicts(Schedule sch) {
+	private Set<Clinician> validateMorningMeetingAfternoonECConflicts(Schedule sch) {
 		// TODO validateNoonECOneIAConflicts
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 
 	/**
 	 * Checks whether the majority of EC sessions assigned to a clinician is for their preferred time
 	 * @param sch a schedule
-	 * @return list of clinicians with with less than a majority of preferred EC times
+	 * @return set of clinicians with with less than a majority of preferred EC times
 	 */
-	private List<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
+	private Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
 		// TODO validateECAssignmentMeetsPreference
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 
 	/**
 	 * Checks whether all clinicians have been assigned between one less than and one more than the average number of 4:00 EC sessions
 	 * @param sch a schedule
-	 * @return list of clinicians with too little or too many 4:00 EC sessions
+	 * @return set of clinicians with too little or too many 4:00 EC sessions
 	 */
-	private List<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
+	private Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
 		// TODO validateEvenlyDistributeECSessions
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 
 	/**
 	 * Checks whether clinicians are assigned to at most 1 IA session per day
 	 * @param sch a schedule
-	 * @return list of clinicians assigned to more than 1 IA session per day
+	 * @return set of clinicians assigned to more than 1 IA session per day
 	 */
-	private List<Clinician> validateOneIAPerDay(Schedule sch) {
+	private Set<Clinician> validateOneIAPerDay(Schedule sch) {
 		//TODO validateOneIAPerDay
-		return new ArrayList<>();
+		return new HashSet<>();
 	}
 	
 	/**
 	 * Checks whether clinicians are assigned to at most 1 EC session per week
 	 * @param sch a schedule
-	 * @return list of clinicians assigned to more than 1 EC session per week
+	 * @return set of clinicians assigned to more than 1 EC session per week
 	 */
-	private List<Clinician> validateOneECPerWeek(Schedule sch) {
+	private Set<Clinician> validateOneECPerWeek(Schedule sch) {
 		//TODO validateOneECPerWeek
-		return new ArrayList<>();
+		return new HashSet<>();
+		
 	}
 
 	/**
