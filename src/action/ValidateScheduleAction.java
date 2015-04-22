@@ -107,11 +107,11 @@ public class ValidateScheduleAction {
 	}
 	
 	/**
-	 * Checks whether a clinician is assigned a group therapy session after 5:00 and a 8:00 EC the next morning
+	 * Checks whether a clinician is assigned a meeting after 5:00 and a 8:00 EC the next morning
 	 * @param sch a schedule
 	 * @return set of clinicians with those conflict
 	 */
-	private Set<Clinician> validateAfternoonTherapyMorningECConflicts(Schedule sch) {
+	private Set<Clinician> validateAfternoonMeetingMorningECConflicts(Schedule sch) {
 		// TODO validateAfternoonTherapyMorningECConflicts
 		return new HashSet<>();
 	}
