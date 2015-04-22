@@ -83,7 +83,27 @@ public class ValidateScheduleAction {
 	 */
 	private Set<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
 		// TODO validateSameDayNoonECIAConflicts
-		return new HashSet<>();
+		Set<Clinician> returnSet = new HashSet<>();
+		Set<Clinician> duplicates = new HashSet<>();
+		
+		for (int week = 1; week <= sch.getNumberOfWeeks(); week++) {
+			for (int day = 1; day <= 5; day++) {
+				
+				duplicates.clear();
+				// Find all clinicians assigned to 1:00 IA sessions for this day
+				for (Clinician cl: sch.getIAClinician(week % 2 == 1, day, 13)) {
+					duplicates.add(cl);
+				}
+
+				// Check whether the clinician assigned to the noon EC sessions is also assigned to the IA session 
+				Clinician cl = sch.getECClinician(week, day, 12);
+				if (cl != null && duplicates.contains(cl)) {
+					returnSet.add(cl);
+				}
+			}
+		}
+		
+		return returnSet;
 	}
 	
 	/**
@@ -133,7 +153,30 @@ public class ValidateScheduleAction {
 	 */
 	private Set<Clinician> validateOneIAPerDay(Schedule sch) {
 		//TODO validateOneIAPerDay
-		return new HashSet<>();
+		Set<Clinician> returnSet = new HashSet<>();
+		Set<Clinician> duplicates = new HashSet<>();
+		int iaHours[] = new int[]{11, 13, 14, 15};
+		
+		for (boolean isTypeA = true; isTypeA; isTypeA = !isTypeA) {
+			for (int day = 1; day <= 5; day++) {
+				
+				duplicates.clear();
+				for (int hour: iaHours) {
+					
+					// Check whether there is more than one IA session that a clinician is assigned to this day
+					for (Clinician cl: sch.getIAClinician(isTypeA, day, hour)) {
+						if (duplicates.contains(cl)) {
+							returnSet.add(cl);
+						}
+						else {
+							duplicates.add(cl);
+						}
+					}
+				}
+			}
+		}
+		
+		return returnSet;
 	}
 	
 	/**
@@ -143,8 +186,32 @@ public class ValidateScheduleAction {
 	 */
 	private Set<Clinician> validateOneECPerWeek(Schedule sch) {
 		//TODO validateOneECPerWeek
-		return new HashSet<>();
+		Set<Clinician> returnSet = new HashSet<>();
+		Set<Clinician> duplicates = new HashSet<>();
+		int ecHours[] = new int[]{8, 12, 16};
 		
+		for (int week = 1; week <= sch.getNumberOfWeeks(); week++) {
+			
+			duplicates.clear();
+			for (int day = 1; day <= 5; day++) {
+				for (int hour: ecHours) {
+					
+					// Check whether there is more than one EC session that a clinician is assigned to this week 
+					Clinician cl = sch.getECClinician(week, day, hour);
+					if (cl == null) {
+						continue;
+					}
+					if (duplicates.contains(cl)) {
+						returnSet.add(cl);
+					}
+					else {
+						duplicates.add(cl);
+					}
+				}
+			}
+		}
+		
+		return returnSet;
 	}
 
 	/**
