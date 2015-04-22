@@ -76,6 +76,11 @@ public class ClinicianBean implements Comparable<ClinicianBean> {
 	}
 	
 	@Override
+	public int hashCode() {
+		return clinicianID;
+	}
+	
+	@Override
 	public int compareTo(ClinicianBean other) {
 		return this.name.compareTo(other.name);
 	}
