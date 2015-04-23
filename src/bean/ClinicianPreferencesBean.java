@@ -138,6 +138,19 @@ public class ClinicianPreferencesBean {
 	}
 	
 	/**
+	 * Returns the ranking array
+	 */
+	public int getRankingFromTime(int startTime) {
+		int timeToGet = startTime==8 ? 1 : (startTime==12 ? 2 : 3);
+		for(int i=1; i<this.ranking.length; i++) {
+			if(this.ranking[i] == timeToGet) {
+				return i;
+			}
+		}
+		return  0;
+	}
+	
+	/**
 	 * Gets the IA hours.
 	 *
 	 * @return the IA hours

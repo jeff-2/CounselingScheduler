@@ -104,7 +104,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	 * Factory method
 	 * @throws SQLException 
 	 */
-	public static ArrayList<ECScheduleWeekBean> getECScheduleWeekBeans(ScheduleDAO dao) throws SQLException {
+	public static ArrayList<ECScheduleWeekBean> getECScheduleWeekBeans(Schedule schedule) throws SQLException {
 		CalendarBean cal = new CalendarDAO(ConnectionFactory.getInstance()).loadCalendar();
 		Calendar c = Calendar.getInstance();
 		// Build weeks
@@ -120,7 +120,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 		addHolidays(weekMap, new HolidayDAO(ConnectionFactory.getInstance()));
 		
 		// Clinician sessions
-		List<SessionNameBean> sessions = dao.loadScheduleType(2); // loads EC sessions
+		List<SessionNameBean> sessions = schedule.getECSessions();
 		for(SessionNameBean bean : sessions) {
 			Date date = bean.getDate();
 			getWeek(date, weekMap).addClinician(date, bean.getStartTime(), bean.getClinicianName(), bean.getSessionID());

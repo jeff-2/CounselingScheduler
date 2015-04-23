@@ -54,12 +54,12 @@ public class CalendarDAO extends DAO {
 		ResultSet res = stmt.getResultSet();
 		res.next();
 		CalendarBean cal = new CalendarBean();
-		cal.setId(res.getInt("id"));
 		cal.setStartDate(res.getDate("startDate"));
 		cal.setEndDate(res.getDate("endDate"));
+		cal.setSemester(Semester.values()[res.getInt("term")]);
 		cal.setIaMinHours(res.getInt("iaMinHours"));
 		cal.setEcMinHours(res.getInt("ecMinHours"));
-		cal.setSemester(Semester.values()[res.getInt("term")]);
+		cal.setId(res.getInt("id"));
 		return cal;
 	}
 	

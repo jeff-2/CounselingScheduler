@@ -15,7 +15,7 @@ In Eclipse:
 
 1) Add lib/gurobi.jar to your build path
 
-2) djust your Run Configuration to include the 
+2) Adjust your Run Configuration to include the 
 following Environment Variable:
 
 PATH  <the /bin directory of your Gurobi installation, e.g. C:\gurobi603\win64\bin>

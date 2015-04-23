@@ -2,6 +2,13 @@ package bean;
 
 import java.util.List;
 
+/**
+ * Contains all the information for a clinician, from ClinicianBean,
+ * ClinicianPreferencesBean, CommitmentBeans, and TimeAwayBeans.
+ * 
+ * @author dlit2, lim92, ramusa2
+ *
+ */
 public class Clinician {
 	
 	private ClinicianBean clinicianBean;
@@ -22,5 +29,36 @@ public class Clinician {
 	
 	public ClinicianPreferencesBean getClinicianPreferencesBean() {
 		return clinicianPreferencesBean;
-	}	
+	}
+
+	public List<TimeAwayBean> getTimeAwayBeans() {
+		return timeAwayBeans;
+	}
+	
+	public List<CommitmentBean> getCommitmentBeans() {
+		return commitmentBeans;
+	}
+	
+	@Override 
+	public int hashCode() {
+		return this.clinicianBean.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object oth) {
+		if(!(oth instanceof Clinician)) {
+			return this == oth;
+		}
+		Clinician other = (Clinician) oth;
+		return this.clinicianBean.equals(other.clinicianBean)
+				&& this.clinicianPreferencesBean.equals(oth);
+	}
+
+	public boolean canCover(SessionBean session) {
+		// TODO: implement me to return true iff this clinician is available to 
+		// cover this session based on meetings and time away (ignoring other IA/EC constraints)
+		double cutoff = 0.5;
+		double rand = Math.random();
+		return rand >= cutoff;
+	}
 }

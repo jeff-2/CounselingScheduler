@@ -8,7 +8,7 @@ import java.util.List;
  * 
  * @author jmfoste2, ramusa2
  */
-public class SessionBean {
+public class SessionBean implements Comparable<SessionBean> {
 	
 	/** The id. */
 	private int id;
@@ -187,6 +187,10 @@ public class SessionBean {
 		this.clinicians = clinicians;
 	}
 	
+	public void addClinician(Clinician clinician) {
+		this.clinicians.add(clinician.getClinicianBean().getClinicianID());
+	}
+
 	/**
 	 * Gets the semester.
 	 *
@@ -242,6 +246,18 @@ public class SessionBean {
 		return this.id == session.id && this.startTime == session.startTime && this.duration == session.duration 
 				&& this.dayOfWeek.equals(session.dayOfWeek) && this.date.equals(session.date) 
 				&& this.type == session.type && this.clinicians.equals(session.clinicians);
+	}
+
+	@Override
+	public int compareTo(SessionBean o) {
+		int res = (this.date.before(o.date)) ? -100 : (this.date.after(o.date) ? 100 : 0);
+		res += (int) Math.signum(this.startTime - o.startTime);
+		return res;
+	}
+
+	public String getVariableString() {
+		String var = id+"_"+dayOfWeek+"_"+startTime+"_"+type;
+		return var;
 	}
 	
 }

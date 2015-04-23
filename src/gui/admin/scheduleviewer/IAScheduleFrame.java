@@ -24,6 +24,7 @@ import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import bean.IAWeektype;
+import bean.Schedule;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 import dao.ScheduleDAO;
@@ -49,14 +50,17 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	private JButton resetButton;
 	private JPanel controlPanel;
 	private JFileChooser fileChooser;
+	private Schedule schedule;
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
 	 */
-	public IAScheduleFrame() throws SQLException {
+	public IAScheduleFrame(Schedule s) throws SQLException {
 		super("View IA Schedule");
 		dao = new ScheduleDAO(ConnectionFactory.getInstance());
 		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
+		this.schedule = s;
+		
 		this.panel = new JSplitPane();
 		this.panel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
 		this.panel.setResizeWeight(0.5);
@@ -86,8 +90,10 @@ public class IAScheduleFrame extends JFrame implements ActionListener {
 	 */
 	private void loadEditableSchedule() throws SQLException {
 		List<String> clinicianNames = clinicianDao.loadClinicianNames();
-		this.weekA = new IAWeeklyComponent(dao.loadScheduleType(0), clinicianNames, IAWeektype.A);
-		this.weekB = new IAWeeklyComponent(dao.loadScheduleType(1), clinicianNames, IAWeektype.B);
+		
+		this.weekA = new IAWeeklyComponent(schedule.getIASessionsA(), clinicianNames, IAWeektype.A);
+		this.weekB = new IAWeeklyComponent(schedule.getIASessionsB(), clinicianNames, IAWeektype.B);
+		
 		this.panel.setLeftComponent(weekA);
 		this.panel.setRightComponent(weekB);
 		repaint();
