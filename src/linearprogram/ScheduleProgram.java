@@ -144,14 +144,30 @@ public class ScheduleProgram {
 				}
 				model.addConstr(expr, GRB.EQUAL, 1.0, session+"_filled");
 			}
-			// Each clinician scheduled no more than once per week
+			// Each clinician scheduled for EC no more than once per week
 			for(Clinician clinician : this.clinicianList) {
 				for(Week week : clinicianWeekVars.get(clinician).keySet()) {
-					GRBLinExpr expr = new GRBLinExpr();
+					GRBLinExpr ec_expr = new GRBLinExpr();
+					HashMap<String, GRBLinExpr> iaDayConstraints = new HashMap<String, GRBLinExpr>();
 					for(GRBVar var : clinicianWeekVars.get(clinician).get(week)) {
-						expr.addTerm(1.0, var);
+						String label = var.get(GRB.StringAttr.VarName);
+						if(label.endsWith("EC")) {
+							ec_expr.addTerm(1.0, var);
+						}
+						else {
+							String weekday = label.split("_")[2];
+							GRBLinExpr expr = iaDayConstraints.get(weekday);
+							if(expr == null) {
+								expr = new GRBLinExpr();
+							}
+							expr.addTerm(1.0, var);
+							iaDayConstraints.put(weekday, expr);
+						}
 					}
-					model.addConstr(expr, GRB.LESS_EQUAL, 1.0, clinician+"_"+week+"_lessthan1");
+					model.addConstr(ec_expr, GRB.LESS_EQUAL, 1.0, clinician+"_"+week+"_eclessthan1");
+					for(String weekday : iaDayConstraints.keySet()) {
+						model.addConstr(ec_expr, GRB.LESS_EQUAL, 1.0, clinician+"_"+week+"_"+weekday+"_islessthan1");
+					}
 				}
 			}
 
@@ -349,5 +365,9 @@ class Week implements Comparable<Week> {
 	@Override
 	public int compareTo(Week o) {
 		return (int) Math.signum(this.start.getTime() - o.start.getTime());
+	}
+	
+	public String toString() {
+		return "week"+orderInSemester;
 	}
 }

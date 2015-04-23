@@ -47,6 +47,7 @@ public class Schedule {
 		CalendarDAO calendarDAO = new CalendarDAO(conn);
 		
 		List<ClinicianBean> clinicianBeans = clinicianDAO.loadClinicians();
+		clinicians = new ArrayList<Clinician>();
 		
 		
 		for(ClinicianBean cb : clinicianBeans) {
@@ -62,13 +63,13 @@ public class Schedule {
 		this.calendar = calendarDAO.loadCalendar();
 	}
 	
-	public Schedule loadScheduleFromDB() throws SQLException {
+	public static Schedule loadScheduleFromDB() throws SQLException {
 		Schedule schedule = new Schedule(ConnectionFactory.getInstance());
 		schedule.initialLoader();
 		return schedule;
 	}
 	
-	public Schedule loadScheduleFromDBAndAssignClinicians() throws SQLException {
+	public static Schedule loadScheduleFromDBAndAssignClinicians() throws SQLException {
 		Schedule schedule = loadScheduleFromDB();
 		ScheduleProgram.assignClinicians(schedule);
 		return schedule;
