@@ -104,14 +104,19 @@ public class Schedule {
 		holidays = holidayDAO.loadHolidays();
 		sessions = sessionsDAO.loadSessions();
 		this.calendar = calendarDAO.loadCalendar();
+		
+		weeks = Week.getSemesterWeeks(calendar);
+		ecSessions = new ArrayList<SessionNameBean>();
+		iaSessionsA = new ArrayList<SessionNameBean>();
+		iaSessionsB = new ArrayList<SessionNameBean>();
 	}
 
 	/**
 	 * Returns the number of weeks in this schedule
 	 */
 	public int getNumberOfWeeks() {
-		// TODO Auto-generated method stub
-		return 0;
+		// initialLoader needs to be called first
+		return weeks.size();
 	}
 
 	/**
@@ -122,7 +127,13 @@ public class Schedule {
 	 * @return list of clinicians assigned to the specified IA session
 	 */
 	public List<Clinician> getIAClinician(boolean isTypeA, int day, int hour) {
-		// TODO Auto-generated method stub
+		// TODO: what's the best way to determine week type from week number?
+		int weekNum = 0;
+		for (SessionBean sb : ia.get(weekNum).keySet()) {
+			if (sb.getDayOfWeek().ordinal() == day && sb.getStartTime() == hour) {
+				return ia.get(weekNum).get(sb);
+			}
+		}
 		return new ArrayList<>();
 	}
 
@@ -134,6 +145,43 @@ public class Schedule {
 	 * @return clinician assigned to the specified EC session
 	 */
 	public Clinician getECClinician(int week, int day, int hour) {
+		HashMap<SessionBean, Clinician> specifiedWeek = ec.get(week);
+		for (SessionBean sb : specifiedWeek.keySet()) {
+			// instead of using ordinal maybe pass in Weekday type?
+			if (sb.getDayOfWeek().ordinal() == day && sb.getStartTime() == hour) {
+				return specifiedWeek.get(sb);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds the Commitments of the specified clinician
+	 * @param specified clinician
+	 * @return ??
+	 */
+	public List<Commitment> getCommitment(Clinician c) {
+		for (Clinician cb : clinicians.values()) {
+			if (cb.equals(c)) {
+				// return cb.getCommitmentBeans();
+				// TODO: problem with commitments and commitmentbean
+				// can't return list of commitments?
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Finds the vacation times of the specified clinician
+	 * @param specified clinician
+	 * @return list of TimeAwayBean
+	 */
+	public List<TimeAwayBean> getTimeAway(Clinician c) {
+		for (Clinician cb : clinicians.values()) {
+			if (cb.equals(c)) {
+				return cb.getTimeAwayBeans();
+			}
+		}
 		return null;
 	}
 	
