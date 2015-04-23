@@ -255,7 +255,7 @@ class Week implements Comparable<Week> {
 		}
 	}
 	
-	public List<Week> getSemesterWeeks(CalendarBean calendarBean) {
+	public static List<Week> getSemesterWeeks(CalendarBean calendarBean) {
 		buildCache(calendarBean);
 		List<Week> weeks = new ArrayList<Week>();
 		weeks.addAll(weekCache.keySet());
