@@ -109,6 +109,7 @@ public class Schedule {
 		ecSessions = new ArrayList<SessionNameBean>();
 		iaSessionsA = new ArrayList<SessionNameBean>();
 		iaSessionsB = new ArrayList<SessionNameBean>();
+		sessionsByClinician = new HashMap<Clinician, List<ClinicianWeekBean>>();
 	}
 
 	/**

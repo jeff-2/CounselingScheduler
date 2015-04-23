@@ -116,7 +116,7 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 		this.initializeFrame();
 		this.setCloseBehavior();
 		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-		schedule = new Schedule(ConnectionFactory.getInstance());
+		//schedule = new Schedule(ConnectionFactory.getInstance());
 	}
 
 
@@ -214,7 +214,12 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 				this.editMeetings();
 			}
 			else if(cur == this.generateScheduleButton.getModel()) {
-				this.generateSchedule();
+				try {
+					this.generateSchedule();
+				} catch (SQLException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 			}
 			else if(cur == this.viewIAButton.getModel()) {
 				this.viewIASchedule();
@@ -252,7 +257,8 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 	}
 
 
-	private void generateSchedule() {
+	private void generateSchedule() throws SQLException {
+		/*
 		try {
 			Connection conn = ConnectionFactory.getInstance();
 			GenerateUnfilledScheduleAction genAction = new GenerateUnfilledScheduleAction(conn);
@@ -274,7 +280,8 @@ public class AdminTaskSelector extends JFrame implements ActionListener {
 					"Tried to schedule appointment on Saturday or Sunday",
 					"Cannot schedule appointment on weekend",
 					JOptionPane.ERROR_MESSAGE);
-		}
+		}*/
+		schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
 	}
 
 
