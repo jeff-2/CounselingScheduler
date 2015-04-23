@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import validator.DateRangeValidator;
+import action.GenerateUnfilledScheduleAction;
 import bean.CalendarBean;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
@@ -107,9 +108,15 @@ public class TestDataGenerator {
 		this.generatedStandardTimeAwayData();
 		this.generateStandardCalendarData();
 		this.generateStandardHolidayData();
+		this.generateUnfilledSchedule();
 		// Add other methods here
 	}
 	
+	private void generateUnfilledSchedule() throws SQLException {
+		GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(conn);
+		action.generateUnfilledSchedule();
+	}
+
 	private void generateStandardClinicianData() throws SQLException {
 		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
 		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));

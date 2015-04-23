@@ -43,21 +43,15 @@ public class ScheduleProgram {
 	private HashMap<Clinician, HashMap<Week, List<GRBVar>>> clinicianWeekVars;
 	private HashMap<SessionBean, List<GRBVar>> sessionVars;
 	private HashMap<SessionBean, List<Clinician>> assignments;	
-
-
-	//private String[] clinicians;
-	//private String[] weeks;
-	//private String[] days;
-	//private String[] slots;
-	//private String[] sessions;
-
-
-	//private HashMap<String, HashMap<String, Collection<GRBVar>>> clinicianWeekVars;
-	//private HashMap<String, Collection<GRBVar>> sessionVars;
+	private HashMap<String, Clinician> clinicianNameLookup;
 
 	private ScheduleProgram(Schedule scheduleToAssign) {
 		this.schedule = scheduleToAssign;
 		this.clinicianList = this.schedule.getClinicians();
+		this.clinicianNameLookup = new HashMap<String, Clinician>();
+		for(Clinician clinician : this.clinicianList) {
+			this.clinicianNameLookup.put(clinician.getClinicianBean().getName(), clinician);
+		}
 		this.sessions = schedule.getSessions();
 		this.sessionsByWeek = new HashMap<Week, List<SessionBean>>();
 		for(SessionBean session : this.sessions) {
@@ -69,10 +63,13 @@ public class ScheduleProgram {
 			temp.add(session);
 			this.sessionsByWeek.put(week, temp);
 		}
-		this.weeks = new ArrayList<Week>();
-		this.weeks.addAll(this.sessionsByWeek.keySet());
+		this.weeks = Week.getSemesterWeeks(this.schedule.getCalendar());
+		//this.weeks.addAll(this.sessionsByWeek.keySet());
 		Collections.sort(this.weeks);
-		for(Week week : this.sessionsByWeek.keySet()) {
+		for(Week week : this.weeks) {
+			if(this.sessionsByWeek.get(week) == null) {
+				this.sessionsByWeek.put(week, new ArrayList<SessionBean>());
+			}
 			Collections.sort(this.sessionsByWeek.get(week));
 		}
 	}
@@ -112,7 +109,7 @@ public class ScheduleProgram {
 					String sessionString = session.getVariableString();
 					for(Clinician clinician : clinicianList) {
 						if(clinician.canCover(session)) {
-							String varName = clinician+"_"+sessionString;
+							String varName = clinician.getClinicianBean().getName()+"_"+sessionString;
 							GRBVar var;
 							if(sessionsIsEC) {
 								double[] prefs = new double[]{0.0, 1.0, 2.0, 5.0}; // TODO: check behavior with these preference weights
@@ -120,9 +117,11 @@ public class ScheduleProgram {
 								int time = start==8 ? 1 : (start==12 ? 2 : 3);
 								double pref = prefs[clinician.getClinicianPreferencesBean().getRankingFromTime(time)];
 								var = model.addVar(0.0, 1.0, pref, GRB.BINARY, varName);
+								objective.addTerm(pref, var);
 							}
 							else {
 								var = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, varName);
+								objective.addTerm(1.0, var);
 							}
 							seshVars.add(var);
 							clinicianWeekVars.get(clinician).get(week).add(var);
@@ -134,15 +133,25 @@ public class ScheduleProgram {
 
 			// Integrate variables
 			model.update();
+			//for(GRBVar var : model.getVars()) {
+			//	System.out.println(var.get(GRB.StringAttr.VarName));
+			//}
 
 			// Add constraints: //
-			// Every session is filled by exactly one clinician
+			// Every EC session is filled by exactly one clinician,
+			// every IA session is filled by at least the number we need 
 			for(SessionBean session : this.sessions) {
 				GRBLinExpr expr = new GRBLinExpr();
 				for(GRBVar var : sessionVars.get(session)) {
 					expr.addTerm(1.0, var);
 				}
-				model.addConstr(expr, GRB.EQUAL, 1.0, session+"_filled");
+				if(session.getType() == SessionType.EC) {
+					model.addConstr(expr, GRB.EQUAL, 1.0, session+"_filled");
+				}
+				else {
+					// Note: duration is instead the number of slots.
+					model.addConstr(expr, GRB.GREATER_EQUAL, session.getDuration(), session+"_filled");
+				}
 			}
 			// Each clinician scheduled for EC no more than once per week
 			for(Clinician clinician : this.clinicianList) {
@@ -166,7 +175,10 @@ public class ScheduleProgram {
 					}
 					model.addConstr(ec_expr, GRB.LESS_EQUAL, 1.0, clinician+"_"+week+"_eclessthan1");
 					for(String weekday : iaDayConstraints.keySet()) {
-						model.addConstr(ec_expr, GRB.LESS_EQUAL, 1.0, clinician+"_"+week+"_"+weekday+"_islessthan1");
+						GRBLinExpr expr = iaDayConstraints.get(weekday);
+						if(expr != null) {
+							model.addConstr(expr, GRB.LESS_EQUAL, 1.0, clinician+"_"+week+"_"+weekday+"_islessthan1");
+						}
 					}
 				}
 			}
@@ -195,7 +207,7 @@ public class ScheduleProgram {
 					String label = var.get(GRB.StringAttr.VarName);
 					double val = var.get(GRB.DoubleAttr.X);
 					if(val > 0.0) {
-						Clinician clinician = null; // TODO: find clinician object from label
+						Clinician clinician = this.clinicianNameLookup.get(label.split("_")[0]);
 						session.addClinician(clinician);
 					}
 				}
@@ -248,27 +260,10 @@ class Week implements Comparable<Week> {
 	}
 
 	synchronized static Week getWeek(Date day, CalendarBean calendar) {
-		if(dayToWeekCache != null) {
-			Week cached = dayToWeekCache.get(day);
-			if(cached != null) {
-				return cached;
-			}
-			else {
-				Week newWeek = getWeekFromDate(day, calendar.getStartDate());
-				Week temp = weekCache.get(newWeek);
-				if(temp != null) {
-					dayToWeekCache.put(day, temp);
-					return temp;
-				}
-				weekCache.put(newWeek, newWeek);
-				dayToWeekCache.put(day, newWeek);
-				return newWeek;
-			}
-		}
-		else {
+		if(dayToWeekCache == null) {
 			buildCache(calendar);
-			return getWeekFromDate(day, calendar.getStartDate());
 		}
+		return dayToWeekCache.get(day);
 	}
 	
 	public static List<Week> getSemesterWeeks(CalendarBean calendarBean) {
@@ -280,70 +275,42 @@ class Week implements Comparable<Week> {
 	}
 
 	private static void buildCache(CalendarBean calendarBean) {
-		dayToWeekCache = new HashMap<Date, Week>();
-		weekCache = new HashMap<Week, Week>();
-		Date calStart = calendarBean.getStartDate();
-		Date cur = calStart;
+		if(dayToWeekCache == null
+				|| weekCache == null) {
+			dayToWeekCache = new HashMap<Date, Week>();
+			weekCache = new HashMap<Week, Week>();
+		}		
+		Date prevMonday = calendarBean.getStartDate();
+		Date currentDate = calendarBean.getStartDate();
 		Date end = calendarBean.getEndDate();
 		Calendar calendar =  Calendar.getInstance();
-		calendar.setTime(cur);
-		while(cur.before(end)) {
-			Week week = getWeekFromDate(cur, calStart);
-			dayToWeekCache.put(cur, week);
-			if(cur.getDay() == 1) {
-				while(cur.getDay() != Calendar.MONDAY) {
-					calendar.add(Calendar.DAY_OF_WEEK, 1);
-					cur = calendar.getTime();
-					dayToWeekCache.put(cur, week);
-				}
-			}
-			else {
+		calendar.setTime(currentDate);
+		int numWeeks = 0;
+		while(currentDate.before(end)) {
+			ArrayList<Date> days = new ArrayList<Date>();
+			while(calendar.get(Calendar.DAY_OF_WEEK) != 6) {
+				days.add(currentDate);
 				calendar.add(Calendar.DAY_OF_WEEK, 1);
-				cur = calendar.getTime();
+				currentDate = calendar.getTime();
 			}
-		}
-	}
-
-	private static Week getWeekFromDate(Date day, Date calStart) {
-		Week cached = dayToWeekCache.get(day);
-		if(cached != null) {
-			return cached;
-		}
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(calStart);
-		while(calendar.getTime().getDay() == 6 || calendar.getTime().getDay() == 0) {
-			// Go ahead to Monday if Sa/Su
+			days.add(currentDate);
 			calendar.add(Calendar.DAY_OF_WEEK, 1);
+			currentDate = calendar.getTime();
+			// CurrentDate is now Monday
+			Week week = new Week(prevMonday, currentDate, numWeeks);
+			Week temp = weekCache.get(week);
+			if(temp != null) {
+				week = temp;
+			}
+			weekCache.put(week,  week);
+			for(Date d : days) {
+				dayToWeekCache.put(d, week);
+			}
+			numWeeks++;
+			calendar.add(Calendar.DAY_OF_WEEK, 1);
+			currentDate = calendar.getTime();
+			prevMonday = currentDate;
 		}
-		while(calendar.getTime().getDay() > 1 && calendar.getTime().getDay() < 6) {
-			// Go back to Monday if T/W/Th/F
-			calendar.add(Calendar.DAY_OF_WEEK, -1);
-		}
-		Date calStartMonday = calendar.getTime();
-		return getWeek(calStartMonday, day);
-	}
-
-	private static Week getWeek(Date calStartMonday, Date day) {
-		Calendar calendar = Calendar.getInstance();
-		calendar.setFirstDayOfWeek(Calendar.MONDAY);
-		calendar.setTime(day);
-		int daysGone = 0;
-		while(calendar.getTime().after(calStartMonday)
-				&& calendar.getTime().getDay() != calendar.getFirstDayOfWeek()) {
-			calendar.add(Calendar.DAY_OF_MONTH, -1);
-			daysGone++;
-		}
-		Date start = calendar.getTime();
-		calendar.setTime(start);
-		calendar.add(Calendar.DAY_OF_MONTH, 7);
-		Date end = calendar.getTime();
-		Week week = new Week(start, end, daysGone / 7);
-		Week cached = weekCache.get(week);
-		if(cached == null) {
-			return cached;
-		}
-		weekCache.put(week, week);
-		return week;
 	}
 
 	public int hashCode() {
@@ -364,7 +331,8 @@ class Week implements Comparable<Week> {
 
 	@Override
 	public int compareTo(Week o) {
-		return (int) Math.signum(this.start.getTime() - o.start.getTime());
+		//return (int) Math.signum(o.start.getTime() - this.start.getTime());
+		return this.start.compareTo(o.start);
 	}
 	
 	public String toString() {
