@@ -160,15 +160,12 @@ public class Schedule {
 	 * @param specified clinician
 	 * @return ??
 	 */
-	public List<Commitment> getCommitment(Clinician c) {
-		for (Clinician cb : clinicians.values()) {
-			if (cb.equals(c)) {
-				// return cb.getCommitmentBeans();
-				// TODO: problem with commitments and commitmentbean
-				// can't return list of commitments?
-			}
+	public List<CommitmentBean> getCommitment(Clinician c) {
+		int id = c.getClinicianBean().getClinicianID();
+		if (clinicians.get(id) == null) {
+			return null;
 		}
-		return null;
+		return clinicians.get(id).getCommitmentBeans();
 	}
 	
 	/**
@@ -177,12 +174,11 @@ public class Schedule {
 	 * @return list of TimeAwayBean
 	 */
 	public List<TimeAwayBean> getTimeAway(Clinician c) {
-		for (Clinician cb : clinicians.values()) {
-			if (cb.equals(c)) {
-				return cb.getTimeAwayBeans();
-			}
+		int id = c.getClinicianBean().getClinicianID();
+		if (clinicians.get(id) == null) {
+			return null;
 		}
-		return null;
+		return clinicians.get(id).getTimeAwayBeans();
 	}
 	
 	public static Schedule loadScheduleFromDB() throws SQLException {
