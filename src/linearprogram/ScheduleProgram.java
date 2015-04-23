@@ -20,6 +20,7 @@ import bean.Clinician;
 import bean.IAWeektype;
 import bean.Schedule;
 import bean.SessionBean;
+import bean.SessionType;
 
 /**
  * Solves an integer linear program to construct an optimal IA and EC schedule.
@@ -107,13 +108,22 @@ public class ScheduleProgram {
 			for(Week week : this.weeks) {
 				for(SessionBean session : this.sessionsByWeek.get(week)) {
 					ArrayList<GRBVar> seshVars = new ArrayList<GRBVar>();
+					boolean sessionsIsEC = session.getType() == SessionType.EC;
+					String sessionString = session.getVariableString();
 					for(Clinician clinician : clinicianList) {
 						if(clinician.canCover(session)) {
-							// TODO: more descriptive name
-							String varName = clinician+"_"+session;
-							// TODO: update weight?
-							double pref = 1.0;
-							GRBVar var = model.addVar(0.0, 1.0, pref, GRB.BINARY, varName);
+							String varName = clinician+"_"+sessionString;
+							GRBVar var;
+							if(sessionsIsEC) {
+								double[] prefs = new double[]{0.0, 1.0, 2.0, 5.0}; // TODO: check behavior with these preference weights
+								int start = session.getStartTime();
+								int time = start==8 ? 1 : (start==12 ? 2 : 3);
+								double pref = prefs[clinician.getClinicianPreferencesBean().getRankingFromTime(time)];
+								var = model.addVar(0.0, 1.0, pref, GRB.BINARY, varName);
+							}
+							else {
+								var = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, varName);
+							}
 							seshVars.add(var);
 							clinicianWeekVars.get(clinician).get(week).add(var);
 						}
@@ -126,7 +136,6 @@ public class ScheduleProgram {
 			model.update();
 
 			// Add constraints: //
-
 			// Every session is filled by exactly one clinician
 			for(SessionBean session : this.sessions) {
 				GRBLinExpr expr = new GRBLinExpr();
@@ -244,6 +253,14 @@ class Week implements Comparable<Week> {
 			buildCache(calendar);
 			return getWeekFromDate(day, calendar.getStartDate());
 		}
+	}
+	
+	public List<Week> getSemesterWeeks(CalendarBean calendarBean) {
+		buildCache(calendarBean);
+		List<Week> weeks = new ArrayList<Week>();
+		weeks.addAll(weekCache.keySet());
+		Collections.sort(weeks);
+		return weeks;
 	}
 
 	private static void buildCache(CalendarBean calendarBean) {

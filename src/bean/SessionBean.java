@@ -254,5 +254,10 @@ public class SessionBean implements Comparable<SessionBean> {
 		res += (int) Math.signum(this.startTime - o.startTime);
 		return res;
 	}
+
+	public String getVariableString() {
+		String var = id+"_"+dayOfWeek+"_"+startTime+"_"+weekType;
+		return var;
+	}
 	
 }
