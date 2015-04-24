@@ -356,9 +356,29 @@ public class Schedule {
 		Clinician c = nameToClinician(clinicianName);
 		
 		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		
+		// Update map
 		for (SessionBean sb : ec.get(weekNum).keySet()) {
-			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time && sb.getType() == SessionType.EC) {
 				ec.get(weekNum).put(sb, c);
+				break;
+			}
+		}
+		
+		// Update SessionNameBean list
+		for (SessionNameBean sb : ecSessions) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+				sb.setClinicianName(clinicianName);
+				break;
+			}
+		}
+		
+		// Update sessions
+		for (SessionBean sb : sessions) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time && sb.getType() == SessionType.EC) {
+				List<Integer> cAL = new ArrayList<Integer>();
+				cAL.add(c.getClinicianBean().getClinicianID());
+				sb.setClinicians(cAL);
 				break;
 			}
 		}
@@ -373,12 +393,53 @@ public class Schedule {
 	 */
 	public void addIAClinician(Date d, int time, String clinicianName) {
 		Clinician c = nameToClinician(clinicianName);
+		int weekNum = weeks.indexOf(Week.getWeek(d, calendar)) % 2;
 		
-		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		// Edit map
 		for (SessionBean sb : ia.get(weekNum).keySet()) {
-			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time && sb.getType() == SessionType.IA) {
+				sb.addClinician(c);
 				ia.get(weekNum).get(sb).add(c);
 				break;
+			}
+		}
+		
+		// Edit SessionNameBean list
+		if (weekNum == 0) {
+			for (int i = 0; i < iaSessionsA.size(); i++) {
+				if (iaSessionsA.get(i).getDayOfWeek() == Weekday.getWeekday(d) &&
+						iaSessionsA.get(i).getStartTime() == time) {
+					iaSessionsA.add(i + 1, new SessionNameBean(
+						clinicianName,
+						iaSessionsA.get(i).getStartTime(),
+						iaSessionsA.get(i).getDayOfWeek(),
+						iaSessionsA.get(i).getDate(),
+						0,
+						iaSessionsA.get(i).getSessionID()));
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < iaSessionsB.size(); i++) {
+				if (iaSessionsB.get(i).getDayOfWeek() == Weekday.getWeekday(d) &&
+						iaSessionsB.get(i).getStartTime() == time) {
+					iaSessionsB.add(i + 1, new SessionNameBean(
+						clinicianName,
+						iaSessionsB.get(i).getStartTime(),
+						iaSessionsB.get(i).getDayOfWeek(),
+						iaSessionsB.get(i).getDate(),
+						1,
+						iaSessionsB.get(i).getSessionID()));
+					break;
+				}
+			}
+		}
+		
+		// Update sessions
+		for (SessionBean sb : sessions) {
+			if (sb.getDayOfWeek().equals(Weekday.getWeekday(d)) &&
+					sb.getStartTime() == time && sb.getType() == SessionType.IA) {
+				sb.addClinician(c);
 			}
 		}
 	}
@@ -397,18 +458,50 @@ public class Schedule {
 	public boolean removeIAClinician(Date d, int time, String clinicianName) {
 		Clinician c = nameToClinician(clinicianName);
 		
-		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		int weekNum = weeks.indexOf(Week.getWeek(d, calendar)) % 2;
+		boolean removed = false;
+		
+		// Update map
 		for (SessionBean sb : ia.get(weekNum).keySet()) {
 			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
 				if (ia.get(weekNum).get(sb).contains(c)) {
+					sb.removeClinician(c);
 					ia.get(weekNum).get(sb).remove(c);
-					return true;
-				} else {
-					return false;
+					removed = true;
 				}
 			}
-		}		
-		return false;
+		}
+		
+		// Update SessionNameBean list
+		if (weekNum == 0) {
+			for (int i = 0; i < iaSessionsA.size(); i++) {
+				if (iaSessionsA.get(i).getDayOfWeek() == Weekday.getWeekday(d) &&
+						iaSessionsA.get(i).getStartTime() == time &&
+						iaSessionsA.get(i).getClinicianName().equals(clinicianName)) {
+					iaSessionsA.remove(i);
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < iaSessionsB.size(); i++) {
+				if (iaSessionsB.get(i).getDayOfWeek() == Weekday.getWeekday(d) &&
+						iaSessionsB.get(i).getStartTime() == time &&
+						iaSessionsB.get(i).getClinicianName().equals(clinicianName)) {
+					iaSessionsB.remove(i);
+					break;
+				}
+			}
+		}
+		
+		// Update sessions
+		for (SessionBean sb : sessions) {
+			if (sb.getDayOfWeek().equals(Weekday.getWeekday(d)) &&
+					sb.getStartTime() == time && sb.getType() == SessionType.IA) {
+				sb.removeClinician(c);
+			}
+		}
+		
+		return removed;
 	}
 	
 	/**
