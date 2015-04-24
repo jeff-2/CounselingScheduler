@@ -38,7 +38,7 @@ public class AdminApplication extends JFrame implements ActionListener {
 	private Schedule schedule;
 	
 	public AdminApplication() throws SQLException {
-		super("Some Title");
+		super("Generate IA/EC schedule");
 		schedule = Schedule.loadScheduleFromDB();
 		ia = new IAScheduleFrame(schedule);
 		ia.setName("IAScheduleFrame");
