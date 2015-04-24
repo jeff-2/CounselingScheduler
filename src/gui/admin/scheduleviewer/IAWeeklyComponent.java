@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -100,7 +101,11 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 				} else {
 					JList<String> currentList = new JList<String>();
 					DefaultListModel<String> currentModel = new DefaultListModel<String>();
+					HashSet<String> uniqueNames = new HashSet<String>();
 					for (String name : getClinicians(sessionNames, Weekday.values()[col - 1], rowLabels[row - 1])) {
+						uniqueNames.add(name);
+					}
+					for(String name : uniqueNames) {
 						currentModel.addElement(name);
 					}
 					currentList.setModel(currentModel);
@@ -112,6 +117,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 					currentList.addMouseListener(this);
 					currentList.setComponentPopupMenu(menu);
 					currentList.setName("JList" + weekType + compNo);
+					System.out.println(currentModel.getSize());
 					pane[row][col] = new JScrollPane(currentList);
 					pane[row][col].setName("JScrollPane" + compNo++);
 					add(pane[row][col]);
