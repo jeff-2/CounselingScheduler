@@ -34,6 +34,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		conn = ConnectionFactory.getInstance();
 		gen = new TestDataGenerator(conn);
 		gen.clearTables();
+		gen.generateStandardDataset();
 	}
 	
 	public void testSaveECScheduleOverwrite() throws IOException {

@@ -89,8 +89,7 @@ public class AdminApplication extends JFrame implements ActionListener {
 	
 	public static void main(String [] args) throws SQLException, ParseException {
 		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
-		gen.clearTables();
-		gen.generateStandardCalendarData();
+		gen.overwriteAndFillDemoData();
 		AdminApplication tmp = new AdminApplication();
 	}
 	
