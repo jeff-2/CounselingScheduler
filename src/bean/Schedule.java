@@ -147,7 +147,6 @@ public class Schedule {
 	public Clinician getECClinician(int week, int day, int hour) {
 		HashMap<SessionBean, Clinician> specifiedWeek = ec.get(week);
 		for (SessionBean sb : specifiedWeek.keySet()) {
-			// instead of using ordinal maybe pass in Weekday type?
 			if (sb.getDayOfWeek().ordinal() == day && sb.getStartTime() == hour) {
 				return specifiedWeek.get(sb);
 			}
@@ -356,9 +355,29 @@ public class Schedule {
 		Clinician c = nameToClinician(clinicianName);
 		
 		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		
+		// Update map
 		for (SessionBean sb : ec.get(weekNum).keySet()) {
-			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time && sb.getType() == SessionType.EC) {
 				ec.get(weekNum).put(sb, c);
+				break;
+			}
+		}
+		
+		// Update SessionNameBean list
+		for (SessionNameBean sb : ecSessions) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+				sb.setClinicianName(clinicianName);
+				break;
+			}
+		}
+		
+		// Update sessions
+		for (SessionBean sb : sessions) {
+			if (sb.getDate().equals(d) && sb.getStartTime() == time && sb.getType() == SessionType.EC) {
+				List<Integer> cAL = new ArrayList<Integer>();
+				cAL.add(c.getClinicianBean().getClinicianID());
+				sb.setClinicians(cAL);
 				break;
 			}
 		}
@@ -367,18 +386,61 @@ public class Schedule {
 	/**
 	 * Adds the specified clinician to the specified IA session.
 	 * 
-	 * @param d Date of the IA session
+	 * @param isTypeA is the week type A or B (true means it's type A)
+	 * @param day integer representation of the day of the week of the IA session
 	 * @param time Start time of the IA session
 	 * @param clinicianName Name of the Clinician we should assigne the session to
 	 */
-	public void addIAClinician(Date d, int time, String clinicianName) {
+	public void addIAClinician(boolean isTypeA, int day, int time, String clinicianName) {
 		Clinician c = nameToClinician(clinicianName);
+		int weekNum = isTypeA ? 0 : 1;
 		
-		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		// Edit map
 		for (SessionBean sb : ia.get(weekNum).keySet()) {
-			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+			if (Weekday.getWeekday(sb.getDate()).ordinal() == day 
+					&& sb.getStartTime() == time && sb.getType() == SessionType.IA) {
+				sb.addClinician(c);
 				ia.get(weekNum).get(sb).add(c);
 				break;
+			}
+		}
+		
+		// Edit SessionNameBean list
+		if (weekNum == 0) {
+			for (int i = 0; i < iaSessionsA.size(); i++) {
+				if (iaSessionsA.get(i).getDayOfWeek().ordinal() == day &&
+						iaSessionsA.get(i).getStartTime() == time) {
+					iaSessionsA.add(i + 1, new SessionNameBean(
+						clinicianName,
+						iaSessionsA.get(i).getStartTime(),
+						iaSessionsA.get(i).getDayOfWeek(),
+						iaSessionsA.get(i).getDate(),
+						0,
+						iaSessionsA.get(i).getSessionID()));
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < iaSessionsB.size(); i++) {
+				if (iaSessionsB.get(i).getDayOfWeek().ordinal() == day &&
+						iaSessionsB.get(i).getStartTime() == time) {
+					iaSessionsB.add(i + 1, new SessionNameBean(
+						clinicianName,
+						iaSessionsB.get(i).getStartTime(),
+						iaSessionsB.get(i).getDayOfWeek(),
+						iaSessionsB.get(i).getDate(),
+						1,
+						iaSessionsB.get(i).getSessionID()));
+					break;
+				}
+			}
+		}
+		
+		// Update sessions
+		for (SessionBean sb : sessions) {
+			if (sb.getDayOfWeek().ordinal() == day &&
+					sb.getStartTime() == time && sb.getType() == SessionType.IA) {
+				sb.addClinician(c);
 			}
 		}
 	}
@@ -389,26 +451,59 @@ public class Schedule {
 	 * not in the list of assigned clinicians for the specified session, or
 	 * if the specified session does not exist).
 	 * 
-	 * @param d Date of the IA session
+	 * @param isTypeA true if type A, false if type B
+	 * @param day integer representation of day of week of the IA session
 	 * @param time Start time fo the IA session
 	 * @param clinicianName Name of the specified Clinician
 	 * @return boolean - whether the remove was successful
 	 */
-	public boolean removeIAClinician(Date d, int time, String clinicianName) {
+	public boolean removeIAClinician(boolean isTypeA, int day, int time, String clinicianName) {
 		Clinician c = nameToClinician(clinicianName);
 		
-		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
+		int weekNum = isTypeA ? 0 : 1;
+		boolean removed = false;
+		
+		// Update map
 		for (SessionBean sb : ia.get(weekNum).keySet()) {
-			if (sb.getDate().equals(d) && sb.getStartTime() == time) {
+			if (Weekday.getWeekday(sb.getDate()).ordinal() == day && sb.getStartTime() == time) {
 				if (ia.get(weekNum).get(sb).contains(c)) {
+					sb.removeClinician(c);
 					ia.get(weekNum).get(sb).remove(c);
-					return true;
-				} else {
-					return false;
+					removed = true;
 				}
 			}
-		}		
-		return false;
+		}
+		
+		// Update SessionNameBean list
+		if (weekNum == 0) {
+			for (int i = 0; i < iaSessionsA.size(); i++) {
+				if (iaSessionsA.get(i).getDayOfWeek().ordinal() == day &&
+						iaSessionsA.get(i).getStartTime() == time &&
+						iaSessionsA.get(i).getClinicianName().equals(clinicianName)) {
+					iaSessionsA.remove(i);
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < iaSessionsB.size(); i++) {
+				if (iaSessionsB.get(i).getDayOfWeek().ordinal() == day &&
+						iaSessionsB.get(i).getStartTime() == time &&
+						iaSessionsB.get(i).getClinicianName().equals(clinicianName)) {
+					iaSessionsB.remove(i);
+					break;
+				}
+			}
+		}
+		
+		// Update sessions
+		for (SessionBean sb : sessions) {
+			if (sb.getDayOfWeek().ordinal() == day &&
+					sb.getStartTime() == time && sb.getType() == SessionType.IA) {
+				sb.removeClinician(c);
+			}
+		}
+		
+		return removed;
 	}
 	
 	/**

@@ -189,6 +189,14 @@ public class SessionBean implements Comparable<SessionBean> {
 	public void addClinician(Clinician clinician) {
 		this.clinicians.add(clinician.getClinicianBean().getClinicianID());
 	}
+	
+	public boolean removeClinician(Clinician clinician) {
+		if (this.clinicians.contains(clinician)) {
+			this.clinicians.remove(clinician);
+			return true;
+		}
+		return false;
+	}
 
 	/**
 	 * Gets the semester.
