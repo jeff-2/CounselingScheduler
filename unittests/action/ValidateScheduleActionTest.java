@@ -54,7 +54,7 @@ public class ValidateScheduleActionTest {
         GenerateUnfilledScheduleAction generateAction = new GenerateUnfilledScheduleAction(conn);
 		generateAction.generateUnfilledSchedule();
 		
-		validateAction = new ValidateScheduleAction(conn);
+		validateAction = new ValidateScheduleAction();
 		
 	}
 

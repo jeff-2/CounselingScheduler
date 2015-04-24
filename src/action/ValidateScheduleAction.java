@@ -42,15 +42,15 @@ public class ValidateScheduleAction {
 	
 	public Set<Clinician> validateSchedule(Schedule sch) {
 		Set<Clinician> resultSet = new HashSet<Clinician>();
-//		resultSet.addAll(validateIAScheduleConflicts(sch));
-//		resultSet.addAll(validateECScheduleConflicts(sch));
-//		resultSet.addAll(validateMorningMeetingAfternoonECConflicts(sch));
-//		resultSet.addAll(validateOneECPerWeek(sch));
-//		resultSet.addAll(validateOneIAPerDay(sch));
-//		resultSet.addAll(validateSameDayNoonECIAConflicts(sch));
-//		resultSet.addAll(validateAfternoonMeetingMorningECConflicts(sch));
-//		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
-//		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
+		resultSet.addAll(validateIAScheduleConflicts(sch));
+		resultSet.addAll(validateECScheduleConflicts(sch));
+		resultSet.addAll(validateMorningMeetingAfternoonECConflicts(sch));
+		resultSet.addAll(validateOneECPerWeek(sch));
+		resultSet.addAll(validateOneIAPerDay(sch));
+		resultSet.addAll(validateSameDayNoonECIAConflicts(sch));
+		resultSet.addAll(validateAfternoonMeetingMorningECConflicts(sch));
+		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
+		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
 		return resultSet;
 	}
 	/**
@@ -157,6 +157,7 @@ public class ValidateScheduleAction {
 							|| cl.equals(sch.getECClinician(weekdiff, weekday, 16)))){
 						retset.add(cl);
 					}
+					start.add(Calendar.DATE, 1);
 				}
 			}
 		}
@@ -242,6 +243,7 @@ public class ValidateScheduleAction {
 					if (withinSemester && timeConflicts && cl.equals(sch.getECClinician(weekdiff, weekday + 1, 8))) {
 						retset.add(cl);
 					}
+					start.add(Calendar.DATE, 1);
 				}
 			}
 		}
@@ -298,6 +300,7 @@ public class ValidateScheduleAction {
 					if (withinSemester && timeConflicts && cl.equals(sch.getECClinician(weekdiff, weekday - 1, 16))) {
 						retset.add(cl);
 					}
+					start.add(Calendar.DATE, 1);
 				}
 			}
 		}
@@ -366,7 +369,8 @@ public class ValidateScheduleAction {
 		for (int week = 0; week < sch.getNumberOfWeeks(); week++) {
 			for (int day = 0; day < 5; day++) {
 				Clinician cl = sch.getECClinician(week, day, 16);
-				fourEC.put(cl,  fourEC.get(cl) + 1);
+				if (cl != null)
+					fourEC.put(cl,  fourEC.get(cl) + 1);
 			}
 		}
 		
