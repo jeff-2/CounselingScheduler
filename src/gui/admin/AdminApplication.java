@@ -17,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import dao.ConnectionFactory;
 import action.GenerateUnfilledScheduleAction;
@@ -88,6 +89,13 @@ public class AdminApplication extends JFrame implements ActionListener {
 	}
 	
 	public static void main(String [] args) throws SQLException, ParseException {
+		try {
+			UIManager.setLookAndFeel(
+					UIManager.getSystemLookAndFeelClassName());
+		}
+		catch(Exception e) {
+			System.out.println("Can't set system look and feel. Using default.");
+		}
 		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
 		gen.overwriteAndFillDemoData();
 		AdminApplication tmp = new AdminApplication();

@@ -14,11 +14,14 @@ import java.util.List;
 
 import org.uispec4j.Button;
 import org.uispec4j.ListBox;
+import org.uispec4j.Panel;
 import org.uispec4j.TextBox;
+import org.uispec4j.Trigger;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.MainClassAdapter;
+import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
 import runner.NewSemesterSettingsRunner;
@@ -54,7 +57,7 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	 */
 	protected void setUp() throws Exception {
 		super.setUp();
-		setAdapter(new MainClassAdapter(NewSemesterSettingsRunner.class, new String[0]));
+		setAdapter(new MainClassAdapter(AdminApplication.class, new String[0]));
 		con = ConnectionFactory.getInstance();
 		ImportClinicianMeetingsActionTest.generateExcelFile(new Object[][] {{"Meeting", "Duration", "Start Time", "End Time", "Staff Members", "Start Date", "Frequency", "Days", "Dates", "Location"},
 				{"Other Meeting", "60 minutes", "10:30am", "11:30am", "Jeff, [Nathan], Bill", DateRangeValidator.parseDate("4/20/2015"), "Weekly", "Monday", null, "Room C"}});
@@ -81,13 +84,14 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	 */
 	public void addHoliday() {
 		Window window = this.getMainWindow();
-		TextBox startDate = window.getTextBox("startHolidayText");
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
+		TextBox startDate = semesterPanel.getTextBox("startHolidayText");
 		startDate.setText("3/5/2015");
-		TextBox endDate = window.getTextBox("endHolidayText");
+		TextBox endDate = semesterPanel.getTextBox("endHolidayText");
 		endDate.setText("3/12/2015");
-		TextBox holidayName = window.getTextBox("holidayNameText");
+		TextBox holidayName = semesterPanel.getTextBox("holidayNameText");
 		holidayName.setText("Spring Break");
-		Button addHolidayButton = window.getButton("addHolidayButton");
+		Button addHolidayButton = semesterPanel.getButton("addHolidayButton");
 		addHolidayButton.click();
 	}
 	
@@ -96,9 +100,13 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	 */
 	public void testAddHoliday() {
 		Window window = this.getMainWindow();
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
 		addHoliday();
-		ListBox holidays = window.getListBox();
-		assertTrue(holidays.contentEquals("Spring Break 3/5/2015-3/12/2015"));
+		ListBox holidays = semesterPanel.getListBox();
+		assertTrue(holidays.contentEquals("Valentine's Day from Saturday, February 14 to Saturday, February 14", 
+				"Unofficial from Friday, March 6 to Friday, March 6",
+				"Spring Break from Saturday, March 21 to Sunday, March 29",
+				"Spring Break from Thursday, March 5 to Thursday, March 12"));
 	}
 	
 	/**
@@ -106,60 +114,71 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	 */
 	public void testRemoveHoliday() {
 		Window window = this.getMainWindow();
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
 		addHoliday();
-		ListBox holidays = window.getListBox();
-		holidays.select("Spring Break 3/5/2015-3/12/2015");
+		ListBox holidays = semesterPanel.getListBox();
+		holidays.select("Spring Break from Thursday, March 5 to Thursday, March 12");
 		
-		Button removeHolidayButton = window.getButton("removeHolidayButton");
+		Button removeHolidayButton = semesterPanel.getButton("removeHolidayButton");
 		removeHolidayButton.click();
-		assertTrue(holidays.isEmpty());
+		assertTrue(holidays.contentEquals("Valentine's Day from Saturday, February 14 to Saturday, February 14", 
+				"Unofficial from Friday, March 6 to Friday, March 6",
+				"Spring Break from Saturday, March 21 to Sunday, March 29"));
 	}
 	
 	public void testAddValidCalendar() throws SQLException {
 		Window window = this.getMainWindow();
-		
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
 		// Add start and end date
-		TextBox startDate = window.getTextBox("startDateText");
-		TextBox endDate = window.getTextBox("endDateText");
+		TextBox startDate = semesterPanel.getTextBox("startDateText");
+		TextBox endDate = semesterPanel.getTextBox("endDateText");
 		startDate.setText("3/1/2015");
 		endDate.setText("3/20/2015");
 		
 		// Add Holiday
-		TextBox holidayStartDate = window.getTextBox("startHolidayText");
+		TextBox holidayStartDate = semesterPanel.getTextBox("startHolidayText");
 		holidayStartDate.setText("3/5/2015");
-		TextBox holidayEndDate = window.getTextBox("endHolidayText");
+		TextBox holidayEndDate = semesterPanel.getTextBox("endHolidayText");
 		holidayEndDate.setText("3/12/2015");
-		TextBox holidayName = window.getTextBox("holidayNameText");
+		TextBox holidayName = semesterPanel.getTextBox("holidayNameText");
 		holidayName.setText("Spring Break");
-		Button addHolidayButton = window.getButton("addHolidayButton");
+		Button addHolidayButton = semesterPanel.getButton("addHolidayButton");
 		addHolidayButton.click();
 		
 		// Add IA and EC clinician hours
-		TextBox ecHours = window.getTextBox("ECHoursText");
-		TextBox iaHours = window.getTextBox("IAHoursText");
+		TextBox ecHours = semesterPanel.getTextBox("ECHoursText");
+		TextBox iaHours = semesterPanel.getTextBox("IAHoursText");
 		ecHours.setText("15");
 		iaHours.setText("33");
 		
 		//Submit calendar
-		Button submitButton = window.getButton("submitButton");
-		submitButton.click();
+		Button submitButton = semesterPanel.getButton("submitButton");
+		WindowInterceptor
+		.init(submitButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(Window window) {
+				assertEquals(window.getTitle(), "Warning");
+				return window.getButton("OK").triggerClick();
+			}
+		})
+		.run();
 		
-		assertEquals(1, countRowsInHolidayTable());
+		assertEquals(4, countRowsInHolidayTable());
 		assertEquals(1, countRowsInCalendarTable());
 	}
 	
 	public void testInvalidSemesterDates() throws SQLException {
 		Window window = this.getMainWindow();
-		
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
 		// Add start and end date
-		TextBox startDate = window.getTextBox("startDateText");
-		TextBox endDate = window.getTextBox("endDateText");
+		TextBox startDate = semesterPanel.getTextBox("startDateText");
+		TextBox endDate = semesterPanel.getTextBox("endDateText");
 		startDate.setText("3/1/2015");
 		endDate.setText("3/20/2014");
 		
 		// Add IA and EC clinician hours
-		TextBox ecHours = window.getTextBox("ECHoursText");
-		TextBox iaHours = window.getTextBox("IAHoursText");
+		TextBox ecHours = semesterPanel.getTextBox("ECHoursText");
+		TextBox iaHours = semesterPanel.getTextBox("IAHoursText");
 		ecHours.setText("15");
 		iaHours.setText("33");
 		
@@ -167,53 +186,55 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		Button submitButton = window.getButton("submitButton");
 		submitButton.click();
 		
-		assertEquals(0, countRowsInCalendarTable());
+		assertEquals(1, countRowsInCalendarTable());
 	}
 	
 	public void testInvalidHolidayDates() {
 		Window window = this.getMainWindow();
-		
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
 		// Add Holiday
-		TextBox holidayStartDate = window.getTextBox("startHolidayText");
+		TextBox holidayStartDate = semesterPanel.getTextBox("startHolidayText");
 		holidayStartDate.setText("3/5/2015");
-		TextBox holidayEndDate = window.getTextBox("endHolidayText");
+		TextBox holidayEndDate = semesterPanel.getTextBox("endHolidayText");
 		holidayEndDate.setText("3/12/2014");
-		TextBox holidayName = window.getTextBox("holidayNameText");
+		TextBox holidayName = semesterPanel.getTextBox("holidayNameText");
 		holidayName.setText("Spring Break");
-		Button addHolidayButton = window.getButton("addHolidayButton");
+		Button addHolidayButton = semesterPanel.getButton("addHolidayButton");
 		addHolidayButton.click();
 		
-		ListBox holidays = window.getListBox();
-		assertTrue(holidays.isEmpty());
+		ListBox holidays = semesterPanel.getListBox();
+		assertTrue(holidays.contentEquals("Valentine's Day from Saturday, February 14 to Saturday, February 14", 
+				"Unofficial from Friday, March 6 to Friday, March 6",
+				"Spring Break from Saturday, March 21 to Sunday, March 29"));
 	}
 	
 	public void testImportMeetingSchedule() throws SQLException, ParseException {
 		Window window = this.getMainWindow();
-		
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
 		// Add start and end date
-		TextBox startDate = window.getTextBox("startDateText");
-		TextBox endDate = window.getTextBox("endDateText");
+		TextBox startDate = semesterPanel.getTextBox("startDateText");
+		TextBox endDate = semesterPanel.getTextBox("endDateText");
 		startDate.setText("1/20/2015");
 		endDate.setText("5/25/2015");
 		
 		// Add Holiday
-		TextBox holidayStartDate = window.getTextBox("startHolidayText");
+		TextBox holidayStartDate = semesterPanel.getTextBox("startHolidayText");
 		holidayStartDate.setText("3/5/2015");
-		TextBox holidayEndDate = window.getTextBox("endHolidayText");
+		TextBox holidayEndDate = semesterPanel.getTextBox("endHolidayText");
 		holidayEndDate.setText("3/12/2015");
-		TextBox holidayName = window.getTextBox("holidayNameText");
+		TextBox holidayName = semesterPanel.getTextBox("holidayNameText");
 		holidayName.setText("Spring Break");
-		Button addHolidayButton = window.getButton("addHolidayButton");
+		Button addHolidayButton = semesterPanel.getButton("addHolidayButton");
 		addHolidayButton.click();
 		
 		// Add IA and EC clinician hours
-		TextBox ecHours = window.getTextBox("ECHoursText");
-		TextBox iaHours = window.getTextBox("IAHoursText");
+		TextBox ecHours = semesterPanel.getTextBox("ECHoursText");
+		TextBox iaHours = semesterPanel.getTextBox("IAHoursText");
 		ecHours.setText("15");
 		iaHours.setText("33");
 		
 		String filePath = new File("tmpFile.xlsx").getAbsolutePath();
-		Button importMeetingsButton = window.getButton("importMeetingsButton");
+		Button importMeetingsButton = semesterPanel.getButton("importMeetingsButton");
 		WindowInterceptor
 			.init(importMeetingsButton.triggerClick())
 			.process(FileChooserHandler.init()
@@ -223,8 +244,16 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		.run();
 		
 		//Submit calendar
-		Button submitButton = window.getButton("submitButton");
-		submitButton.click();
+		Button submitButton = semesterPanel.getButton("submitButton");
+		WindowInterceptor
+		.init(submitButton.triggerClick())
+		.process(new WindowHandler() {
+			public Trigger process(Window window) {
+				assertEquals(window.getTitle(), "Warning");
+				return window.getButton("OK").triggerClick();
+			}
+		})
+		.run();
 		
 		List<HolidayBean> holidays = holidayDAO.loadHolidays();
 		CalendarBean calendar = calendarDAO.loadCalendar();
@@ -246,7 +275,10 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 		expectedCommitments.add(new CommitmentBean(2, 10, 12, DateRangeValidator.parseDate("5/18/2015"), "Other Meeting"));
 		expectedCommitments.add(new CommitmentBean(2, 10, 12, DateRangeValidator.parseDate("5/25/2015"), "Other Meeting"));
 		List<HolidayBean> expectedHolidays = new ArrayList<HolidayBean>();
-		expectedHolidays.add(new HolidayBean(0, "Spring Break", DateRangeValidator.parseDate("3/5/2015"), DateRangeValidator.parseDate("3/12/2015")));
+		expectedHolidays.add(new HolidayBean(0, "Valentine's Day", DateRangeValidator.parseDate("2/14/2015"), DateRangeValidator.parseDate("2/14/2015")));
+		expectedHolidays.add(new HolidayBean(1, "Unofficial", DateRangeValidator.parseDate("3/6/2015"), DateRangeValidator.parseDate("3/6/2015")));
+		expectedHolidays.add(new HolidayBean(2, "Spring Break", DateRangeValidator.parseDate("3/21/2015"), DateRangeValidator.parseDate("3/29/2015")));
+		expectedHolidays.add(new HolidayBean(3, "Spring Break", DateRangeValidator.parseDate("3/5/2015"), DateRangeValidator.parseDate("3/12/2015")));
 		CalendarBean expectedCalendar = new CalendarBean(0, DateRangeValidator.parseDate("1/20/2015"), DateRangeValidator.parseDate("5/25/2015"), 33, 15, Semester.Spring, filePath);
 		assertEquals(expectedCommitments, commitments);
 		assertEquals(expectedHolidays, holidays);
@@ -256,7 +288,8 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	public void testSelectMeetingSchedule() throws IOException {
 		String filePath = new File("tmpFile.xlsx").getAbsolutePath();
 		Window window = this.getMainWindow();
-		Button importMeetingsButton = window.getButton("importMeetingsButton");
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
+		Button importMeetingsButton = semesterPanel.getButton("importMeetingsButton");
 		WindowInterceptor
 			.init(importMeetingsButton.triggerClick())
 			.process(FileChooserHandler.init()
@@ -264,14 +297,15 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 			.assertAcceptsFilesOnly()
 			.select(filePath))
 		.run();
-		TextBox filePathBox = window.getTextBox("excelFilenameLabel");
+		TextBox filePathBox = semesterPanel.getTextBox("excelFilenameLabel");
 		assertEquals(filePath, filePathBox.getText());
 	}
 	
 	public void testRemoveMeetingSchedule() {
 		String filePath = new File("tmpFile.xlsx").getAbsolutePath();
 		Window window = this.getMainWindow();
-		Button importMeetingsButton = window.getButton("importMeetingsButton");
+		Panel semesterPanel = window.getPanel("NewSemesterSettings");
+		Button importMeetingsButton = semesterPanel.getButton("importMeetingsButton");
 		WindowInterceptor
 			.init(importMeetingsButton.triggerClick())
 			.process(FileChooserHandler.init()
@@ -279,9 +313,9 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 			.assertAcceptsFilesOnly()
 			.select(filePath))
 		.run();
-		Button removeMeetingsButton = window.getButton("removeMeetingsButton");
+		Button removeMeetingsButton = semesterPanel.getButton("removeMeetingsButton");
 		removeMeetingsButton.click();
-		TextBox filePathBox = window.getTextBox("excelFilenameLabel");
+		TextBox filePathBox = semesterPanel.getTextBox("excelFilenameLabel");
 		assertEquals("No File Selected", filePathBox.getText());
 	}
 	

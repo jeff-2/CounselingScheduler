@@ -219,13 +219,6 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 
 					try {
 						Connection conn = ConnectionFactory.getInstance();
-
-						if (!excelFilenameLabel.getText().equals("No File Selected")) {
-							File meetingFile = new File(excelFilenameLabel.getText());
-							calendar.setMeetingFilepath(meetingFile.getAbsolutePath());
-							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, meetingFile);
-							action.insertImportedMeetings(calendar.getEndDate());
-						}
 						
 						CalendarDAO calendarDao = new CalendarDAO(conn);
 						if (calendarDao.calendarExists()) {
@@ -238,6 +231,14 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 								return;
 							}
 						}
+
+						if (!excelFilenameLabel.getText().equals("No File Selected")) {
+							File meetingFile = new File(excelFilenameLabel.getText());
+							calendar.setMeetingFilepath(meetingFile.getAbsolutePath());
+							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, meetingFile);
+							action.insertImportedMeetings(calendar.getEndDate());
+						}
+						
 						HolidayDAO holidayDao = new HolidayDAO(conn);
 						int calendarId = calendarDao.getNextAvailableId();
 						calendar.setId(calendarId);
