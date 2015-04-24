@@ -199,7 +199,6 @@ public class ScheduleProgram {
 								else if(label.contains("_12_")) {
 									String iaName = clinician.getClinicianBean().getName();
 									iaName += "_"+label.split("_")[2]+"_13_IA_"+week.type;
-									System.out.println(iaName);
 									GRBVar nextIA = this.iaVars.get(iaName);
 									if(nextIA != null) {
 										GRBLinExpr pairExpr = new GRBLinExpr();
