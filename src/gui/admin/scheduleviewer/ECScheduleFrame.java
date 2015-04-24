@@ -72,8 +72,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 		controlPanel.add(resetButton);
 		
 		// Finish
-		this.add(scrollPanel, BorderLayout.CENTER);
-		this.add(controlPanel, BorderLayout.SOUTH);
+		this.setLayout(new FlowLayout());
+		this.add(scrollPanel);//, BorderLayout.CENTER);
+		this.add(controlPanel);//, BorderLayout.SOUTH);
 	}
 
 	/**

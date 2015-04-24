@@ -25,11 +25,7 @@ public class DBUtils {
 	}
 	
 	public static String loadConnectionConfig() throws ConnectionConfigException {
-		try {
-			return loadConnectionConfig(new File(ClassLoader.getSystemResource(CONFIG_FILEPATH).toURI()).getAbsolutePath());
-		} catch (URISyntaxException e) {
-			return "";
-		}
+		return loadConnectionConfig(CONFIG_FILEPATH);
 	}
 	
 	public static String loadConnectionConfig(String filePath) throws ConnectionConfigException {
