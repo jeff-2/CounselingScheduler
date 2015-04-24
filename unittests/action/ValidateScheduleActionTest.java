@@ -70,24 +70,6 @@ public class ValidateScheduleActionTest {
 	    gen.clearTables();
 	}
 	
-	@Test
-	public void testValidSchedule() throws SQLException, ParseException {
-		gen.clearTables();
-		generateValidSchedule();
-		
-		FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
-		fillScheduleAction.fillSchedule();
-		
-		validateAction.validateSchedule();
-		assertEquals("", outContent.toString());
-	}
-	
-	@Test
-	public void testInvalidSchedule() throws SQLException, ParseException {
-		generateInvalidData();
-		validateAction.validateSchedule();
-		assertNotEquals("", outContent.toString());
-	}
 	
 	private void generateInvalidData() throws SQLException, ParseException {
 		SessionsDAO sessionsDAO = new SessionsDAO(conn);
