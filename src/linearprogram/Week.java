@@ -23,7 +23,11 @@ public class Week implements Comparable<Week> {
 		this.start = s;
 		this.end = e;
 		this.orderInSemester = orderInSemester;
-		this.type = (orderInSemester % 2 == 0) ? IAWeektype.A : IAWeektype.B;
+		this.type = getWeekType(orderInSemester);
+	}
+	
+	public static IAWeektype getWeekType(int orderInSemester) {
+		return (orderInSemester % 2 == 0) ? IAWeektype.A : IAWeektype.B;
 	}
 
 	public synchronized static Week getWeek(Date day, CalendarBean calendar) {
