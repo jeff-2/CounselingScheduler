@@ -17,16 +17,20 @@ public class CalendarBean {
 	private int iaMinHours;
 	private int ecMinHours;
 	private Semester semester;
+	private String meetingFilepath;
 	
-	public CalendarBean() {}
+	public CalendarBean() {
+		this.meetingFilepath = "";
+	}
 	
-	public CalendarBean(int id, Date startDate, Date endDate, int iaMinHours, int ecMinHours, Semester semester) {
+	public CalendarBean(int id, Date startDate, Date endDate, int iaMinHours, int ecMinHours, Semester semester, String meetingFilepath) {
 		this.id = id;
 		this.startDate = startDate;
 		this.endDate = endDate;
 		this.iaMinHours = iaMinHours;
 		this.ecMinHours = ecMinHours;
 		this.semester = semester;
+		this.meetingFilepath = meetingFilepath;
 	}
 
 	public int getId() {
@@ -65,6 +69,12 @@ public class CalendarBean {
 	public void setSemester(Semester semester) {
 		this.semester = semester;
 	}
+	public String getMeetingFilepath() {
+		return meetingFilepath;
+	}
+	public void setMeetingFilepath(String meetingFilepath) {
+		this.meetingFilepath = meetingFilepath;
+	}
 	
 	public int getYear() {
 		Calendar calendar = Calendar.getInstance();
@@ -88,6 +98,7 @@ public class CalendarBean {
 		CalendarBean calendar = (CalendarBean)other;
 		return id == calendar.id && startDate.equals(calendar.startDate)
 				&& endDate.equals(calendar.endDate) && iaMinHours == calendar.iaMinHours
-				&& ecMinHours == calendar.ecMinHours && semester == calendar.semester;
+				&& ecMinHours == calendar.ecMinHours && semester == calendar.semester &&
+				meetingFilepath.equals(calendar.meetingFilepath);
 	}
 }

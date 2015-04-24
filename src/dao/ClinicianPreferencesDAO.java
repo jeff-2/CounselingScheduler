@@ -68,6 +68,10 @@ public class ClinicianPreferencesDAO extends DAO {
 		return preferences;
 	}
 	
+	public boolean preferencesExist(int clinicianID) throws SQLException {
+		return loadClinicianPreferences(clinicianID) != null;
+	}
+	
 	/**
 	 * Update the preferences for a particular clinician in the database.
 	 *

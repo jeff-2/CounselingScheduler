@@ -121,7 +121,7 @@ public class ClinicianLoadPreferencesAction {
 			CommitmentBean b1 = list.get(0);
 
 			String frequency = null;
-			if (list.size() == 2) {
+			if (list.size() >= 2) {
 				CommitmentBean b2 = list.get(1);
 				long diff = b2.getDate().getTime() - b1.getDate().getTime();
 				long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);

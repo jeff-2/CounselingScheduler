@@ -30,6 +30,7 @@ import bean.ClinicianBean;
 import bean.DateRange;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
+import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
 
 /**
@@ -40,18 +41,13 @@ import dao.ConnectionFactory;
  * @author dtli2
  * 
  */
-public class ClinicianIDListEditor extends JFrame 
+public class ClinicianIDListEditor extends JPanel 
 implements ActionListener, KeyListener, ListSelectionListener {
 
 	/**
 	 * Generated Serial Version UID
 	 */
 	private static final long serialVersionUID = -5942052228994817185L;
-
-	/**
-	 * The main panel for the GUI frame
-	 */
-	private final JPanel panel;
 	
 	/**
 	 * JLabel for new clinican name field
@@ -90,6 +86,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 */
 	private ClinicianDAO dao;
 
+	private ClinicianPreferencesDAO prefsDAO;
 	/**
 	 * Local cache of current list of clinicians
 	 */
@@ -99,12 +96,12 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	 * Create an empty client ID list
 	 */
 	public ClinicianIDListEditor() {
-		super("Edit Clinician ID List");
+		//super("Edit Clinician ID List");
 		this.initializeConnectionToDB();
 		this.updateClinicianList();
-		this.panel = new JPanel(new MigLayout("gap rel 0", "grow"));
-		this.initializeFrame();
-		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
+		setLayout(new MigLayout("gap rel 0", "grow"));
+		this.initializePanel();
+		//this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
 	}
 
 	/**
@@ -114,6 +111,7 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		try {
 			Connection conn = ConnectionFactory.getInstance();
 			dao = new ClinicianDAO(conn);
+			prefsDAO = new ClinicianPreferencesDAO(conn);
 		}
 		catch(Exception e) {
 			handleDBException(e);
@@ -138,44 +136,44 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	}
 
 	/**
-	 * Set up the components of this JFrame, pack, and make it visible
+	 * Set up the components of this JPanel
 	 */
-	private void initializeFrame() {
+	private void initializePanel() {
 		// Set preferred size
-		this.panel.setPreferredSize(new Dimension(550, 550));
+		setPreferredSize(new Dimension(550, 550));
 		// Set exit behavior
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// Add label and full name field for new clinicians
 		this.newFullnameLabel = new JLabel("New Clinician Name:");
-		this.panel.add(newFullnameLabel, "align label");
+		add(newFullnameLabel, "align label");
 		this.newFullnameField = new JTextField();
 		this.newFullnameField.setName("newFullnameField");
 		this.newFullnameField.addKeyListener(this);
-		this.panel.add(newFullnameField, "span, grow, wrap 15px");
+		add(newFullnameField, "span, grow, wrap 15px");
 		// Add "Add" and "Remove" buttons
 		this.addButton = new JButton("Add Clinician");
 		this.addButton.setName("addButton");
 		this.addButton.addActionListener(this);
-		this.panel.add(addButton, "split 3, align center, span, sizegroup bttn");
+		add(addButton, "split 3, align center, span, sizegroup bttn");
 		this.removeButton = new JButton("Remove Clinician");
 		this.removeButton.setName("removeButton");
 		this.removeButton.addActionListener(this);
-		this.panel.add(removeButton, "gapleft 15, sizegroup bttn");
+		add(removeButton, "gapleft 15, sizegroup bttn");
 		this.editButton = new JButton("Edit Clinician Preferences");
 		this.editButton.setName("editButton");
 		this.editButton.addActionListener(this);
-		this.panel.add(editButton, "gapleft 15, sizegroup bttn, wrap");
+		add(editButton, "gapleft 15, sizegroup bttn, wrap");
 		// Add list & scrollpane
 		this.clinicianList = new JList<ClinicianBean>();
 		this.populateClinicianList();
 		this.clinicianList.addListSelectionListener(this);
 		this.listScrollPane = new JScrollPane(clinicianList);
-		this.panel.add(listScrollPane, "grow, push, span");
+		add(listScrollPane, "grow, push, span");
 		// Pack and make visible
 		this.updateButtonStatus();
-		this.getContentPane().add(panel);
-		this.pack();
-		this.setVisible(true);
+		//this.getContentPane().add(panel);
+		//this.pack();
+		//this.setVisible(true);
 	}
 
 	/**
@@ -204,7 +202,12 @@ implements ActionListener, KeyListener, ListSelectionListener {
 			try {
 				calendarDAO = new CalendarDAO(ConnectionFactory.getInstance());
 				CalendarBean calendarBean = calendarDAO.loadCalendar();
-				new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), new DateRange(calendarBean.getStartDate(), calendarBean.getEndDate()), true, clinicianList.getSelectedValue().getName());
+				JFrame frame = new JFrame("Clinician Input Form");
+				frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+				ClinicianForm form = new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), new DateRange(calendarBean.getStartDate(), calendarBean.getEndDate()), true, clinicianList.getSelectedValue().getName());
+				frame.getContentPane().add(form);
+				frame.pack();
+				frame.setVisible(true);
 			} catch (SQLException e1) {
 				handleDBException(e1);
 			}
@@ -222,7 +225,13 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
-		this.editButton.setEnabled(!noListSelection);
+		// TODO: assert that preferences exist
+		try {
+			this.editButton.setEnabled(!noListSelection 
+				&& prefsDAO.preferencesExist(this.clinicianList.getSelectedValue().getClinicianID()));
+		} catch (SQLException e) {
+			handleDBException(e);
+		}
 	}
 
 	/**

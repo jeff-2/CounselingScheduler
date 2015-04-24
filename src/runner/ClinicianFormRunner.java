@@ -4,6 +4,8 @@ import gui.clinician.ClinicianForm;
 
 import java.sql.SQLException;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import bean.CalendarBean;
@@ -26,13 +28,22 @@ public class ClinicianFormRunner {
 		catch(Exception e) {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
+		CalendarBean calendarBean;
 		try {
 			CalendarDAO calendarDAO = new CalendarDAO(ConnectionFactory.getInstance());
-			CalendarBean calendarBean = calendarDAO.loadCalendar();
-			new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), new DateRange(calendarBean.getStartDate(), calendarBean.getEndDate()), false, "");
+			calendarBean = calendarDAO.loadCalendar();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Clinician Preferences cannot be set without existing semester settings", 
+					"Error Opening Clinician Preferences", JOptionPane.ERROR_MESSAGE);
+			return;
 		}
+		JFrame frame = new JFrame("Clinician Input Form");
+		ClinicianForm form = new ClinicianForm(calendarBean.getSemester(), calendarBean.getYear(), new DateRange(calendarBean.getStartDate(), calendarBean.getEndDate()), false, "");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.getContentPane().add(form);
+		frame.pack();
+		frame.setVisible(true);
 	}
 
 }

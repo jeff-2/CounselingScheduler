@@ -2,6 +2,8 @@ package bean;
 
 import java.util.Date;
 
+import validator.DateRangeValidator;
+
 /**
  * Represents a holiday that an administrator adds to the settings for a new semester
  *  
@@ -54,7 +56,7 @@ public class HolidayBean {
 	}
 	
 	public String toString() {
-		return "id: " + id + " name: " + name + " startDate: " + startDate + " endDate: " + endDate;
+		return name + " from " + DateRangeValidator.formatDateLong(startDate) + " to " + DateRangeValidator.formatDateLong(endDate);
 	}
 	
 	public boolean equals(Object other) {

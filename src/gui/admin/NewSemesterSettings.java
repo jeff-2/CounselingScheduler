@@ -15,7 +15,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -23,16 +22,18 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
+import net.miginfocom.swing.MigLayout;
 import validator.DateRangeValidator;
 import validator.InvalidDateRangeException;
 import action.ImportClinicianMeetingsAction;
 import action.InvalidExcelFormatException;
+import action.LoadNewSemesterSettingsAction;
 import bean.CalendarBean;
 import bean.HolidayBean;
 import bean.Semester;
-import net.miginfocom.swing.MigLayout;
 import dao.CalendarDAO;
 import dao.ConnectionFactory;
+import dao.DBUtils;
 import dao.HolidayDAO;
 
 /**
@@ -41,10 +42,9 @@ import dao.HolidayDAO;
  * @author jmfoste2
  * @author nbeltr2
  */
-public class NewSemesterSettings extends JFrame implements ActionListener {
+public class NewSemesterSettings extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 992467448521859468L;
-	private final JPanel panel;
 	private JLabel semesterStartDateLabel, semesterEndDateLabel, clinicianHoursLabel;
 	private JLabel holidayNameLabel, holidayStartDateLabel, holidayEndDateLabel;
 	private JLabel IALabel, ECLabel, IAHoursLabel, ECHoursLabel;
@@ -63,13 +63,19 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	 * Instantiates a new semester settings.
 	 */
 	public NewSemesterSettings() {
-		super("Create New Semester Settings");
-		panel = new JPanel();
-		panel.setLayout(new MigLayout("gap rel, fill"));
+		//super("Create New Semester Settings");
+		//panel = new JPanel();
+		//panel.
+		setLayout(new MigLayout("gap rel, fill"));
 		fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Select Meeting Schedule");
 		initializeComponents();
-		initializeFrame();
+		try {
+			loadSettings();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		initializePanel();
 	}
 
 	/**
@@ -158,42 +164,42 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 	 * Adds the semester date components.
 	 */
 	private void addSemesterDateComponents() {
-		panel.add(semesterStartDateLabel);
-		panel.add(startDateText);
-		panel.add(semesterEndDateLabel);
-		panel.add(endDateText);
-		panel.add(semesterSeasonBox, "center, wrap");
+		add(semesterStartDateLabel);
+		add(startDateText);
+		add(semesterEndDateLabel);
+		add(endDateText);
+		add(semesterSeasonBox, "center, wrap");
 	}
 
 	/**
 	 * Adds the holiday components.
 	 */
 	private void addHolidayComponents() {
-		panel.add(holidayNameLabel);
-		panel.add(holidayNameText);
-		panel.add(holidayStartDateLabel);
-		panel.add(startHolidayText);
-		panel.add(holidayEndDateLabel);
-		panel.add(endHolidayText, "wrap");
-		panel.add(listScrollPane, "grow, span, wrap");
+		add(holidayNameLabel);
+		add(holidayNameText);
+		add(holidayStartDateLabel);
+		add(startHolidayText);
+		add(holidayEndDateLabel);
+		add(endHolidayText, "wrap");
+		add(listScrollPane, "grow, span, wrap");
 
 		removeHolidayButton.addActionListener(this);
 		addHolidayButton.addActionListener(this);
-		panel.add(addHolidayButton);
-		panel.add(removeHolidayButton, "wrap");
+		add(addHolidayButton);
+		add(removeHolidayButton, "wrap");
 	}
 
 	/**
 	 * Adds the clinician components.
 	 */
 	private void addClinicianComponents() {
-		panel.add(clinicianHoursLabel, "wrap");
-		panel.add(IALabel);
-		panel.add(IAHoursText);
-		panel.add(IAHoursLabel, "wrap");
-		panel.add(ECLabel);
-		panel.add(ECHoursText);
-		panel.add(ECHoursLabel, "wrap");
+		add(clinicianHoursLabel, "wrap");
+		add(IALabel);
+		add(IAHoursText);
+		add(IAHoursLabel, "wrap");
+		add(ECLabel);
+		add(ECHoursText);
+		add(ECHoursLabel, "wrap");
 		submitButton.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
@@ -215,11 +221,23 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 						Connection conn = ConnectionFactory.getInstance();
 
 						if (!excelFilenameLabel.getText().equals("No File Selected")) {
-							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, new File(excelFilenameLabel.getText()));
+							File meetingFile = new File(excelFilenameLabel.getText());
+							calendar.setMeetingFilepath(meetingFile.getAbsolutePath());
+							ImportClinicianMeetingsAction action = new ImportClinicianMeetingsAction(conn, meetingFile);
 							action.insertImportedMeetings(calendar.getEndDate());
 						}
 						
 						CalendarDAO calendarDao = new CalendarDAO(conn);
+						if (calendarDao.calendarExists()) {
+							int res = JOptionPane.showConfirmDialog(NewSemesterSettings.this, "Changing Semester Settings at this point will delete"
+									+ " all currently provided information. This will require re-submitting clinician preferences", 
+									"Warning", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+							if (res == JOptionPane.OK_OPTION) {
+								DBUtils.clearAllTablesExceptClinicians();
+							} else {
+								return;
+							}
+						}
 						HolidayDAO holidayDao = new HolidayDAO(conn);
 						int calendarId = calendarDao.getNextAvailableId();
 						calendar.setId(calendarId);
@@ -231,7 +249,7 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 					} catch (SQLException e1) {
 						e1.printStackTrace();
 					} catch (InvalidExcelFormatException e2) {
-						JOptionPane.showMessageDialog(panel,
+						JOptionPane.showMessageDialog(NewSemesterSettings.this,
 								e2.getMessage(),
 								"Invalid Format",
 								JOptionPane.ERROR_MESSAGE);
@@ -239,33 +257,33 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 				}
 			}
 		});
-		panel.add(submitButton, "right, wrap");
 	}
 	
 	private void addMeetingComponents() {
-		panel.add(importMeetingsButton);
-		panel.add(excelFilenameLabel, "span 2");
+		add(importMeetingsButton);
+		add(excelFilenameLabel, "span 2");
 		removeMeetingsButton.setEnabled(false);
-		panel.add(removeMeetingsButton, "wrap");
+		add(removeMeetingsButton, "wrap");
 		importMeetingsButton.addActionListener(this);
 		removeMeetingsButton.addActionListener(this);
+		add(submitButton, "wrap");
 	}
 
 	/**
 	 * Initialize frame.
 	 */
-	private void initializeFrame() {
-		panel.setPreferredSize(new Dimension(600, 500));
+	private void initializePanel() {
+		setPreferredSize(new Dimension(600, 500));
 
 		addSemesterDateComponents();
 		addHolidayComponents();
 		addClinicianComponents();
 		addMeetingComponents();
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.getContentPane().add(panel);
-		this.pack();
-		this.setVisible(true);
+		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		//this.getContentPane().add(panel);
+		//this.pack();
+		//this.setVisible(true);
 	}
 
 
@@ -386,14 +404,33 @@ public class NewSemesterSettings extends JFrame implements ActionListener {
 		endHolidayText.setText("");
 
 		DefaultListModel<String> model = (DefaultListModel<String>) holidayStringList.getModel();
-		model.add(model.size(), holiday + " " + startDate + "-" + endDate);
-
 		
 		HolidayBean h = new HolidayBean();
 		h.setName(holiday);
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		h.setStartDate(format.parse(startDate));
 		h.setEndDate(format.parse(endDate));
+		model.add(model.size(), h.toString());
 		holidayList.add(h);
+	}
+	
+	private void loadSettings() throws SQLException {
+		Connection conn = ConnectionFactory.getInstance();
+		LoadNewSemesterSettingsAction action = new LoadNewSemesterSettingsAction(conn);
+		holidayList = action.loadHolidays();
+		CalendarBean calendar = action.loadCalendar();
+		startDateText.setText(DateRangeValidator.formatDate(calendar.getStartDate()));
+		endDateText.setText(DateRangeValidator.formatDate(calendar.getEndDate()));
+		semesterSeasonBox.setSelectedItem(calendar.getSemester());
+		IAHoursText.setText("" + calendar.getIaMinHours());
+		ECHoursText.setText("" + calendar.getEcMinHours());
+		File f = new File(calendar.getMeetingFilepath());
+		if (f.exists()) {
+			excelFilenameLabel.setText(calendar.getMeetingFilepath());
+		}
+		DefaultListModel<String> model = (DefaultListModel<String>) holidayStringList.getModel();
+		for (HolidayBean holiday : holidayList) {
+			model.addElement(holiday.toString());
+		}
 	}
 }
