@@ -79,16 +79,15 @@ public class ScheduleTest {
 	@Test
 	public void testEditEC() throws SQLException, ParseException {
 		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
-		
-		Clinician ecClinician = schedule.getECClinician(1, 0, 8);
-		assertEquals(ecClinician.getClinicianBean().getName(), "James");
-		
-		/*SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		Date d = sdf.parse("01/23/2015");
-		schedule.editEC(d, 8, "Norbert");		
+
+		Date d = schedule.getCalendar().getStartDate();
+		schedule.editEC(d, 8, "Nymphadora");
 		assert(schedule.getECClinician(schedule.getWeeks()
-				.indexOf(Week.getWeek(d, schedule.getCalendar())), 0, 8).equals("Norbert"));*/
-		
+				.indexOf(Week.getWeek(d, schedule.getCalendar())), 0, 8).equals("Nymphadora"));
+
+		schedule.editEC(d, 8, "Alice");
+		assert(schedule.getECClinician(schedule.getWeeks()
+				.indexOf(Week.getWeek(d, schedule.getCalendar())), 0, 8).equals("Alice"));
 	}
 	
 	@Test

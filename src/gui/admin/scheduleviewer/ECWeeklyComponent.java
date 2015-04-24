@@ -23,6 +23,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import action.ValidateScheduleAction;
 import bean.Clinician;
@@ -32,7 +34,7 @@ import bean.Schedule;
 /**
  * Editable component displaying the clinicians assigned to EC sessions for one week. 
  * @author Yusheng, Denise
- */
+ */  
 public class ECWeeklyComponent extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1181653974079435258L;
@@ -130,12 +132,16 @@ public class ECWeeklyComponent extends JPanel implements ActionListener {
 		schedule.editEC(date, timeInt, clinicianName);
 		Set<Clinician> clinicians = new ValidateScheduleAction().validateSchedule(schedule);
 		if(clinicians.size() != 0) {
+			String cliniciansString = "";
 			for(Clinician clinician : clinicians) {
-				JOptionPane.showMessageDialog(this,
-						"There is a conflict with " + clinician.getClinicianBean().getName()
-						+ " on " + month + " " + day, "Validation Error",
-						JOptionPane.ERROR_MESSAGE);
+				cliniciansString += clinician.getClinicianBean().getName() + ", ";
 			}
+			cliniciansString = cliniciansString.substring(0, cliniciansString.length()-2) + ".";
+			String errorString = "The previous change created conflicts with the following clinicians on "
+					+ month + " " + day + ":\n\n " + cliniciansString;
+			JOptionPane.showMessageDialog(this,
+					errorString, "Validation Error",
+					JOptionPane.ERROR_MESSAGE);
 		}
 		
 		
