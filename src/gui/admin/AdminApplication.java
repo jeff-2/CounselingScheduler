@@ -15,13 +15,14 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 
-import dao.ConnectionFactory;
 import action.GenerateUnfilledScheduleAction;
 import bean.Schedule;
+import dao.ConnectionFactory;
 
 public class AdminApplication extends JFrame implements ActionListener {
 	
@@ -88,7 +89,7 @@ public class AdminApplication extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 	
-	public static void main(String [] args) throws SQLException, ParseException {
+	public static void main(String [] args) {
 		try {
 			UIManager.setLookAndFeel(
 					UIManager.getSystemLookAndFeelClassName());
@@ -96,9 +97,16 @@ public class AdminApplication extends JFrame implements ActionListener {
 		catch(Exception e) {
 			System.out.println("Can't set system look and feel. Using default.");
 		}
-		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
-		gen.overwriteAndFillDemoData();
-		AdminApplication tmp = new AdminApplication();
+		try {
+			TestDataGenerator.overwriteAndFillDemoData();
+			AdminApplication tmp = new AdminApplication();
+		} catch (SQLException e) {
+			JOptionPane.showMessageDialog(null, "Unable to launch application due to error with database. Please check the database connection configuration properties file",
+					"ERROR", JOptionPane.INFORMATION_MESSAGE);
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, "Some warning message",
+					"ERROR", JOptionPane.INFORMATION_MESSAGE);
+		}
 	}
 	
 	
