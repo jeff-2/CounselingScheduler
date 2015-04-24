@@ -87,7 +87,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	public void testAddClinicianIAScheduleWeektype(IAWeektype weekType) throws SQLException {
 		Window iaSchedule = navigateScheduleWindow("IA");
 		
-		ListBox jList = iaSchedule.getListBox("JList" + weekType + "0");
+		ListBox jList = iaSchedule.getListBox(IAWeektype.A + "-0-" + "11");
 		ClinicianDAO dao = new ClinicianDAO(ConnectionFactory.getInstance());
 		Vector<String> clinicianNames = dao.loadClinicianNames();
 		@SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	public void testRemoveClinicianIAScheduleWeektype(IAWeektype weekType) {
 		Window iaSchedule = navigateScheduleWindow("IA");
 		
-		ListBox jList = iaSchedule.getListBox("JList" + weekType + "0");
+		ListBox jList = iaSchedule.getListBox(IAWeektype.A + "-0-" + "11");
 		@SuppressWarnings("unchecked")
 		JList<String> list = (JList<String>)jList.getAwtComponent();
 		DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
@@ -208,7 +208,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		Window iaSchedule = navigateScheduleWindow("IA");
 		Panel iaPanel = iaSchedule.getPanel("IAScheduleFrame");
 		
-		ListBox jList = iaSchedule.getListBox("JList" + IAWeektype.A + "0");
+		ListBox jList = iaSchedule.getListBox(IAWeektype.A + "-0-" + "11");
 		@SuppressWarnings("unchecked")
 		JList<String> list = (JList<String>)jList.getAwtComponent();
 		DefaultListModel<String> model = (DefaultListModel<String>)list.getModel();
@@ -223,7 +223,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		
 		Button reset = iaPanel.getButton("Reset");
 		reset.click();
-		jList = iaSchedule.getListBox("JList" + IAWeektype.A + "0");
+		jList = iaSchedule.getListBox(IAWeektype.A + "-0-" + "11");
 		assertTrue(jList.contains(clinicianZero));
 	}
 }

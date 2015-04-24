@@ -141,6 +141,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.resetButton) {
 				try {
+					schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
 					this.loadEditableSchedule();
 				} catch (SQLException e1) {
 					e1.printStackTrace();

@@ -77,8 +77,8 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	private void loadEditableSchedule() throws SQLException {
 		List<String> clinicianNames = clinicianDao.loadClinicianNames();
 		
-		this.weekA = new IAWeeklyComponent(schedule.getIASessionsA(), clinicianNames, IAWeektype.A);
-		this.weekB = new IAWeeklyComponent(schedule.getIASessionsB(), clinicianNames, IAWeektype.B);
+		this.weekA = new IAWeeklyComponent(schedule.getIASessionsA(), clinicianNames, IAWeektype.A, schedule);
+		this.weekB = new IAWeeklyComponent(schedule.getIASessionsB(), clinicianNames, IAWeektype.B, schedule);
 		
 		this.panel.setLeftComponent(weekA);
 		this.panel.setRightComponent(weekB);
