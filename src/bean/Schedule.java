@@ -465,7 +465,7 @@ public class Schedule {
 	 * @param clinicianName Name of the specified Clinician
 	 * @return boolean - whether the remove was successful
 	 */
-	public boolean removeIAClinician(boolean isTypeA, int day, int time, String clinicianName) {
+	public boolean removeIAClinician(boolean isTypeA, int day, int time, String clinicianName) {		
 		Clinician c = nameToClinician(clinicianName);
 		
 		int weekNum = isTypeA ? 0 : 1;

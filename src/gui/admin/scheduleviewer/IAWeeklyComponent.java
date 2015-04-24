@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -32,7 +33,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
+import action.ValidateScheduleAction;
+import bean.Clinician;
 import bean.IAWeektype;
+import bean.Schedule;
 import bean.SessionNameBean;
 import bean.Utility;
 import bean.Weekday;
@@ -45,6 +49,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 	private List<String> clinicianNames;
 	private JPopupMenu menu;
 	private JMenuItem add, remove;
+	private Schedule schedule;
 	private static final int [] rowLabels = {11, 12, 13, 14, 15};
 	
 	public List<List<List<String>>> toCellsArray() {
@@ -68,10 +73,11 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		return cells;
 	}
 
-	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, IAWeektype weekType) {
+	public IAWeeklyComponent(List<SessionNameBean> sessionNames, List<String> clinicianNames, IAWeektype weekType, Schedule schedule) {
 
 		setName("IAWeeklyComponent" + weekType);
 		this.clinicianNames = clinicianNames;
+		this.schedule = schedule;
 		
 		menu = new JPopupMenu();
 		add = new JMenuItem("Add Clinician");
@@ -109,16 +115,17 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 						currentModel.addElement(name);
 					}
 					currentList.setModel(currentModel);
-					currentList.setTransferHandler(new ToTransferHandler(TransferHandler.MOVE, row, col));
+					currentList.setTransferHandler(new ToTransferHandler(TransferHandler.MOVE, row, col, this));
 					currentList.setDragEnabled(true);
 					currentList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 					currentList.setDropMode(DropMode.INSERT);
-					currentList.setName(weekType + ", " + row + ", " + col);
 					currentList.addMouseListener(this);
 					currentList.setComponentPopupMenu(menu);
 					currentList.setName("JList" + weekType + compNo);
+					currentList.setName(weekType + "-" + Weekday.values()[col - 1].ordinal() + "-" + rowLabels[row - 1]);
 					pane[row][col] = new JScrollPane(currentList);
 					pane[row][col].setName("JScrollPane" + compNo++);
+					pane[row][col].setName(weekType + "-" + Weekday.values()[col - 1].ordinal() + "-" + rowLabels[row - 1]);
 					add(pane[row][col]);
 				}
 			}
@@ -171,11 +178,17 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		private static final long serialVersionUID = 1157878033666829034L;
 		private int action;
 		private int row, column;
+		private String clinicianName;
+		private IAWeeklyComponent weeklyComponent;
+		private int exportDay, exportTime;
+		private int importDay, importTime;
+		private boolean exportIsTypeA, importIsTypeA;
 
-		public ToTransferHandler(int action, int row, int col) {
+		public ToTransferHandler(int action, int row, int col, IAWeeklyComponent weeklyComponent) {
 			this.action = action;
 			this.row = row;
 			this.column = col;
+			this.weeklyComponent = weeklyComponent;
 		}
 
 		public boolean canImport(TransferHandler.TransferSupport support) {
@@ -198,6 +211,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 			} catch (IOException e) {
 				return false;
 			}
+			this.clinicianName = data;
 			
 			if (model.contains(data)) {
 				return false;
@@ -215,7 +229,14 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 			if (!canImport(support)) {
 				return false;
 			}
-
+			
+			String componentName = support.getComponent().getName();
+			importIsTypeA = componentName.split("-")[0].equals("A");
+			importDay = Integer.parseInt(componentName.split("-")[1]);
+			importTime = Integer.parseInt(componentName.split("-")[2]);
+			
+			schedule.addIAClinician(importIsTypeA, importDay, importTime, clinicianName);
+			
 			JList.DropLocation dl = (JList.DropLocation) support.getDropLocation();
 
 			int index = dl.getIndex();
@@ -228,12 +249,12 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 			} catch (IOException e) {
 				return false;
 			}
-
+			this.clinicianName = data;
 			@SuppressWarnings("unchecked")
 			JList<String> list = ((JList<String>) support.getComponent());
 			DefaultListModel<String> model = (DefaultListModel<String>) list.getModel();
 			model.insertElementAt(data, index);
-
+			
 			Rectangle rect = list.getCellBounds(index, index);
 			list.scrollRectToVisible(rect);
 			list.setSelectedIndex(index);
@@ -249,7 +270,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 		private int index = 0;
 
 		public Transferable createTransferable(JComponent comp) {
-
+			
 			@SuppressWarnings("unchecked")
 			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column]).getViewport().getView();
 			index = l.getSelectedIndex();
@@ -264,10 +285,31 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 			if (action != MOVE) {
 				return;
 			}
-
+			
+			String componentName = comp.getName();
+			exportIsTypeA = componentName.split("-")[0].equals("A");
+			exportDay = Integer.parseInt(componentName.split("-")[1]);
+			exportTime = Integer.parseInt(componentName.split("-")[2]);
+			
+			schedule.removeIAClinician(exportIsTypeA, exportDay, exportTime, clinicianName);
+			validate();
+			
 			@SuppressWarnings("unchecked")
 			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column]).getViewport().getView();
 			((DefaultListModel<String>) l.getModel()).removeElementAt(index);
+		}
+
+		private void validate() {
+			Set<Clinician> clinicians = new ValidateScheduleAction().validateSchedule(schedule);
+			if(clinicians.size() != 0) {
+				for(Clinician clinician : clinicians) {
+					JOptionPane.showMessageDialog(weeklyComponent,
+						"There is a conflict with " + clinician.getClinicianBean().getName()
+						+ " on " + importDay, "Validation Error",
+						JOptionPane.ERROR_MESSAGE);
+				}
+			}
+			
 		}
 	}
 

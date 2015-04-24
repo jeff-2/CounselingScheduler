@@ -3,41 +3,55 @@ package gui.admin.scheduleviewer;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import action.ValidateScheduleAction;
+import bean.Clinician;
 import bean.ECScheduleWeekBean;
+import bean.Schedule;
 
 /**
  * Editable component displaying the clinicians assigned to EC sessions for one week. 
  * @author Yusheng, Denise
  */
-public class ECWeeklyComponent extends JPanel {
+public class ECWeeklyComponent extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1181653974079435258L;
 	private Component [][] pane;
 	private int row, column;
 	private List<JComboBox<String>> comboBoxes;
 	private Map<String, String> sessionIDs;
+	private Schedule schedule;
 	
 	/**
 	 * Creates a component that displays the clinicians assigned to EC sessions for a particular week.
 	 * @param week 
 	 */
-	public ECWeeklyComponent(ECScheduleWeekBean week, Vector<String> clinicianNames) {
+	public ECWeeklyComponent(ECScheduleWeekBean week, Vector<String> clinicianNames, Schedule schedule) {
 		this.setLayout(new GridLayout(4,6));
 		this.setBorder(BorderFactory.createLineBorder(Color.black));
 		comboBoxes = new ArrayList<>();
 		sessionIDs = new HashMap<>();
+		this.schedule = schedule;
 
 		ArrayList<ArrayList<String>> cells = week.getCellContent();
 		ArrayList<ArrayList<String>> ids = week.getCellIDs();
@@ -62,6 +76,11 @@ public class ECWeeklyComponent extends JPanel {
 					comp = assignedClinician;
 					assignedClinician.setSelectedItem(cells.get(r).get(c));
 					assignedClinician.setActionCommand(key);
+					assignedClinician.addActionListener(this);
+					assignedClinician.putClientProperty("Month", week.monthAbbrev());
+					assignedClinician.putClientProperty("Day", cells.get(0).get(c).split(" ")[1]);
+					assignedClinician.putClientProperty("Time", cells.get(r).get(0));
+					
 					comboBoxes.add(assignedClinician);
 					sessionIDs.put(key, ids.get(r).get(c));
 					assignedClinician.setName("" + ids.get(r).get(c));
@@ -95,5 +114,52 @@ public class ECWeeklyComponent extends JPanel {
 			cellsList.add(cells);
 		}
 		return cellsList;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String month = (String) ((JComboBox<String>)e.getSource()).getClientProperty("Month");
+		String day = (String) ((JComboBox<String>)e.getSource()).getClientProperty("Day");
+		String time = (String) ((JComboBox<String>)e.getSource()).getClientProperty("Time");
+		String clinicianName = ((JComboBox<String>)e.getSource()).getSelectedItem().toString();
+		
+		Date date = getDate(month, day);
+		int timeInt = getTime(time);
+		
+		schedule.editEC(date, timeInt, clinicianName);
+		Set<Clinician> clinicians = new ValidateScheduleAction().validateSchedule(schedule);
+		if(clinicians.size() != 0) {
+			for(Clinician clinician : clinicians) {
+				JOptionPane.showMessageDialog(this,
+						"There is a conflict with " + clinician.getClinicianBean().getName()
+						+ " on " + month + " " + day, "Validation Error",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		}
+		
+		
+	}
+
+	private int getTime(String time) {
+		if(time.charAt(0) == '8') {
+			return 8;
+		}
+		else if(time.charAt(0) == '4') {
+			return 16;
+		}
+		else return 12;
+	}
+
+	private Date getDate(String month, String day) {
+		@SuppressWarnings("deprecation")
+		String date = month + " " + day + ", " + (schedule.getCalendar().getStartDate().getYear() +1900);
+		DateFormat format = new SimpleDateFormat("MMMM d, yyyy", Locale.ENGLISH);
+		try {
+			return format.parse(date);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
