@@ -119,6 +119,14 @@ public class Schedule {
 		// initialLoader needs to be called first
 		return weeks.size();
 	}
+	
+	/**
+	 * Returns the list of weeks in the schedule
+	 * @return
+	 */
+	public List<Week> getWeeks() {
+		return weeks;
+	}
 
 	/**
 	 * Finds the clinicians assigned to the specified IA session
