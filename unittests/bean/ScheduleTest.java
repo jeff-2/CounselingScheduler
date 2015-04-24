@@ -7,10 +7,16 @@ import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
+
+import linearprogram.Week;
 
 import org.junit.After;
 import org.junit.Before;
@@ -71,9 +77,57 @@ public class ScheduleTest {
 	}
 	
 	@Test
-	public void testEditEC() throws SQLException {
+	public void testEditEC() throws SQLException, ParseException {
 		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
-		//System.out.println()
+		
+		Clinician ecClinician = schedule.getECClinician(1, 0, 8);
+		assertEquals(ecClinician.getClinicianBean().getName(), "James");
+		
+		/*SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		Date d = sdf.parse("01/23/2015");
+		schedule.editEC(d, 8, "Norbert");		
+		assert(schedule.getECClinician(schedule.getWeeks()
+				.indexOf(Week.getWeek(d, schedule.getCalendar())), 0, 8).equals("Norbert"));*/
+		
+	}
+	
+	@Test
+	public void removeIA() throws SQLException {
+		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+		List<Clinician> iaClinicianList = schedule.getIAClinician(true, 0, 13);
+		String clinicianName = "Eric";
+		
+		assert(searchForClinician(iaClinicianList, clinicianName));
+		schedule.removeIAClinician(true, 0, 13, clinicianName);
+		assert(!searchForClinician(iaClinicianList, clinicianName));
+	}
+	
+	@Test
+	public void addIA() throws SQLException {
+		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+		List<Clinician> iaClinicianList = schedule.getIAClinician(false, 1, 11);		
+		String clinicianName = "Igor";
+		
+		assert(!searchForClinician(iaClinicianList, clinicianName));
+		schedule.addIAClinician(false, 1, 11, clinicianName);
+		assert(searchForClinician(iaClinicianList, clinicianName));
+	}
+	
+	/**
+	 * Helper method to look through the clincian IA assignments for a particular day
+	 * @param clist List of clinicians assigned to a day session
+	 * @param clinicianName
+	 * @return true if clinician is assigned for that day, false otherwise
+	 */
+	private boolean searchForClinician(List<Clinician> clist, String clinicianName) {
+		boolean foundClinician = false;
+		for (Clinician c : clist) {
+			String cName = c.getClinicianBean().getName();
+			if (cName.equals(clinicianName)) {
+				foundClinician = true;
+			}
+		}
+		return foundClinician;
 	}
 	
 	@After
