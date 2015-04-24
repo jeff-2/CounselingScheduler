@@ -5,7 +5,7 @@ CREATE TABLE Calendar (
 	iaMinHours int NOT NULL,
 	ecMinHours int NOT NULL,
 	id int NOT NULL,
-	meetingFilepath varchar(50),
+	meetingFilepath varchar(500),
 	PRIMARY KEY (id)
 );
 
