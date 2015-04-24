@@ -13,7 +13,11 @@ import javax.swing.JList;
 import org.uispec4j.Button;
 import org.uispec4j.ComboBox;
 import org.uispec4j.ListBox;
+import org.uispec4j.MenuBar;
+import org.uispec4j.MenuItem;
+import org.uispec4j.Panel;
 import org.uispec4j.RadioButton;
+import org.uispec4j.TabGroup;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
@@ -138,18 +142,21 @@ public class ScheduleEditTest extends UISpecTestCase {
 	 */
 	public Window navigateScheduleWindow(String scheduleType) {
 		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
 		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
 		
-		RadioButton edit = window.getRadioButton("Edit/print " + scheduleType + " schedule");
-		edit.click();
-		Window schedule = WindowInterceptor.run(runTask.triggerClick());
-		assertEquals("View "+ scheduleType + " Schedule", schedule.getTitle());
-		return schedule;
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		if (scheduleType.equals("IA")) {
+			tabbedPane.selectTab("IA Schedule");
+		}
+		else if(scheduleType.equals("EC")) {
+			tabbedPane.selectTab("EC Schedule");
+		}
+		
+		return window;
 	}
 
 	/**
@@ -173,6 +180,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	public void testResetECSchedule() throws SQLException {
 		
 		Window ecSchedule = navigateScheduleWindow("EC");
+		Panel ecPanel = ecSchedule.getPanel("ECScheduleFrame");
 		
 		ComboBox cb[] = new ComboBox[3];
 		int selected[] = new int[3];
@@ -183,7 +191,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 			cb[i].select("Alice");
 		}
 		
-		Button reset = ecSchedule.getButton("Reset");
+		Button reset = ecPanel.getButton("Reset");
 		reset.click();
 		
 		for (int i = 0; i < cb.length; i++) {
@@ -198,6 +206,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	 */
 	public void testResetIASchedule() throws SQLException {
 		Window iaSchedule = navigateScheduleWindow("IA");
+		Panel iaPanel = iaSchedule.getPanel("IAScheduleFrame");
 		
 		ListBox jList = iaSchedule.getListBox("JList" + IAWeektype.A + "0");
 		@SuppressWarnings("unchecked")
@@ -212,7 +221,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 		 	.click();
 		assertFalse(jList.contains(clinicianZero));
 		
-		Button reset = iaSchedule.getButton("Reset");
+		Button reset = iaPanel.getButton("Reset");
 		reset.click();
 		jList = iaSchedule.getListBox("JList" + IAWeektype.A + "0");
 		assertTrue(jList.contains(clinicianZero));
