@@ -311,7 +311,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 			JOptionPane.showMessageDialog(weeklyComponent,
 					errorString, "Validation Error",
 					JOptionPane.ERROR_MESSAGE);
-			
+			 
 		}
 	}
 

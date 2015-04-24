@@ -34,7 +34,7 @@ import bean.Schedule;
 /**
  * Editable component displaying the clinicians assigned to EC sessions for one week. 
  * @author Yusheng, Denise
- */
+ */ 
 public class ECWeeklyComponent extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1181653974079435258L;

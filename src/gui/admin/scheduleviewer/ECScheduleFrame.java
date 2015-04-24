@@ -64,7 +64,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		fileChooser = new JFileChooser();
+		fileChooser = new JFileChooser(); 
 		fileChooser.setDialogTitle("Save Schedule");
 		fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
 		
