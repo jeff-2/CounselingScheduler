@@ -57,7 +57,7 @@ public class Clinician {
 	public boolean canCover(SessionBean session) {
 		// TODO: implement me to return true iff this clinician is available to 
 		// cover this session based on meetings and time away (ignoring other IA/EC constraints)
-		double cutoff = 0.5;
+		double cutoff = 0.4;
 		double rand = Math.random();
 		return rand >= cutoff;
 	}

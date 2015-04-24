@@ -44,6 +44,7 @@ public class ScheduleProgram {
 	private HashMap<SessionBean, List<GRBVar>> sessionVars;
 	private HashMap<SessionBean, List<Clinician>> assignments;	
 	private HashMap<String, Clinician> clinicianNameLookup;
+	private HashMap<String, GRBVar> iaVars;
 
 	private ScheduleProgram(Schedule scheduleToAssign) {
 		this.schedule = scheduleToAssign;
@@ -100,6 +101,7 @@ public class ScheduleProgram {
 				this.clinicianWeekVars.put(clinician, temp);
 			}
 			this.sessionVars = new HashMap<SessionBean, List<GRBVar>>();
+			this.iaVars = new HashMap<String, GRBVar>();
 
 			// Initialize variables themselves
 			for(Week week : this.weeks) {
@@ -109,8 +111,8 @@ public class ScheduleProgram {
 					String sessionString = session.getVariableString();
 					for(Clinician clinician : clinicianList) {
 						if(clinician.canCover(session)) {
-							String varName = clinician.getClinicianBean().getName()+"_"+sessionString;
 							GRBVar var;
+							String varName = clinician.getClinicianBean().getName()+"_"+sessionString;
 							if(sessionsIsEC) {
 								double[] prefs = new double[]{0.0, 1.0, 2.0, 5.0}; // TODO: check behavior with these preference weights
 								int start = session.getStartTime();
@@ -120,8 +122,13 @@ public class ScheduleProgram {
 								objective.addTerm(pref, var);
 							}
 							else {
-								var = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, varName);
-								objective.addTerm(1.0, var);
+								
+								var = this.iaVars.get(varName);					
+								if(var == null) {									
+									var = model.addVar(0.0, 1.0, 1.0, GRB.BINARY, varName);
+									objective.addTerm(1.0, var);
+									this.iaVars.put(varName, var);
+								}
 							}
 							seshVars.add(var);
 							clinicianWeekVars.get(clinician).get(week).add(var);

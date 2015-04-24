@@ -256,8 +256,12 @@ public class SessionBean implements Comparable<SessionBean> {
 	}
 
 	public String getVariableString() {
-		String var = id+"_"+dayOfWeek+"_"+startTime+"_"+type;
-		return var;
+		if(this.type == SessionType.EC) {
+			return id+"_"+dayOfWeek+"_"+startTime+"_"+type;
+		}
+		else {
+			return dayOfWeek+"_"+startTime+"_"+type+"_"+weekType;
+		}
 	}
 	
 }
