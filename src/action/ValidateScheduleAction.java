@@ -44,13 +44,13 @@ public class ValidateScheduleAction {
 		Set<Clinician> resultSet = new HashSet<Clinician>();
 		resultSet.addAll(validateIAScheduleConflicts(sch));
 		resultSet.addAll(validateECScheduleConflicts(sch));
-		resultSet.addAll(validateMorningMeetingAfternoonECConflicts(sch));
-		resultSet.addAll(validateOneECPerWeek(sch));
-		resultSet.addAll(validateOneIAPerDay(sch));
 		resultSet.addAll(validateSameDayNoonECIAConflicts(sch));
 		resultSet.addAll(validateAfternoonMeetingMorningECConflicts(sch));
+		resultSet.addAll(validateMorningMeetingAfternoonECConflicts(sch));
+		resultSet.addAll(validateECAssignmentMeetsPreference(sch));
 		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
-		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
+		resultSet.addAll(validateOneECPerWeek(sch));
+		resultSet.addAll(validateOneIAPerDay(sch));
 		return resultSet;
 	}
 	/**
@@ -329,14 +329,16 @@ public class ValidateScheduleAction {
 			for (int day = 0; day < 5; day++) {
 				for (int ec: ecHours) {
 					Clinician cl = sch.getECClinician(week, day, ec);
-					pref = cl.getClinicianPreferencesBean();
-					
-					// calculate start hour from preferences format for preferred time
-					int prefHour = pref.getRanking(0) * 4 + 8;
-					if (ec == prefHour) {
-						prefEC.put(cl,  prefEC.get(cl) + 1);
+					if (cl != null) {
+						pref = cl.getClinicianPreferencesBean();
+						
+						// calculate start hour from preferences format for preferred time
+						int prefHour = pref.getRanking(0) * 4 + 8;
+						if (ec == prefHour) {
+							prefEC.put(cl,  prefEC.get(cl) + 1);
+						}
+						allEC.put(cl,  allEC.get(cl) + 1);
 					}
-					allEC.put(cl,  allEC.get(cl) + 1);
 				}
 			}
 		}
