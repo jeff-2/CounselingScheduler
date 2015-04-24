@@ -20,8 +20,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 
 import bean.ECScheduleWeekBean;
 import bean.Schedule;
@@ -49,10 +51,11 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
-	 */
+	 */ 
 	public ECScheduleFrame(Schedule s) throws SQLException {
 		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.schedule = s;
+		
 		this.scrollPanel = new JScrollPane();
 		
 		this.scrollPanel = new JScrollPane();
@@ -61,7 +64,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
 		this.scrollPanel.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		
-		fileChooser = new JFileChooser();
+		fileChooser = new JFileChooser(); 
 		fileChooser.setDialogTitle("Save Schedule");
 		fileChooser.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
 		
@@ -72,8 +75,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 		controlPanel.add(resetButton);
 		
 		// Finish
-		this.add(scrollPanel, BorderLayout.CENTER);
-		this.add(controlPanel, BorderLayout.SOUTH);
+		this.setLayout(new FlowLayout());
+		this.add(scrollPanel);//, BorderLayout.CENTER);
+		this.add(controlPanel);//, BorderLayout.SOUTH);
 	}
 
 	/**

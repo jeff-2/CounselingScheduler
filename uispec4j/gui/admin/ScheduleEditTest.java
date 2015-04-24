@@ -57,15 +57,15 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 	
 	public void testFirstECSelection() throws SQLException {
-		testEditECSchedule("0");
+		testEditECScheduleCatchWindow("0");
 	}
 	
 	public void testSecondECSelection() throws SQLException {
-		testEditECSchedule("1");
+		testEditECScheduleCatchWindow("1");
 	}
 	
 	public void testThirdECSelection() throws SQLException {
-		testEditECSchedule("2");
+		testEditECScheduleCatchWindow("2");
 	}
 	
 	public void testRemoveClinicianIAScheduleWeekA() {
@@ -158,6 +158,25 @@ public class ScheduleEditTest extends UISpecTestCase {
 		
 		return window;
 	}
+	
+	public void testEditECScheduleCatchWindow(final String boxnum) {
+		final Window ecSchedule = navigateScheduleWindow("EC");
+		
+		WindowInterceptor
+	    .init(new Trigger() {
+	        public void run() throws Exception {
+	        	ComboBox cb = ecSchedule.getComboBox(boxnum);
+	        	cb.select("Alice");
+	        	cb.selectionEquals("Alice");
+	        }
+	    })
+	    .process(new WindowHandler() {
+	    	public Trigger process(Window errorMessage) {
+	    		return errorMessage.getButton("OK").triggerClick();
+	    	}
+	    })
+	    .run();
+	}
 
 	/**
 	 * Tests whether selecting new name in the EC schedule works
@@ -179,7 +198,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	 */
 	public void testResetECSchedule() throws SQLException {
 		
-		Window ecSchedule = navigateScheduleWindow("EC");
+		final Window ecSchedule = navigateScheduleWindow("EC");
 		Panel ecPanel = ecSchedule.getPanel("ECScheduleFrame");
 		
 		ComboBox cb[] = new ComboBox[3];
@@ -188,7 +207,19 @@ public class ScheduleEditTest extends UISpecTestCase {
 		for (int i = 0; i < cb.length; i++) {
 			cb[i] = ecSchedule.getComboBox("" + i);
 			selected[i] = cb[i].getAwtComponent().getSelectedIndex();
-			cb[i].select("Alice");
+			final ComboBox current = cb[i];
+			WindowInterceptor
+		    .init(new Trigger() {
+		        public void run() throws Exception {
+		        	current.select("Alice");
+		        }
+		    })
+		    .process(new WindowHandler() {
+		    	public Trigger process(Window errorMessage) {
+		    		return errorMessage.getButton("OK").triggerClick();
+		    	}
+		    })
+		    .run();
 		}
 		
 		Button reset = ecPanel.getButton("Reset");

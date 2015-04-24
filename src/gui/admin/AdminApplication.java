@@ -40,7 +40,7 @@ public class AdminApplication extends JFrame implements ActionListener {
 	private Schedule schedule;
 	
 	public AdminApplication() throws SQLException {
-		super("Some Title");
+		super("Generate IA/EC schedule");
 		schedule = Schedule.loadScheduleFromDB();
 		ia = new IAScheduleFrame(schedule);
 		ia.setName("IAScheduleFrame");
@@ -101,7 +101,8 @@ public class AdminApplication extends JFrame implements ActionListener {
 			TestDataGenerator.overwriteAndFillDemoData();
 			AdminApplication tmp = new AdminApplication();
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Unable to launch application due to error with database. Please check the database connection configuration properties file",
+			JOptionPane.showMessageDialog(null, "Unable to launch application due to error with database. "
+					+ "Please check the database connection configuration properties file. ",
 					"ERROR", JOptionPane.INFORMATION_MESSAGE);
 		} catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, "Some warning message",
