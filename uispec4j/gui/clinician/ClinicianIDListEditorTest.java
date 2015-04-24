@@ -211,50 +211,52 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	@Test
 	public void testRemoveClinicians() throws Exception {
 		Window window = this.getMainWindow();
-		TextBox newFullnameField = window.getTextBox("newFullnameField");
-		typeText(newFullnameField, beanA.getName());
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		TextBox newFullnameField = editorPanel.getTextBox("newFullnameField");
+		typeText(newFullnameField, beanC.getName());
 		
-		Button addButton = window.getButton("addButton");
+		Button addButton = editorPanel.getButton("addButton");
 		addButton.click();
 
-		ListBox cliniciansBox = window.getListBox();
-		cliniciansBox.contentEquals(beanA.getName());
+		ListBox cliniciansBox = editorPanel.getListBox();
+		cliniciansBox.contentEquals(beanC.getName());
 		
-		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
-		expectedClinicians.add(beanA);
+		List<ClinicianBean> expectedClinicians = getClinicianList();
+		expectedClinicians.add(beanC);
 		
 		List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
 		
 		newFullnameField.setText("");
-		typeText(newFullnameField, beanB.getName());
+		typeText(newFullnameField, beanD.getName());
 		addButton.click();
-		cliniciansBox.contentEquals(beanA.getName(), beanB.getName());
+		cliniciansBox.contentEquals(beanC.getName(), beanD.getName());
 		
-		expectedClinicians.add(beanB);
+		expectedClinicians.add(beanD);
 		
 		clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
 		
-		cliniciansBox.select(beanA.getName());
-		Button removeButton = window.getButton("removeButton");
+		cliniciansBox.select(beanC.getName());
+		Button removeButton = editorPanel.getButton("removeButton");
 		removeButton.click();
-		cliniciansBox.contentEquals(beanB.getName());
+		cliniciansBox.contentEquals(beanD.getName());
 		clinicians = clinicianDAO.loadClinicians();
-		expectedClinicians.remove(beanA);
+		expectedClinicians.remove(beanC);
 		assertEquals(clinicians, expectedClinicians);
 		
-		cliniciansBox.select(beanB.getName());
+		cliniciansBox.select(beanD.getName());
 		removeButton.click();
 		clinicians = clinicianDAO.loadClinicians();
-		expectedClinicians.remove(beanB);
+		expectedClinicians.remove(beanD);
 		assertEquals(clinicians, expectedClinicians);
 	}
 	
 	public void testLoadClinicianPreferences() throws ParseException, SQLException {
 		gen.generateStandardDataset();
 		Window window = this.getMainWindow();
-		ListBox cliniciansBox = window.getListBox();
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.select("Denise");
 		Button editButton = window.getButton("editButton");
 		WindowInterceptor
@@ -292,7 +294,8 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	public void testUpdateClinicianPreferences() throws ParseException, SQLException {
 		gen.generateStandardDataset();
 		Window window = this.getMainWindow();
-		ListBox cliniciansBox = window.getListBox();
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.select("Denise");
 		Button editButton = window.getButton("editButton");
 		WindowInterceptor
@@ -357,7 +360,8 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	public void testUpdateWithMissingIAHours() throws ParseException, SQLException {
 		gen.generateStandardDataset();
 		Window window = this.getMainWindow();
-		ListBox cliniciansBox = window.getListBox();
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.select("Denise");
 		Button editButton = window.getButton("editButton");
 		WindowInterceptor
@@ -391,7 +395,8 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	public void testUpdateWithMissingECHours() throws ParseException, SQLException {
 		gen.generateStandardDataset();
 		Window window = this.getMainWindow();
-		ListBox cliniciansBox = window.getListBox();
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.select("Denise");
 		Button editButton = window.getButton("editButton");
 		WindowInterceptor
@@ -425,7 +430,8 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	public void testLoadEmptyPreferences() throws ParseException, SQLException {
 		gen.generateStandardDataset();
 		Window window = this.getMainWindow();
-		ListBox cliniciansBox = window.getListBox();
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.select("Eric");
 		Button editButton = window.getButton("editButton");
 		WindowInterceptor
