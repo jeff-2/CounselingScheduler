@@ -2,8 +2,10 @@ package dao;
 
 import generator.TestDataGenerator;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.util.Properties;
 
@@ -23,7 +25,11 @@ public class DBUtils {
 	}
 	
 	public static String loadConnectionConfig() throws ConnectionConfigException {
-		return loadConnectionConfig(CONFIG_FILEPATH);
+		try {
+			return loadConnectionConfig(new File(ClassLoader.getSystemResource(CONFIG_FILEPATH).toURI()).getAbsolutePath());
+		} catch (URISyntaxException e) {
+			return "";
+		}
 	}
 	
 	public static String loadConnectionConfig(String filePath) throws ConnectionConfigException {

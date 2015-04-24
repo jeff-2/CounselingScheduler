@@ -101,7 +101,8 @@ public class AdminApplication extends JFrame implements ActionListener {
 			TestDataGenerator.overwriteAndFillDemoData();
 			AdminApplication tmp = new AdminApplication();
 		} catch (SQLException e) {
-			JOptionPane.showMessageDialog(null, "Unable to launch application due to error with database. Please check the database connection configuration properties file",
+			JOptionPane.showMessageDialog(null, "Unable to launch application due to error with database. "
+					+ "Please check the database connection configuration properties file. ",
 					"ERROR", JOptionPane.INFORMATION_MESSAGE);
 		} catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, "Some warning message",

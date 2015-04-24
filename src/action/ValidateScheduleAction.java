@@ -333,7 +333,7 @@ public class ValidateScheduleAction {
 						pref = cl.getClinicianPreferencesBean();
 						
 						// calculate start hour from preferences format for preferred time
-						int prefHour = pref.getRanking(0) * 4 + 8;
+						int prefHour = pref.getRanking(1) * 4 + 8;
 						if (ec == prefHour) {
 							prefEC.put(cl,  prefEC.get(cl) + 1);
 						}
