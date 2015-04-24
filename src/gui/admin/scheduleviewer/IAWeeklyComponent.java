@@ -301,16 +301,18 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 
 		private void validate() {
 			Set<Clinician> clinicians = new ValidateScheduleAction().validateSchedule(schedule);
-			if(clinicians.size() != 0) {
-				for(Clinician clinician : clinicians) {
-					JOptionPane.showMessageDialog(weeklyComponent,
-						"There is a conflict with " + clinician.getClinicianBean().getName()
-						+ " on " + importDay, "Validation Error",
-						JOptionPane.ERROR_MESSAGE);
-				}
+			String cliniciansString = "";
+			for(Clinician clinician : clinicians) {
+				cliniciansString += clinician.getClinicianBean().getName() + ", ";
 			}
+			cliniciansString = cliniciansString.substring(0, cliniciansString.length()-2) + ".";
+			String errorString = "The previous change created conflicts with the following clinicians:\n\n " + cliniciansString;
 			
-		}
+			JOptionPane.showMessageDialog(weeklyComponent,
+					errorString, "Validation Error",
+					JOptionPane.ERROR_MESSAGE);
+			 
+		} 
 	}
 
 	@Override
