@@ -117,7 +117,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 					currentList.addMouseListener(this);
 					currentList.setComponentPopupMenu(menu);
 					currentList.setName("JList" + weekType + compNo);
-					System.out.println(currentModel.getSize());
 					pane[row][col] = new JScrollPane(currentList);
 					pane[row][col].setName("JScrollPane" + compNo++);
 					add(pane[row][col]);
