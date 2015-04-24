@@ -29,7 +29,7 @@ public class CalendarDAO extends DAO {
 	 */
 	public void insertCalendar(CalendarBean calendar) throws SQLException {		
 		PreparedStatement stmt = connection.prepareStatement("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
-				+ "ecMinHours, term) VALUES(?, ?, ?, ?, ?, ?)");
+				+ "ecMinHours, term, meetingFilepath) VALUES(?, ?, ?, ?, ?, ?, ?)");
 		
 		stmt.setInt(1, calendar.getId());
 		stmt.setDate(2, new java.sql.Date(calendar.getStartDate().getTime()));
@@ -37,6 +37,7 @@ public class CalendarDAO extends DAO {
 		stmt.setInt(4,  calendar.getIaMinHours());
 		stmt.setInt(5,  calendar.getEcMinHours());
 		stmt.setInt(6, calendar.getSemester().ordinal());
+		stmt.setString(7, calendar.getMeetingFilepath());
 		
 		stmt.executeUpdate();
 	}
@@ -60,7 +61,15 @@ public class CalendarDAO extends DAO {
 		cal.setIaMinHours(res.getInt("iaMinHours"));
 		cal.setEcMinHours(res.getInt("ecMinHours"));
 		cal.setId(res.getInt("id"));
+		cal.setMeetingFilepath(res.getString("meetingFilepath"));
 		return cal;
+	}
+	
+	public boolean calendarExists() throws SQLException {
+		Statement stmt = connection.createStatement();
+		stmt.execute("Select * From Calendar");
+		ResultSet res = stmt.getResultSet();
+		return res.next();
 	}
 	
 	/**

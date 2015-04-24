@@ -13,7 +13,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -42,11 +41,9 @@ import dao.ConnectionFactory;
  *
  * @author Yusheng Hou and Kevin Lim
  */
-public class ClinicianForm extends JFrame implements ActionListener {
+public class ClinicianForm extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = -5377691259929030865L;
-	
-	private JPanel panel;
 	private JScrollPane timeAwayPane, commitmentsPane;
 	private JList<TimeAwayBean> timeAway;
 	private JList<String> commitments;
@@ -86,9 +83,6 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	 * @param name the name
 	 */
 	public ClinicianForm(Semester semester, int year, DateRange dateRange, boolean isAdmin, String name) {
-		super("Clinician Input Form");
-		panel = new JPanel();
-		panel.setLayout(new MigLayout("gap unrel", "grow"));
 		this.semester = semester;
 		this.year = year;
 		this.dateRange = dateRange;
@@ -103,7 +97,7 @@ public class ClinicianForm extends JFrame implements ActionListener {
 				displayDBErrorMessage(e);
 			}
 		}
-		initializeFrame();
+		initializePanel();
 	}
 	
 	/**
@@ -290,15 +284,16 @@ public class ClinicianForm extends JFrame implements ActionListener {
 	}
 	
 	/**
-	 * Initialize frame.
+	 * Initialize panel.
 	 */
-	private void initializeFrame() {
-		panel.setPreferredSize(new Dimension(700, 800));
+	private void initializePanel() {
 		
-		panel.add(nameLabel, "align label, split 2, span");
-		panel.add(nameField, "wrap");
-		panel.add(preferenceFormLabel, "align center, span, wrap");
-		panel.add(periodLabel, "align center, gapbottom 15, span, wrap");
+		setLayout(new MigLayout("gap unrel", "grow"));
+		setPreferredSize(new Dimension(700, 800));
+		add(nameLabel, "align label, split 2, span");
+		add(nameField, "wrap");
+		add(preferenceFormLabel, "align center, span, wrap");
+		add(periodLabel, "align center, gapbottom 15, span, wrap");
 		
 		addTimeAwayComponents();
 		addCommitmentComponents();
@@ -307,83 +302,76 @@ public class ClinicianForm extends JFrame implements ActionListener {
 			addAdminComponents();
 		}
 		
-		panel.add(clearButton, "split 2, span, gap top 25, align center, sizegroup bttn");
-		panel.add(submitButton, "wrap, gapleft 50, sizegroup bttn");
-		
-		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		this.getContentPane().add(panel);
-		this.pack();
-		this.setVisible(true);
+		add(clearButton, "split 2, span, gap top 25, align center, sizegroup bttn");
+		add(submitButton, "wrap, gapleft 50, sizegroup bttn");
 	}
 	
 	/**
 	 * Adds the time away components.
 	 */
 	private void addTimeAwayComponents() {
-		panel.add(timeAwayLabel, "align center, span, wrap");
-		panel.add(timeAwayDescription, "align center, span, wrap");
-		panel.add(timeAwayNameLabel, "align label, split 2");
-		panel.add(timeAwayName);
-		panel.add(timeAwayStartDateLabel, "align label, split 2");
-		panel.add(timeAwayStartDate);
-		panel.add(timeAwayEndDateLabel, "align label, split 2");
-		panel.add(timeAwayEndDate, "wrap");
-		panel.add(timeAwayPane, "grow, span, wrap");
-		panel.add(addTimeAwayButton, "split 2, span, align center, sizegroup timeBttn");
-		panel.add(removeTimeAwayButton, "wrap, gapleft 50, sizegroup timeBttn");
+		add(timeAwayLabel, "align center, span, wrap");
+		add(timeAwayDescription, "align center, span, wrap");
+		add(timeAwayNameLabel, "align label, split 2");
+		add(timeAwayName);
+		add(timeAwayStartDateLabel, "align label, split 2");
+		add(timeAwayStartDate);
+		add(timeAwayEndDateLabel, "align label, split 2");
+		add(timeAwayEndDate, "wrap");
+		add(timeAwayPane, "grow, span, wrap");
+		add(addTimeAwayButton, "split 2, span, align center, sizegroup timeBttn");
+		add(removeTimeAwayButton, "wrap, gapleft 50, sizegroup timeBttn");
 	}
 	
 	/**
 	 * Adds the commitment components.
 	 */
 	private void addCommitmentComponents() {
-		panel.add(conflictsLabel, "align center, span, wrap");
-		panel.add(iaTimesLabel, "align center, span, wrap");
-		panel.add(ecTimesLabel, "align center, span, wrap");
-		panel.add(conflictsDescription, "align center, span, wrap");
-		panel.add(commitmentDescriptionLabel, "split 2");
-		panel.add(commitmentDescription);
-		panel.add(commitmentStartTimeLabel, "split 2");
-		panel.add(startTimeBox);
-		panel.add(commitmentEndTimeLabel, "split 2");
-		panel.add(endTimeBox, "wrap");
-		//
-		panel.add(commitmentDayLabel, "split 2");
-		panel.add(daysOfWeekBox);
-		panel.add(commitmentFrequencyLabel, "split 2");
-		panel.add(frequencyBox);
-		//
-		panel.add(externalCommitmentLabel, "split 2");
-		panel.add(externalCommitment, "wrap");
-		panel.add(commitmentsPane, "grow, span, wrap");
-		panel.add(addCommitmentButton, "split 2, span, align center, sizegroup commitmentBttn");
-		panel.add(removeCommitmentButton, "wrap, gapleft 50, sizegroup commitmentBttn");
+		add(conflictsLabel, "align center, span, wrap");
+		add(iaTimesLabel, "align center, span, wrap");
+		add(ecTimesLabel, "align center, span, wrap");
+		add(conflictsDescription, "align center, span, wrap");
+		add(commitmentDescriptionLabel, "split 2");
+		add(commitmentDescription);
+		add(commitmentStartTimeLabel, "split 2");
+		add(startTimeBox);
+		add(commitmentEndTimeLabel, "split 2");
+		add(endTimeBox, "wrap");
+		add(commitmentDayLabel, "split 2");
+		add(daysOfWeekBox);
+		add(commitmentFrequencyLabel, "split 2");
+		add(frequencyBox);
+		add(externalCommitmentLabel, "split 2");
+		add(externalCommitment, "wrap");
+		add(commitmentsPane, "grow, span, wrap");
+		add(addCommitmentButton, "split 2, span, align center, sizegroup commitmentBttn");
+		add(removeCommitmentButton, "wrap, gapleft 50, sizegroup commitmentBttn");
 	}
 	
 	/**
 	 * Adds the preference components.
 	 */
 	private void addPreferenceComponents() {
-		panel.add(ecPreferencesLabel, "align center, span, wrap");
-		panel.add(ecPreferencesDescription, "align center, span, wrap");
-		panel.add(timeLabel, "align label, split 4, span, growx 25");
-		panel.add(morningLabel, "growx 25");
-		panel.add(noonLabel, "growx 25");
-		panel.add(afternoonLabel, "wrap, growx 25");
-		panel.add(rankLabel, "align label, growx 23, split 4, span");
-		panel.add(morningRankBox, "growx 25");
-		panel.add(noonRankBox, "growx 25");
-		panel.add(afternoonRankBox, "growx 25, wrap");
+		add(ecPreferencesLabel, "align center, span, wrap");
+		add(ecPreferencesDescription, "align center, span, wrap");
+		add(timeLabel, "align label, split 4, span, growx 25");
+		add(morningLabel, "growx 25");
+		add(noonLabel, "growx 25");
+		add(afternoonLabel, "wrap, growx 25");
+		add(rankLabel, "align label, growx 23, split 4, span");
+		add(morningRankBox, "growx 25");
+		add(noonRankBox, "growx 25");
+		add(afternoonRankBox, "growx 25, wrap");
 	}
 	
 	/**
 	 * Adds the admin components.
 	 */
 	private void addAdminComponents() {
-		panel.add(iaHoursLabel, "align label, split 2, span");
-		panel.add(iaHours, "wrap");
-		panel.add(ecHoursLabel, "align label, split 2, span");
-		panel.add(ecHours, "wrap");
+		add(iaHoursLabel, "align label, split 2, span");
+		add(iaHours, "wrap");
+		add(ecHoursLabel, "align label, split 2, span");
+		add(ecHours, "wrap");
 	}
 
 
@@ -551,7 +539,15 @@ public class ClinicianForm extends JFrame implements ActionListener {
 		((DefaultListModel<String>)commitments.getModel()).clear();
 		commitmentList.clear();
 		clearPreferenceFields();
+		if (isAdmin) {
+			clearAdminFields();
+		}
 		this.repaint();
+	}
+	
+	private void clearAdminFields() {
+		iaHours.setText("");
+		ecHours.setText("");
 	}
 	
 	private void clearTimeAwayFields() {
