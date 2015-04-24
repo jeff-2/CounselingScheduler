@@ -86,15 +86,6 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	}
 
 	public void save() {
-		try {
-			IAScheduleViewFrame frame = new IAScheduleViewFrame(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray());
-			frame.printSchedule();
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
-	}
-	
-	public void print() {
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 			File file = fileChooser.getSelectedFile();
 			if (!file.getName().contains(".")) {
@@ -108,6 +99,15 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 					"Error saving schedule",
 					JOptionPane.ERROR_MESSAGE);
 			}
+		}
+	}
+	
+	public void print() {
+		try {
+			IAScheduleViewFrame frame = new IAScheduleViewFrame(((IAWeeklyComponent)this.weekA).toCellsArray(), ((IAWeeklyComponent)this.weekB).toCellsArray());
+			frame.printSchedule();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
 		}
 	}
 

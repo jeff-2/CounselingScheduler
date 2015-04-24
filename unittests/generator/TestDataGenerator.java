@@ -197,7 +197,7 @@ public class TestDataGenerator {
 		timeAwayDAO.insert(new TimeAwayBean(5, "Vacation", format.parse("4/17/2015"), format.parse("4/17/2015")));
 	}
 
-	private void generateStandardCalendarData() throws ParseException, SQLException {
+	public void generateStandardCalendarData() throws ParseException, SQLException {
 		CalendarDAO calendarDAO = new CalendarDAO(conn);
 		SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 		CalendarBean calendar = new CalendarBean();

@@ -25,7 +25,7 @@ import bean.Schedule;
 public class AdminApplication extends JFrame implements ActionListener {
 	
 	private static final long serialVersionUID = 8557735241347619359L;
-	private JTabbedPane pane;
+	private JTabbedPane tabbedPane;
 	private ClinicianIDListEditor editor;
 	private NewSemesterSettings settings;
 	private IAScheduleFrame ia;
@@ -41,14 +41,19 @@ public class AdminApplication extends JFrame implements ActionListener {
 		super("Some Title");
 		schedule = Schedule.loadScheduleFromDB();
 		ia = new IAScheduleFrame(schedule);
+		ia.setName("IAScheduleFrame");
 		ec = new ECScheduleFrame(schedule);
-		pane = new JTabbedPane();
+		ec.setName("ECScheduleFrame");
+		tabbedPane = new JTabbedPane();
+		tabbedPane.setName("tabbedPane");
 		editor = new ClinicianIDListEditor();
+		editor.setName("ClinicianIDListEditor");
 		settings = new NewSemesterSettings();
-		pane.add(editor, "Edit Clinicians");
-		pane.add(settings, "Change Settings");
-		pane.add(ia, "IA Schedule");
-		pane.add(ec, "EC schedule");
+		settings.setName("NewSemesterSettings");
+		tabbedPane.add(editor, "Edit Clinicians");
+		tabbedPane.add(settings, "Change Settings");
+		tabbedPane.add(ia, "IA Schedule");
+		tabbedPane.add(ec, "EC Schedule");
 		initializeMenu();
 		initializeFrame();
 	}
@@ -59,12 +64,15 @@ public class AdminApplication extends JFrame implements ActionListener {
 		generate = new JMenuItem("Generate Schedule");
 		generate.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, ActionEvent.CTRL_MASK));
 		generate.addActionListener(this);
+		generate.setName("Generate Schedule");
 		print = new JMenuItem("Print");
 		print.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, ActionEvent.CTRL_MASK));
 		print.addActionListener(this);
+		print.setName("Print");
 		save = new JMenuItem("Save");
 		save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
 		save.addActionListener(this);
+		save.setName("Save");
 		menu.add(generate);
 		menu.add(print);
 		menu.add(save);
@@ -74,16 +82,19 @@ public class AdminApplication extends JFrame implements ActionListener {
 	private void initializeFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setJMenuBar(menuBar);
-		getContentPane().add(pane);
+		getContentPane().add(tabbedPane);
 		pack();
 		setVisible(true);
 	}
 	
 	public static void main(String [] args) throws SQLException, ParseException {
 		TestDataGenerator gen = new TestDataGenerator(ConnectionFactory.getInstance());
-		gen.overwriteAndFillDemoData();
+		gen.clearTables();
+		gen.generateStandardCalendarData();
 		AdminApplication tmp = new AdminApplication();
 	}
+	
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -93,25 +104,27 @@ public class AdminApplication extends JFrame implements ActionListener {
 				GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(conn);
 				action.generateUnfilledSchedule();
 				schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
-				pane.remove(ia);
+				tabbedPane.remove(ia);
 				ia = new IAScheduleFrame(schedule);
-				pane.add(ia, "IA Schedule");
-				pane.remove(ec);
+				ia.setName("IAScheduleFrame");
+				tabbedPane.add(ia, "IA Schedule");
+				tabbedPane.remove(ec);
 				ec = new ECScheduleFrame(schedule);
-				pane.add(ec, "EC Schedule");
+				ec.setName("ECScheduleFrame");
+				tabbedPane.add(ec, "EC Schedule");
 			} catch (SQLException ex) {
 				ex.printStackTrace();
 			}
 		} else if (e.getSource() == print) {
-			if (pane.getSelectedComponent() == ec) {
+			if (tabbedPane.getSelectedComponent() == ec) {
 				ec.print();
-			} else if (pane.getSelectedComponent() == ia) {
+			} else if (tabbedPane.getSelectedComponent() == ia) {
 				ia.print();
 			}
 		} else if (e.getSource() == save) {
-			if (pane.getSelectedComponent() == ec) {
+			if (tabbedPane.getSelectedComponent() == ec) {
 				ec.save();
-			} else if (pane.getSelectedComponent() == ia) {
+			} else if (tabbedPane.getSelectedComponent() == ia) {
 				ia.save();
 			}
 		}

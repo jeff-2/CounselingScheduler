@@ -1,6 +1,7 @@
 package gui.clinician;
 
 import generator.TestDataGenerator;
+import gui.admin.AdminApplication;
 
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
@@ -18,6 +19,7 @@ import org.uispec4j.Button;
 import org.uispec4j.ComboBox;
 import org.uispec4j.Key;
 import org.uispec4j.ListBox;
+import org.uispec4j.Panel;
 import org.uispec4j.TextBox;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpecTestCase;
@@ -26,7 +28,6 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
-import runner.ClinicianIDListRunner;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
@@ -47,7 +48,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	@Before
 	protected void setUp() throws Exception {
 		super.setUp();
-		setAdapter(new MainClassAdapter(ClinicianIDListRunner.class, new String[0]));
+		setAdapter(new MainClassAdapter(AdminApplication.class, new String[0]));
 		
 		conn = ConnectionFactory.getInstance();
 		gen = new TestDataGenerator(conn);
@@ -77,13 +78,14 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	@Test
 	public void testRejectDuplicateClinicians() throws Exception {
 		Window window = this.getMainWindow();
-		TextBox newFullnameField = window.getTextBox("newFullnameField");
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		TextBox newFullnameField = editorPanel.getTextBox("newFullnameField");
 		typeText(newFullnameField, beanA.getName());
 		
-		Button addButton = window.getButton("addButton");
+		Button addButton = editorPanel.getButton("addButton");
 		addButton.click();
 
-		ListBox cliniciansBox = window.getListBox();
+		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.contentEquals(beanA.getName());
 		
 		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();

@@ -11,10 +11,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.sql.Connection;
 
-import org.uispec4j.Button;
 import org.uispec4j.MenuBar;
 import org.uispec4j.MenuItem;
-import org.uispec4j.RadioButton;
+import org.uispec4j.TabGroup;
 import org.uispec4j.UISpecTestCase;
 import org.uispec4j.Window;
 import org.uispec4j.interception.FileChooserHandler;
@@ -45,20 +44,16 @@ public class ScheduleSaveTest extends UISpecTestCase {
 		out.close();
 		
 		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
 		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editEC = window.getRadioButton("Edit/print EC schedule");
-		editEC.click();
-		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
-		
-		MenuBar menuBar = ecSchedule.getMenuBar();
-		MenuItem menu = menuBar.getMenu("Options");
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
 		MenuItem save = menu.getSubMenu("Save");
+		generate.click();
+
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("EC Schedule");
+		
 		WindowInterceptor
 			.init(save.triggerClick())
 			.process(FileChooserHandler.init()
@@ -73,26 +68,22 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	
 	public void testSaveECSchedule() {
 		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
 		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editEC = window.getRadioButton("Edit/print EC schedule");
-		editEC.click();
-		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
-		
-		MenuBar menuBar = ecSchedule.getMenuBar();
-		MenuItem menu = menuBar.getMenu("Options");
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
 		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
+		
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("EC Schedule");
+		
 		WindowInterceptor
 			.init(save.triggerClick())
 			.process(FileChooserHandler.init()
 			.titleEquals("Save Schedule")
 			.assertAcceptsFilesOnly()
-			.select(filePath))
+			.select(filePath))		
 		.run();
 		File f = new File(filePath);
 		assertTrue(f.exists());
@@ -100,53 +91,45 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	
 	public void testSaveIASchedule() {
 		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
 		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editEC = window.getRadioButton("Edit/print IA schedule");
-		editEC.click();
-		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
-		
-		MenuBar menuBar = ecSchedule.getMenuBar();
-		MenuItem menu = menuBar.getMenu("Options");
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
 		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
+		
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("IA Schedule");
+		
 		WindowInterceptor
 			.init(save.triggerClick())
 			.process(FileChooserHandler.init()
 			.titleEquals("Save Schedule")
 			.assertAcceptsFilesOnly()
-			.select(filePath))
+			.select(filePath))		
 		.run();
 		File f = new File(filePath);
 		assertTrue(f.exists());
 	}
 	
-	public void testCancelSaveIASchedule() {
+	public void testCancelSaveIASchedule() {		
 		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
 		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editEC = window.getRadioButton("Edit/print IA schedule");
-		editEC.click();
-		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
-		
-		MenuBar menuBar = ecSchedule.getMenuBar();
-		MenuItem menu = menuBar.getMenu("Options");
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
 		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
+		
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("IA Schedule");
+		
 		WindowInterceptor
 			.init(save.triggerClick())
 			.process(FileChooserHandler.init()
 			.titleEquals("Save Schedule")
 			.assertAcceptsFilesOnly()
-			.cancelSelection())
+			.cancelSelection())	
 		.run();
 		File f = new File(filePath);
 		assertFalse(f.exists());
@@ -154,26 +137,22 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	
 	public void testCancelSaveECSchedule() {
 		Window window = this.getMainWindow();
-		assertEquals("Select Admin Task", window.getTitle());
 		
-		RadioButton generateSchedule = window.getRadioButton("Generate schedule");
-		generateSchedule.click();
-		Button runTask = window.getButton("Run task");
-		runTask.click();
-		
-		RadioButton editEC = window.getRadioButton("Edit/print EC schedule");
-		editEC.click();
-		Window ecSchedule = WindowInterceptor.run(runTask.triggerClick());
-		
-		MenuBar menuBar = ecSchedule.getMenuBar();
-		MenuItem menu = menuBar.getMenu("Options");
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
 		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
+		
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("EC Schedule");
+		
 		WindowInterceptor
 			.init(save.triggerClick())
 			.process(FileChooserHandler.init()
 			.titleEquals("Save Schedule")
 			.assertAcceptsFilesOnly()
-			.cancelSelection())
+			.cancelSelection())	
 		.run();
 		File f = new File(filePath);
 		assertFalse(f.exists());
