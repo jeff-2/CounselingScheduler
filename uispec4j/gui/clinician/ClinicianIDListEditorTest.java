@@ -43,7 +43,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	private Connection conn;
 	private ClinicianDAO clinicianDAO;
 	private TestDataGenerator gen;
-	private ClinicianBean beanA, beanB;
+	private ClinicianBean beanA, beanB, beanC, beanD;
 	
 	@Before
 	protected void setUp() throws Exception {
@@ -57,6 +57,8 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		
 		beanA = new ClinicianBean(0, "Jeff");
 		beanB = new ClinicianBean(1, "Ryan");
+		beanC = new ClinicianBean(24, "Some Name");
+		beanD = new ClinicianBean(25, "Other Name");
 	}
 	
 	@After
@@ -75,6 +77,35 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		}
 	}
 	
+	private List<ClinicianBean> getClinicianList() {
+		List<ClinicianBean> clinicians = new ArrayList<ClinicianBean>();
+		clinicians.add(new ClinicianBean(0, "Jeff"));
+		clinicians.add(new ClinicianBean(1, "Ryan"));
+		clinicians.add(new ClinicianBean(2, "Nathan"));
+		clinicians.add(new ClinicianBean(3, "Kevin"));
+		clinicians.add(new ClinicianBean(4, "Denise"));
+		clinicians.add(new ClinicianBean(5, "Yusheng"));
+		clinicians.add(new ClinicianBean(6, "Alice"));
+		clinicians.add(new ClinicianBean(7, "Bob"));
+		clinicians.add(new ClinicianBean(8, "Charlie"));
+		clinicians.add(new ClinicianBean(9, "Dennis"));
+		clinicians.add(new ClinicianBean(10, "Eric"));
+		clinicians.add(new ClinicianBean(11, "Frank"));
+		clinicians.add(new ClinicianBean(12, "Gary"));
+		clinicians.add(new ClinicianBean(13, "Horatio"));
+		clinicians.add(new ClinicianBean(14, "Igor"));
+		clinicians.add(new ClinicianBean(15, "James"));
+		clinicians.add(new ClinicianBean(16, "Kong"));
+		clinicians.add(new ClinicianBean(17, "Linda"));
+		clinicians.add(new ClinicianBean(18, "Maurice"));
+		clinicians.add(new ClinicianBean(19, "Nymphadora"));
+		clinicians.add(new ClinicianBean(20, "Olivia"));
+		clinicians.add(new ClinicianBean(21, "Pam"));
+		clinicians.add(new ClinicianBean(22, "Quincy"));
+		clinicians.add(new ClinicianBean(23, "Rachel"));
+		return clinicians;
+	}
+	
 	@Test
 	public void testRejectDuplicateClinicians() throws Exception {
 		Window window = this.getMainWindow();
@@ -88,8 +119,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		ListBox cliniciansBox = editorPanel.getListBox();
 		cliniciansBox.contentEquals(beanA.getName());
 		
-		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
-		expectedClinicians.add(beanA);
+		List<ClinicianBean> expectedClinicians = getClinicianList();
 		
 		List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
@@ -114,27 +144,28 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	@Test
 	public void testAddClinicians() throws Exception {
 		Window window = this.getMainWindow();
-		TextBox newFullnameField = window.getTextBox("newFullnameField");
-		typeText(newFullnameField, beanA.getName());
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		TextBox newFullnameField = editorPanel.getTextBox("newFullnameField");
+		typeText(newFullnameField, beanC.getName());
 		
-		Button addButton = window.getButton("addButton");
+		Button addButton = editorPanel.getButton("addButton");
 		addButton.click();
 
-		ListBox cliniciansBox = window.getListBox();
-		cliniciansBox.contentEquals(beanA.getName());
+		ListBox cliniciansBox = editorPanel.getListBox();
+		cliniciansBox.contentEquals(beanC.getName());
 		
-		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
-		expectedClinicians.add(beanA);
+		List<ClinicianBean> expectedClinicians = getClinicianList();
+		expectedClinicians.add(beanC);
 		
 		List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
 		
 		newFullnameField.setText("");
-		typeText(newFullnameField, beanB.getName());
+		typeText(newFullnameField, beanD.getName());
 		addButton.click();
-		cliniciansBox.contentEquals(beanA.getName(), beanB.getName());
+		cliniciansBox.contentEquals(beanC.getName(), beanC.getName());
 		
-		expectedClinicians.add(beanB);
+		expectedClinicians.add(beanD);
 		
 		clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
@@ -143,35 +174,36 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	@Test
 	public void testAddRemoveReadd() throws Exception {
 		Window window = this.getMainWindow();
-		TextBox newFullnameField = window.getTextBox("newFullnameField");
-		typeText(newFullnameField, beanA.getName());
+		Panel editorPanel = window.getPanel("ClinicianIDListEditor");
+		TextBox newFullnameField = editorPanel.getTextBox("newFullnameField");
+		typeText(newFullnameField, beanC.getName());
 		
-		Button addButton = window.getButton("addButton");
+		Button addButton = editorPanel.getButton("addButton");
 		addButton.click();
 
-		ListBox cliniciansBox = window.getListBox();
-		cliniciansBox.contentEquals(beanA.getName());
+		ListBox cliniciansBox = editorPanel.getListBox();
+		cliniciansBox.contentEquals(beanC.getName());
 		
-		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
-		expectedClinicians.add(beanA);
+		List<ClinicianBean> expectedClinicians = getClinicianList();
+		expectedClinicians.add(beanC);
 		
 		List<ClinicianBean> clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
 		
-		cliniciansBox.select(beanA.getName());
+		cliniciansBox.select(beanC.getName());
 		Button removeButton = window.getButton("removeButton");
 		removeButton.click();
 		
-		expectedClinicians.remove(beanA);
+		expectedClinicians.remove(beanC);
 		
 		clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
 		
 		newFullnameField.setText("");
-		typeText(newFullnameField, beanA.getName());
+		typeText(newFullnameField, beanC.getName());
 		addButton.click();
 
-		expectedClinicians.add(beanA);
+		expectedClinicians.add(beanC);
 		clinicians = clinicianDAO.loadClinicians();
 		assertEquals(clinicians, expectedClinicians);
 	}
