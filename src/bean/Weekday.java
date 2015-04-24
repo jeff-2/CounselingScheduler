@@ -64,4 +64,27 @@ public enum Weekday {
 	public int toCalendarWeekday() {
 		return ordinal() + 2;
 	}
+	
+	/**
+	 * Returns the index of the day name (ignoring case): Monday=0, Tuesday=1, etc.
+	 */
+	public static int getIndexOfDay(String dayName) {
+		String lower = dayName.toLowerCase();
+		if(lower.equals("monday")) {
+			return 0;
+		}
+		if(lower.equals("tuesday")) {
+			return 1;
+		}
+		if(lower.equals("wednesday")) {
+			return 2;
+		}
+		if(lower.equals("thursday")) {
+			return 3;
+		}
+		if(lower.equals("friday")) {
+			return 4;
+		}
+		return -1;
+	}
 }

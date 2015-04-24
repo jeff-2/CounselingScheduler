@@ -58,7 +58,6 @@ public class SessionBean implements Comparable<SessionBean> {
 		clinicians = sClinicians;
 		semester = sSemester;
 		weekType = sWeekType;
-		
 	}
 	
 	/**
