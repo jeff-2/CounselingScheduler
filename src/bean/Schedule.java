@@ -128,8 +128,7 @@ public class Schedule {
 	 * @return list of clinicians assigned to the specified IA session
 	 */
 	public List<Clinician> getIAClinician(boolean isTypeA, int day, int hour) {
-		// TODO: what's the best way to determine week type from week number?
-		int weekNum = 0;
+		int weekNum = isTypeA ? 0 : 1;
 		for (SessionBean sb : ia.get(weekNum).keySet()) {
 			if (sb.getDayOfWeek().ordinal() == day && sb.getStartTime() == hour) {
 				return ia.get(weekNum).get(sb);
@@ -204,8 +203,9 @@ public class Schedule {
 		// Initial fill of ia and ec
 		for (int i = 0; i < schedule.weeks.size(); i++) {
 			schedule.ec.add(new HashMap<SessionBean, Clinician>());
-			schedule.ia.add(new HashMap<SessionBean, List<Clinician>>());
 		}
+		schedule.ia.add(new HashMap<SessionBean, List<Clinician>>());
+		schedule.ia.add(new HashMap<SessionBean, List<Clinician>>());
 		
 		// Initial fill of x
 		for (Clinician c: schedule.clinicians.values()) {
@@ -228,33 +228,28 @@ public class Schedule {
 				for (Integer id : clinicianIDs) {
 					assigned.add(schedule.clinicians.get(id));
 				}
-				schedule.ia.get(weekNum).put(sb, assigned);
+				if (assigned.size() > 0) {
+					boolean found = false;
+					for (SessionBean s : schedule.ia.get(weekNum % 2).keySet()) {
+						if (s.getDayOfWeek().equals(sb.getDayOfWeek()) && s.getStartTime() == sb.getStartTime()) {
+							found = true;
+							schedule.ia.get(weekNum % 2).put(s, assigned);
+						}
+					}
+					if (!found) {
+						schedule.ia.get(weekNum%2).put(sb, assigned);
+					}
+				}
 			} else {
 				// This is an EC session.
 				schedule.ec.get(weekNum).put(sb, schedule.clinicians.get(clinicianIDs.get(0)));
 			}
-			// Fill sessionsByClinician and the SessionNameBean lists
+			// Fill sessionsByClinician and the ec SessionNameBean lists
 			for (Integer id : clinicianIDs) {
 				Clinician c = schedule.clinicians.get(id);
 				ClinicianBean cb = c.getClinicianBean();
 				schedule.sessionsByClinician.get(c).get(weekNum).addSession(sb);
-				if (sb.getType() == SessionType.IA && sb.getWeekType() == IAWeektype.A) {
-					schedule.iaSessionsA.add(new SessionNameBean(
-							cb.getName(),
-							sb.getStartTime(),
-							sb.getDayOfWeek(),
-							sb.getDate(),
-							0,
-							sb.getID()));
-				} else if (sb.getType() == SessionType.IA && sb.getWeekType() == IAWeektype.B) {
-					schedule.iaSessionsB.add(new SessionNameBean(
-							cb.getName(),
-							sb.getStartTime(),
-							sb.getDayOfWeek(),
-							sb.getDate(),
-							1,
-							sb.getID()));
-				} else {
+				if (sb.getType() == SessionType.EC) {
 					schedule.ecSessions.add(new SessionNameBean(
 							cb.getName(),
 							sb.getStartTime(),
@@ -266,7 +261,35 @@ public class Schedule {
 			}
 		}
 		
+		schedule.fillIASessionNameBeans();
+		
 		return schedule;
+	}
+	
+	private void fillIASessionNameBeans() {
+		for (SessionBean sb : ia.get(0).keySet()) {
+			for (int id : sb.getClinicians()) {
+				iaSessionsA.add(new SessionNameBean(
+						clinicians.get(id).getClinicianBean().getName(),
+						sb.getStartTime(),
+						sb.getDayOfWeek(),
+						sb.getDate(),
+						0,
+						sb.getID()));
+			}
+		}
+		
+		for (SessionBean sb : ia.get(1).keySet()) {
+			for (int id : sb.getClinicians()) {
+				iaSessionsB.add(new SessionNameBean(
+						clinicians.get(id).getClinicianBean().getName(),
+						sb.getStartTime(),
+						sb.getDayOfWeek(),
+						sb.getDate(),
+						1,
+						sb.getID()));
+			}
+		}
 	}
 	
 	public List<HolidayBean> getHolidays() {

@@ -1,5 +1,6 @@
 package bean;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -55,10 +56,24 @@ public class Clinician {
 	}
 
 	public boolean canCover(SessionBean session) {
-		// TODO: implement me to return true iff this clinician is available to 
-		// cover this session based on meetings and time away (ignoring other IA/EC constraints)
-		double cutoff = 0.4;
-		double rand = Math.random();
-		return rand >= cutoff;
+		for(CommitmentBean cb : this.commitmentBeans) {
+			if(cb.getDate().equals(session.getDate())
+					&& cb.getStartHour() <= session.getStartTime()
+					&& cb.getEndHour() >= (session.getDuration()+session.getStartTime())) {
+				return false;
+			}
+		}
+		if(session.getType() == SessionType.EC) {
+			Date sd = session.getDate();
+			for(TimeAwayBean tb : this.timeAwayBeans) {
+				Date tbStart = tb.getStartDate();
+				Date tbEnd = tb.getEndDate();
+				if(!sd.before(tbStart)
+						&& !sd.after(tbEnd)) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }
