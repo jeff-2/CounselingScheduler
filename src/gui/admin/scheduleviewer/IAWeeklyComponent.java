@@ -312,7 +312,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener, MouseLi
 					errorString, "Validation Error",
 					JOptionPane.ERROR_MESSAGE);
 			 
-		}
+		} 
 	}
 
 	@Override

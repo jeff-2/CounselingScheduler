@@ -51,7 +51,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	/**
 	 * Create an empty client ID list
 	 * @throws SQLException 
-	 */
+	 */ 
 	public ECScheduleFrame(Schedule s) throws SQLException {
 		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.schedule = s;
