@@ -1,7 +1,9 @@
 package action;
 
 import java.sql.Connection;
+import java.util.Date;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,9 +14,11 @@ import utils.Logger;
 import bean.CalendarBean;
 import bean.Clinician;
 import bean.ClinicianPreferencesBean;
+import bean.CommitmentBean;
 import bean.Schedule;
 import bean.Semester;
 import bean.SessionBean;
+import bean.TimeAwayBean;
 import dao.CalendarDAO;
 import dao.SessionsDAO;
 
@@ -45,41 +49,114 @@ public class ValidateScheduleAction {
 	}
 	
 	/**
-	 * Validates the schedule. Logs  any error messages. 
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	public void validateSchedule() throws SQLException {
-		CalendarBean calendarBean = calendarDAO.loadCalendar();
-		currentSemester = calendarBean.getSemester();
-		currentYear = calendarBean.getYear();
-		
-		validateIASessions();
-		validateECSessions();
-		validateWeeklyECSessionConstraint();
-		validateDailyIASessionConstraint();
-		validateAlternatingIAFridayConstraintViolation();
-		validateNoonECConstraintViolation();
-	}
-
-	/**
 	 * Checks whether the IA schedule conflicts with the clinicians' regular commitments
 	 * @param sch a schedule
 	 * @return set of clinicians with those conflict
 	 */
-	private Set<Clinician> validateIAScheduleConflicts(Schedule sch) {
-		//TODO validateIAScheduleConflicts
-		return new HashSet<>();
-	}
+	public Set<Clinician> validateIAScheduleConflicts(Schedule sch) {
+		Set<Clinician> retset = new HashSet<>();
+		List<Clinician> clinicians = sch.getClinicians();
+		Date startdate = sch.getCalendar().getStartDate();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startdate);
+		int startweek = cal.get(Calendar.WEEK_OF_YEAR);
+
+		for (Clinician cl: clinicians) {
+			List<CommitmentBean> commitments = cl.getCommitmentBeans();
+			
+			// Checks whether commitment with IA session
+			for (CommitmentBean cmt: commitments) {
+				Date date = cmt.getDate();
+				int weekday = date.getDay() - 1;
+				int hour = cmt.getEndHour();
+				cal.setTime(date);
+				int week = cal.get(Calendar.WEEK_OF_YEAR);
+				int weekdiff = week - startweek;
+				boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+				boolean weekdayConflicts = weekday >= 0 && weekday <= 4;
+				if (withinSemester && weekdayConflicts) {
+					if (cmt.getStartHour() <= 11 && cmt.getEndHour() >= 12 && sch.getIAClinician(weekdiff % 2 == 0, weekday, 11).contains(cl)) {
+						retset.add(cl);
+					}
+					if (cmt.getStartHour() <= 13 && cmt.getEndHour() >= 14 && sch.getIAClinician(weekdiff % 2 == 0, weekday, 13).contains(cl)) {
+						retset.add(cl);
+					}
+					if (cmt.getStartHour() <= 14 && cmt.getEndHour() >= 15 && sch.getIAClinician(weekdiff % 2 == 0, weekday, 14).contains(cl)) {
+						retset.add(cl);
+					}
+					if (cmt.getStartHour() <= 15 && cmt.getEndHour() >= 16 && sch.getIAClinician(weekdiff % 2 == 0, weekday, 15).contains(cl)) {
+						retset.add(cl);
+					}
+				}
+			}
+		}
+		
+		return retset;	}
 	
 	/**
 	 * Checks whether the EC schedule conflicts with the clinicians' regular commitments as well as times away
 	 * @param sch a schedule
 	 * @return set of clinicians with those conflict
 	 */
-	private Set<Clinician> validateECScheduleConflicts(Schedule sch) {
-		//TODO validateECScheduleConflicts
-		return new HashSet<>();
+	public Set<Clinician> validateECScheduleConflicts(Schedule sch) {
+		Set<Clinician> retset = new HashSet<>();
+		List<Clinician> clinicians = sch.getClinicians();
+		Date startdate = sch.getCalendar().getStartDate();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startdate);
+		int startweek = cal.get(Calendar.WEEK_OF_YEAR);
+
+		for (Clinician cl: clinicians) {
+			List<CommitmentBean> commitments = cl.getCommitmentBeans();
+			List<TimeAwayBean> timesAway = cl.getTimeAwayBeans();
+			
+			// Checks whether commitment with EC session
+			for (CommitmentBean cmt: commitments) {
+				Date date = cmt.getDate();
+				int weekday = date.getDay() - 1;
+				int hour = cmt.getEndHour();
+				cal.setTime(date);
+				int week = cal.get(Calendar.WEEK_OF_YEAR);
+				int weekdiff = week - startweek;
+				boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+				boolean weekdayConflicts = weekday >= 0 && weekday <= 4;
+				if (withinSemester && weekdayConflicts) {
+					if (cmt.getStartHour() <= 8 && cmt.getEndHour() >= 9 && cl.equals(sch.getECClinician(weekdiff, weekday, 8))) {
+						retset.add(cl);
+					}
+					if (cmt.getStartHour() <= 12 && cmt.getEndHour() >= 13 && cl.equals(sch.getECClinician(weekdiff, weekday, 12))) {
+						retset.add(cl);
+					}
+					if (cmt.getStartHour() <= 16 && cmt.getEndHour() >= 17 && cl.equals(sch.getECClinician(weekdiff, weekday, 16))) {
+						retset.add(cl);
+					}
+				}
+			}
+			
+			// Checks whether time away conflicts with EC sessions
+			for (TimeAwayBean tm: timesAway) {
+				Calendar start = Calendar.getInstance();
+				Calendar end = Calendar.getInstance();
+				start.setTime(tm.getStartDate());
+				end.setTime(tm.getEndDate());
+				
+				while (!start.after(end)) {
+					Date date = start.getTime();
+					int weekday = date.getDay() - 1;
+					int week = start.get(Calendar.WEEK_OF_YEAR);
+					int weekdiff = week - startweek;
+					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+					boolean timeConflicts = weekday >= 0 && weekday <= 5;
+					if (withinSemester && timeConflicts && (cl.equals(sch.getECClinician(weekdiff, weekday, 8))
+							|| cl.equals(sch.getECClinician(weekdiff, weekday, 12))
+							|| cl.equals(sch.getECClinician(weekdiff, weekday, 16)))){
+						retset.add(cl);
+					}
+				}
+			}
+		}
+		
+		return retset;
 	}
 
 	/**
@@ -87,7 +164,7 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians with those conflict
 	 */
-	private Set<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
+	public Set<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
 		Set<Clinician> returnSet = new HashSet<>();
 		Set<Clinician> duplicates = new HashSet<>();
 		
@@ -116,9 +193,55 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians with those conflict
 	 */
-	private Set<Clinician> validateAfternoonMeetingMorningECConflicts(Schedule sch) {
-		// TODO validateAfternoonTherapyMorningECConflicts
-		return new HashSet<>();
+	public Set<Clinician> validateAfternoonMeetingMorningECConflicts(Schedule sch) {
+		Set<Clinician> retset = new HashSet<>();
+		List<Clinician> clinicians = sch.getClinicians();
+		Date startdate = sch.getCalendar().getStartDate();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startdate);
+		int startweek = cal.get(Calendar.WEEK_OF_YEAR);
+
+		for (Clinician cl: clinicians) {
+			List<CommitmentBean> commitments = cl.getCommitmentBeans();
+			List<TimeAwayBean> timesAway = cl.getTimeAwayBeans();
+			
+			// Checks whether commitment conflicts with next day's morning EC session
+			for (CommitmentBean cmt: commitments) {
+				Date date = cmt.getDate();
+				int weekday = date.getDay() - 1;
+				int hour = cmt.getEndHour();
+				cal.setTime(date);
+				int week = cal.get(Calendar.WEEK_OF_YEAR);
+				int weekdiff = week - startweek;
+				boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+				boolean timeConflicts = weekday >= -1 && weekday <= 4 && hour >= 6;
+				if (withinSemester && timeConflicts && cl.equals(sch.getECClinician(weekdiff, weekday + 1, 8))) {
+					retset.add(cl);
+				}
+			}
+			
+			// Checks whether time away conflicts with next day's morning EC session
+			for (TimeAwayBean tm: timesAway) {
+				Calendar start = Calendar.getInstance();
+				Calendar end = Calendar.getInstance();
+				start.setTime(tm.getStartDate());
+				end.setTime(tm.getEndDate());
+				
+				while (!start.after(end)) {
+					Date date = start.getTime();
+					int weekday = date.getDay() - 1;
+					int week = start.get(Calendar.WEEK_OF_YEAR);
+					int weekdiff = week - startweek;
+					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+					boolean timeConflicts = weekday >= -1 && weekday <= 4;
+					if (withinSemester && timeConflicts && cl.equals(sch.getECClinician(weekdiff, weekday + 1, 8))) {
+						retset.add(cl);
+					}
+				}
+			}
+		}
+		
+		return retset;
 	}
 
 	/**
@@ -126,9 +249,55 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians with those conflict
 	 */
-	private Set<Clinician> validateMorningMeetingAfternoonECConflicts(Schedule sch) {
-		// TODO validateNoonECOneIAConflicts
-		return new HashSet<>();
+	public Set<Clinician> validateMorningMeetingAfternoonECConflicts(Schedule sch) {
+		Set<Clinician> retset = new HashSet<>();
+		List<Clinician> clinicians = sch.getClinicians();
+		Date startdate = sch.getCalendar().getStartDate();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(startdate);
+		int startweek = cal.get(Calendar.WEEK_OF_YEAR);
+
+		for (Clinician cl: clinicians) {
+			List<CommitmentBean> commitments = cl.getCommitmentBeans();
+			List<TimeAwayBean> timesAway = cl.getTimeAwayBeans();
+			
+			// Checks whether commitment conflicts with previous day's afternoon EC session
+			for (CommitmentBean cmt: commitments) {
+				Date date = cmt.getDate();
+				int weekday = date.getDay() - 1;
+				int hour = cmt.getStartHour();
+				cal.setTime(date);
+				int week = cal.get(Calendar.WEEK_OF_YEAR);
+				int weekdiff = week - startweek;
+				boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+				boolean timeConflicts = weekday >= 1 && weekday <= 5 && hour <= 8;
+				if (withinSemester && timeConflicts && cl.equals(sch.getECClinician(weekdiff, weekday - 1, 16))) {
+					retset.add(cl);
+				}
+			}
+			
+			// Checks whether time away conflicts with previous day's afternoon EC session
+			for (TimeAwayBean tm: timesAway) {
+				Calendar start = Calendar.getInstance();
+				Calendar end = Calendar.getInstance();
+				start.setTime(tm.getStartDate());
+				end.setTime(tm.getEndDate());
+				
+				while (!start.after(end)) {
+					Date date = start.getTime();
+					int weekday = date.getDay() - 1;
+					int week = start.get(Calendar.WEEK_OF_YEAR);
+					int weekdiff = week - startweek;
+					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
+					boolean timeConflicts = weekday >= 1 && weekday <= 5;
+					if (withinSemester && timeConflicts && cl.equals(sch.getECClinician(weekdiff, weekday - 1, 16))) {
+						retset.add(cl);
+					}
+				}
+			}
+		}
+		
+		return retset;
 	}
 
 	/**
@@ -136,7 +305,7 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians with with less than a majority of preferred EC times
 	 */
-	private Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
+	public Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
 		List<Clinician> clinicians = sch.getClinicians();
 		Set<Clinician> retSet = new HashSet<>();
 		Map<Clinician, Integer> prefEC = new HashMap<>();
@@ -180,7 +349,7 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians with too little or too many 4:00 EC sessions
 	 */
-	private Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
+	public Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
 		List<Clinician> clinicians = sch.getClinicians();
 		Set<Clinician> retSet = new HashSet<>();
 		Map<Clinician, Integer> fourEC = new HashMap<>();
@@ -212,7 +381,7 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians assigned to more than 1 IA session per day
 	 */
-	private Set<Clinician> validateOneIAPerDay(Schedule sch) {
+	public Set<Clinician> validateOneIAPerDay(Schedule sch) {
 		Set<Clinician> returnSet = new HashSet<>();
 		Set<Clinician> duplicates = new HashSet<>();
 		
@@ -243,7 +412,7 @@ public class ValidateScheduleAction {
 	 * @param sch a schedule
 	 * @return set of clinicians assigned to more than 1 EC session per week
 	 */
-	private Set<Clinician> validateOneECPerWeek(Schedule sch) {
+	public Set<Clinician> validateOneECPerWeek(Schedule sch) {
 		Set<Clinician> returnSet = new HashSet<>();
 		Set<Clinician> duplicates = new HashSet<>();
 		
@@ -270,101 +439,4 @@ public class ValidateScheduleAction {
 		
 		return returnSet;
 	}
-
-	/**
-	 * Validate ia sessions.
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	private void validateIASessions() throws SQLException {
-		List<SessionBean> invalidSessions = sessionDAO.getInvalidIASessions(currentSemester, currentYear);
-		if(invalidSessions.isEmpty()) {
-			return;
-		}
-		for(SessionBean session : invalidSessions) {
-			String error = "The IA session occurring on " + session.getDate() +
-					" has an invalid start time of " + session.getStartTime();
-			Logger.logln(error);
-		}
-	}
-
-	/**
-	 * Validate ec sessions.
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	private void validateECSessions() throws SQLException {
-		List<SessionBean> invalidSessions = sessionDAO.getInvalidECSessions(currentSemester.ordinal(), currentYear);
-		if(invalidSessions.isEmpty()) {
-			return;
-		}
-		for(SessionBean session : invalidSessions) {
-			String error = "The EC session occurring on " + session.getDate() +
-					" has an invalid start time of " + session.getStartTime();
-			Logger.logln(error);
-		}
-	}
-
-	/**
-	 * Validate weekly ec session constraint.
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	private void validateWeeklyECSessionConstraint() throws SQLException {
-		List<String> errors = sessionDAO.getWeeklyECSessionConstraintViolation(currentSemester, currentYear);
-		if(errors.isEmpty()) {
-			return;
-		}
-		for(String error : errors) {
-			Logger.logln(error);
-		}
-		
-	}
-
-	/**
-	 * Validate daily ia session constraint.
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	private void validateDailyIASessionConstraint() throws SQLException {
-		List<String> errors = sessionDAO.getDailyIASessionConstraintViolation(currentSemester, currentYear);
-		if(errors.isEmpty()) {
-			return;
-		}
-		for(String error : errors) {
-			Logger.logln(error);
-		}
-	}
-
-	/**
-	 * Validate alternating ia friday constraint violation.
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	private void validateAlternatingIAFridayConstraintViolation() throws SQLException {
-		List<String> errors = sessionDAO.getAlternatingIAFridayConstraintViolation(currentSemester, currentYear);
-		if(errors.isEmpty()) {
-			return;
-		}
-		for(String error : errors) {
-			Logger.logln(error);
-		}
-	}
-
-	/**
-	 * Validate noon ec constraint violation.
-	 *
-	 * @throws SQLException the SQL exception
-	 */
-	private void validateNoonECConstraintViolation() throws SQLException {
-		List<String> errors = sessionDAO.getNoonECConstraintViolation(currentSemester, currentYear);
-		if(errors.isEmpty()) {
-			return;
-		}
-		for(String error : errors) {
-			Logger.logln(error);
-		}
-		
-	}
-
 }

@@ -187,7 +187,7 @@ public class Schedule {
 		}
 		return clinicians.get(id).getTimeAwayBeans();
 	}
-	
+
 	public static Schedule loadScheduleFromDB() throws SQLException {
 		Schedule schedule = new Schedule(ConnectionFactory.getInstance());
 		schedule.initialLoader();
