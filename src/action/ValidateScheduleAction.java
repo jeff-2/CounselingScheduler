@@ -137,7 +137,6 @@ public class ValidateScheduleAction {
 	 * @return set of clinicians with with less than a majority of preferred EC times
 	 */
 	private Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
-		// TODO validateECAssignmentMeetsPreference
 		List<Clinician> clinicians = sch.getClinicians();
 		Set<Clinician> retSet = new HashSet<>();
 		Map<Clinician, Integer> prefEC = new HashMap<>();
@@ -182,8 +181,30 @@ public class ValidateScheduleAction {
 	 * @return set of clinicians with too little or too many 4:00 EC sessions
 	 */
 	private Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
-		// TODO validateEvenlyDistributeECSessions
-		return new HashSet<>();
+		List<Clinician> clinicians = sch.getClinicians();
+		Set<Clinician> retSet = new HashSet<>();
+		Map<Clinician, Integer> fourEC = new HashMap<>();
+
+		for (Clinician cl: clinicians) {
+			fourEC.put(cl, 0);
+		}
+		
+		for (int week = 0; week < sch.getNumberOfWeeks(); week++) {
+			for (int day = 0; day < 5; day++) {
+				Clinician cl = sch.getECClinician(week, day, 16);
+				fourEC.put(cl,  fourEC.get(cl) + 1);
+			}
+		}
+		
+		for (Clinician cl: clinicians) {
+			ClinicianPreferencesBean pref = cl.getClinicianPreferencesBean();
+			int expectedNumberSessions = (pref.getECHours() + 1) / 3;
+			if (Math.abs(fourEC.get(cl) - expectedNumberSessions) > 1) {
+				retSet.add(cl);
+			}
+		}
+		
+		return retSet;
 	}
 
 	/**
