@@ -88,7 +88,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1, 1, 0, 50));
 		editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
 		for (ECScheduleWeekBean week: weeks) {
-			ECWeeklyComponent curr = new ECWeeklyComponent(week, clinicianNames);
+			ECWeeklyComponent curr = new ECWeeklyComponent(week, clinicianNames, schedule);
 			editableSchedule.add(curr);
 			ecComponents.add(curr);
 		}

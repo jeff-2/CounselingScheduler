@@ -27,11 +27,6 @@ import dao.SessionsDAO;
  */
 public class ValidateScheduleAction {
 	
-	protected Connection conn;
-	private SessionsDAO sessionDAO;
-	private CalendarDAO calendarDAO;
-	private Semester currentSemester;
-	private int currentYear;
 	private int[] ecHours;
 	private int[] iaHours;
 
@@ -40,14 +35,24 @@ public class ValidateScheduleAction {
 	 *
 	 * @param connection the connection
 	 */
-	public ValidateScheduleAction(Connection connection) {
-		conn = connection;
-		sessionDAO = new SessionsDAO(conn);
-		calendarDAO = new CalendarDAO(conn);
+	public ValidateScheduleAction() {
 		ecHours = new int[]{8, 12, 16};
 		iaHours = new int[]{11, 13, 14, 15};
 	}
 	
+	public Set<Clinician> validateSchedule(Schedule sch) {
+		Set<Clinician> resultSet = new HashSet<Clinician>();
+//		resultSet.addAll(validateIAScheduleConflicts(sch));
+//		resultSet.addAll(validateECScheduleConflicts(sch));
+//		resultSet.addAll(validateMorningMeetingAfternoonECConflicts(sch));
+//		resultSet.addAll(validateOneECPerWeek(sch));
+//		resultSet.addAll(validateOneIAPerDay(sch));
+//		resultSet.addAll(validateSameDayNoonECIAConflicts(sch));
+//		resultSet.addAll(validateAfternoonMeetingMorningECConflicts(sch));
+//		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
+//		resultSet.addAll(validateEvenlyDistributeECSessions(sch));
+		return resultSet;
+	}
 	/**
 	 * Checks whether the IA schedule conflicts with the clinicians' regular commitments
 	 * @param sch a schedule
@@ -68,7 +73,6 @@ public class ValidateScheduleAction {
 			for (CommitmentBean cmt: commitments) {
 				Date date = cmt.getDate();
 				int weekday = date.getDay() - 1;
-				int hour = cmt.getEndHour();
 				cal.setTime(date);
 				int week = cal.get(Calendar.WEEK_OF_YEAR);
 				int weekdiff = week - startweek;
@@ -91,7 +95,8 @@ public class ValidateScheduleAction {
 			}
 		}
 		
-		return retset;	}
+		return retset;	
+	}
 	
 	/**
 	 * Checks whether the EC schedule conflicts with the clinicians' regular commitments as well as times away
