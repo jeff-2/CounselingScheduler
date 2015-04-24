@@ -6,13 +6,15 @@ import java.sql.SQLException;
 
 public class ConnectionFactory {
 	
-	private static final String connectionUrl = "jdbc:sqlserver://localhost;databaseName=CounselingScheduler;user=admin;password=admin;";
-	
 	private static Connection conn = null;
 	
 	public static Connection getInstance() throws SQLException {
 		if (conn == null) {
-			conn = DriverManager.getConnection(connectionUrl);
+			try {
+				conn = DriverManager.getConnection(DBUtils.loadConnectionConfig());
+			} catch (ConnectionConfigException e) {
+				throw new SQLException("Unable to setup database connection because " + e.getMessage());
+			}
 		}
 		return conn;
 	}
