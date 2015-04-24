@@ -127,10 +127,10 @@ public class Schedule {
 	 * @param hour of IA session
 	 * @return list of clinicians assigned to the specified IA session
 	 */
-	public List<Clinician> getIAClinician(boolean isTypeA, Date day, int hour) {
-		int weekNum = weeks.indexOf(Week.getWeek(day, calendar));
-		for (SessionBean sb : ia.get(weekNum % 2).keySet()) {
-			if (sb.getDate().equals(day) && sb.getStartTime() == hour) {
+	public List<Clinician> getIAClinician(boolean isTypeA, int day, int hour) {
+		int weekNum = isTypeA ? 0 : 1;
+		for (SessionBean sb : ia.get(weekNum).keySet()) {
+			if (sb.getDayOfWeek().ordinal() == day && sb.getStartTime() == hour) {
 				return ia.get(weekNum).get(sb);
 			}
 		}
