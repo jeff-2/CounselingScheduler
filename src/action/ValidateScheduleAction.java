@@ -2,14 +2,16 @@ package action;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import utils.Logger;
 import bean.CalendarBean;
 import bean.Clinician;
+import bean.ClinicianPreferencesBean;
 import bean.Schedule;
 import bean.Semester;
 import bean.SessionBean;
@@ -26,6 +28,8 @@ public class ValidateScheduleAction {
 	private CalendarDAO calendarDAO;
 	private Semester currentSemester;
 	private int currentYear;
+	private int[] ecHours;
+	private int[] iaHours;
 
 	/**
 	 * Instantiates a new validate schedule action.
@@ -36,6 +40,8 @@ public class ValidateScheduleAction {
 		conn = connection;
 		sessionDAO = new SessionsDAO(conn);
 		calendarDAO = new CalendarDAO(conn);
+		ecHours = new int[]{8, 12, 16};
+		iaHours = new int[]{11, 13, 14, 15};
 	}
 	
 	/**
@@ -82,16 +88,15 @@ public class ValidateScheduleAction {
 	 * @return set of clinicians with those conflict
 	 */
 	private Set<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
-		// TODO validateSameDayNoonECIAConflicts
 		Set<Clinician> returnSet = new HashSet<>();
 		Set<Clinician> duplicates = new HashSet<>();
 		
-		for (int week = 1; week <= sch.getNumberOfWeeks(); week++) {
-			for (int day = 1; day <= 5; day++) {
+		for (int week = 0; week < sch.getNumberOfWeeks(); week++) {
+			for (int day = 0; day < 5; day++) {
 				
 				duplicates.clear();
 				// Find all clinicians assigned to 1:00 IA sessions for this day
-				for (Clinician cl: sch.getIAClinician(week % 2 == 1, day, 13)) {
+				for (Clinician cl: sch.getIAClinician(week % 2 != 0, day, 13)) {
 					duplicates.add(cl);
 				}
 
@@ -133,7 +138,42 @@ public class ValidateScheduleAction {
 	 */
 	private Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
 		// TODO validateECAssignmentMeetsPreference
-		return new HashSet<>();
+		List<Clinician> clinicians = sch.getClinicians();
+		Set<Clinician> retSet = new HashSet<>();
+		Map<Clinician, Integer> prefEC = new HashMap<>();
+		Map<Clinician, Integer> allEC = new HashMap<>();
+		ClinicianPreferencesBean pref;
+		
+		for (Clinician cl: clinicians) {
+			prefEC.put(cl, 0);
+			allEC.put(cl, 0);
+		}
+		
+		for (int week = 0; week < sch.getNumberOfWeeks(); week++) {
+			for (int day = 0; day < 5; day++) {
+				for (int ec: ecHours) {
+					Clinician cl = sch.getECClinician(week, day, ec);
+					pref = cl.getClinicianPreferencesBean();
+					
+					// calculate start hour from preferences format for preferred time
+					int prefHour = pref.getRanking(0) * 4 + 8;
+					if (ec == prefHour) {
+						prefEC.put(cl,  prefEC.get(cl) + 1);
+					}
+					allEC.put(cl,  allEC.get(cl) + 1);
+				}
+			}
+		}
+		
+		for (Clinician cl: clinicians) {
+			int prefAssigned = prefEC.get(cl);
+			int totalAssigned = allEC.get(cl);
+			if (prefAssigned < (totalAssigned + 1) / 2) {
+				retSet.add(cl);
+			}
+		}
+		
+		return retSet;
 	}
 
 	/**
@@ -152,13 +192,11 @@ public class ValidateScheduleAction {
 	 * @return set of clinicians assigned to more than 1 IA session per day
 	 */
 	private Set<Clinician> validateOneIAPerDay(Schedule sch) {
-		//TODO validateOneIAPerDay
 		Set<Clinician> returnSet = new HashSet<>();
 		Set<Clinician> duplicates = new HashSet<>();
-		int iaHours[] = new int[]{11, 13, 14, 15};
 		
 		for (boolean isTypeA = true; isTypeA; isTypeA = !isTypeA) {
-			for (int day = 1; day <= 5; day++) {
+			for (int day = 0; day < 5; day++) {
 				
 				duplicates.clear();
 				for (int hour: iaHours) {
@@ -185,15 +223,13 @@ public class ValidateScheduleAction {
 	 * @return set of clinicians assigned to more than 1 EC session per week
 	 */
 	private Set<Clinician> validateOneECPerWeek(Schedule sch) {
-		//TODO validateOneECPerWeek
 		Set<Clinician> returnSet = new HashSet<>();
 		Set<Clinician> duplicates = new HashSet<>();
-		int ecHours[] = new int[]{8, 12, 16};
 		
-		for (int week = 1; week <= sch.getNumberOfWeeks(); week++) {
+		for (int week = 0; week < sch.getNumberOfWeeks(); week++) {
 			
 			duplicates.clear();
-			for (int day = 1; day <= 5; day++) {
+			for (int day = 0; day < 5; day++) {
 				for (int hour: ecHours) {
 					
 					// Check whether there is more than one EC session that a clinician is assigned to this week 
