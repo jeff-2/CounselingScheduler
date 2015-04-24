@@ -20,8 +20,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.DefaultCaret;
 
 import bean.ECScheduleWeekBean;
 import bean.Schedule;
@@ -53,6 +55,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	public ECScheduleFrame(Schedule s) throws SQLException {
 		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.schedule = s;
+		
 		this.scrollPanel = new JScrollPane();
 		
 		this.scrollPanel = new JScrollPane();
