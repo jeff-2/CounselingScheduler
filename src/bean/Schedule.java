@@ -3,7 +3,7 @@ package bean;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -361,9 +361,14 @@ public class Schedule {
 	 */
 	public void editEC(Date d, int time, String clinicianName) {
 		Clinician c = nameToClinician(clinicianName);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(calendar.getStartDate());
+		int startWeek = cal.get(Calendar.WEEK_OF_YEAR);
+		cal.setTime(d);
+		int curWeek = cal.get(Calendar.WEEK_OF_YEAR);
 		
-		int weekNum = weeks.indexOf(Week.getWeek(d, calendar));
-		
+		int weekNum = curWeek - startWeek;
+
 		// Update map
 		for (SessionBean sb : ec.get(weekNum).keySet()) {
 			if (sb.getDate().equals(d) && sb.getStartTime() == time && sb.getType() == SessionType.EC) {

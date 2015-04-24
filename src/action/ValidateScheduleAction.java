@@ -119,7 +119,6 @@ public class ValidateScheduleAction {
 			for (CommitmentBean cmt: commitments) {
 				Date date = cmt.getDate();
 				int weekday = date.getDay() - 1;
-				int hour = cmt.getEndHour();
 				cal.setTime(date);
 				int week = cal.get(Calendar.WEEK_OF_YEAR);
 				int weekdiff = week - startweek;
@@ -151,7 +150,7 @@ public class ValidateScheduleAction {
 					int week = start.get(Calendar.WEEK_OF_YEAR);
 					int weekdiff = week - startweek;
 					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
-					boolean timeConflicts = weekday >= 0 && weekday <= 5;
+					boolean timeConflicts = weekday >= 0 && weekday <= 4;
 					if (withinSemester && timeConflicts && (cl.equals(sch.getECClinician(weekdiff, weekday, 8))
 							|| cl.equals(sch.getECClinician(weekdiff, weekday, 12))
 							|| cl.equals(sch.getECClinician(weekdiff, weekday, 16)))){
@@ -394,22 +393,23 @@ public class ValidateScheduleAction {
 	 */
 	public Set<Clinician> validateOneIAPerDay(Schedule sch) {
 		Set<Clinician> returnSet = new HashSet<>();
-		Set<Clinician> duplicates = new HashSet<>();
+		Set<Clinician> duplicatesWeekA = new HashSet<>();
+		Set<Clinician> duplicatesWeekB = new HashSet<>();
 		
-		for (boolean isTypeA = true; isTypeA; isTypeA = !isTypeA) {
-			for (int day = 0; day < 5; day++) {
-				
-				duplicates.clear();
-				for (int hour: iaHours) {
-					
-					// Check whether there is more than one IA session that a clinician is assigned to this day
-					for (Clinician cl: sch.getIAClinician(isTypeA, day, hour)) {
-						if (duplicates.contains(cl)) {
-							returnSet.add(cl);
-						}
-						else {
-							duplicates.add(cl);
-						}
+		for (int day = 0; day < 5; day++) {
+			duplicatesWeekA.clear();
+			duplicatesWeekB.clear();
+			for (int hour: iaHours) {
+				// Check whether there is more than one IA session that a clinician is assigned to this day
+				for (Clinician cl: sch.getIAClinician(true, day, hour)) {
+					if (!duplicatesWeekA.add(cl)) {
+						returnSet.add(cl);
+					}
+				}
+
+				for (Clinician cl: sch.getIAClinician(false, day, hour)) {
+					if (!duplicatesWeekB.add(cl)) {
+						returnSet.add(cl);
 					}
 				}
 			}
