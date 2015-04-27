@@ -99,7 +99,7 @@ public class AdminApplication extends JFrame implements ActionListener {
 		}
 		try {
 			TestDataGenerator.overwriteAndFillDemoData();
-			AdminApplication tmp = new AdminApplication();
+			new AdminApplication();
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(null, "Unable to launch application due to error with database. "
 					+ "Please check the database connection configuration properties file. ",

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import utils.DateUtils;
 import bean.Clinician;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
@@ -64,7 +65,7 @@ public class ValidateScheduleAction {
 			// Checks whether commitment with IA session
 			for (CommitmentBean cmt: commitments) {
 				Date date = cmt.getDate();
-				int weekday = date.getDay() - 1;
+				int weekday = DateUtils.getDay(date) - 1;
 				cal.setTime(date);
 				int week = cal.get(Calendar.WEEK_OF_YEAR);
 				int weekdiff = week - startweek;
@@ -110,7 +111,7 @@ public class ValidateScheduleAction {
 			// Checks whether commitment with EC session
 			for (CommitmentBean cmt: commitments) {
 				Date date = cmt.getDate();
-				int weekday = date.getDay() - 1;
+				int weekday = DateUtils.getDay(date) - 1;
 				cal.setTime(date);
 				int week = cal.get(Calendar.WEEK_OF_YEAR);
 				int weekdiff = week - startweek;
@@ -138,7 +139,7 @@ public class ValidateScheduleAction {
 				
 				while (!start.after(end)) {
 					Date date = start.getTime();
-					int weekday = date.getDay() - 1;
+					int weekday = DateUtils.getDay(date) - 1;
 					int week = start.get(Calendar.WEEK_OF_YEAR);
 					int weekdiff = week - startweek;
 					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
@@ -205,7 +206,7 @@ public class ValidateScheduleAction {
 			// Checks whether commitment conflicts with next day's morning EC session
 			for (CommitmentBean cmt: commitments) {
 				Date date = cmt.getDate();
-				int weekday = date.getDay() - 1;
+				int weekday = DateUtils.getDay(date) - 1;
 				int hour = cmt.getEndHour();
 				cal.setTime(date);
 				int week = cal.get(Calendar.WEEK_OF_YEAR);
@@ -226,7 +227,7 @@ public class ValidateScheduleAction {
 				
 				while (!start.after(end)) {
 					Date date = start.getTime();
-					int weekday = date.getDay() - 1;
+					int weekday = DateUtils.getDay(date) - 1;
 					int week = start.get(Calendar.WEEK_OF_YEAR);
 					int weekdiff = week - startweek;
 					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 
@@ -262,7 +263,7 @@ public class ValidateScheduleAction {
 			// Checks whether commitment conflicts with previous day's afternoon EC session
 			for (CommitmentBean cmt: commitments) {
 				Date date = cmt.getDate();
-				int weekday = date.getDay() - 1;
+				int weekday = DateUtils.getDay(date) - 2;
 				int hour = cmt.getStartHour();
 				cal.setTime(date);
 				int week = cal.get(Calendar.WEEK_OF_YEAR);
@@ -283,7 +284,7 @@ public class ValidateScheduleAction {
 				
 				while (!start.after(end)) {
 					Date date = start.getTime();
-					int weekday = date.getDay() - 1;
+					int weekday = DateUtils.getDay(date) - 1;
 					int week = start.get(Calendar.WEEK_OF_YEAR);
 					int weekdiff = week - startweek;
 					boolean withinSemester = weekdiff >= 0 && weekdiff < sch.getNumberOfWeeks(); 

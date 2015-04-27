@@ -2,6 +2,8 @@ package bean;
 
 import java.util.Date;
 
+import utils.DateUtils;
+
 /**
  * Stores a day in the EC calendar
  * 
@@ -61,7 +63,7 @@ public class ECScheduleDayBean {
 	 * Returns true if this day starts a month
 	 */
 	public boolean startsMonth() {
-		return this.date.getDate() == 1;
+		return DateUtils.getDate(this.date) == 1;
 	}
 	
 	/**
@@ -116,7 +118,7 @@ public class ECScheduleDayBean {
 	}
 
 	public String headerString() {
-		return this.dayName+" "+this.date.getDate();
+		return this.dayName+" "+DateUtils.getDate(this.date);
 	}
 
 	public int[] getSessionIDs() {
