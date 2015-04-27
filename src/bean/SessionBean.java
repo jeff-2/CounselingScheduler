@@ -233,6 +233,11 @@ public class SessionBean implements Comparable<SessionBean> {
 	public void setWeekType(IAWeektype weekType) {
 		this.weekType = weekType;
 	}
+	
+	@Override
+	public int hashCode() {
+		return this.id;
+	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)

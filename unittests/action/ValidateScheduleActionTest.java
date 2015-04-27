@@ -60,8 +60,8 @@ public class ValidateScheduleActionTest{
 		Clinician cl1 = sch.getECClinician(1, 2, 12);
 		Clinician cl2 = sch.getECClinician(2, 3, 12);
 		
-		sch.addIAClinician(false, 2, 13, cl1.getClinicianBean().getName());
-		sch.addIAClinician(true, 3, 13, cl2.getClinicianBean().getName());
+		sch.addIAClinician(true, 2, 13, cl1.getClinicianBean().getName());
+		sch.addIAClinician(false, 3, 13, cl2.getClinicianBean().getName());
 		
 		Set<Clinician> violations = validateAction.validateSameDayNoonECIAConflicts(sch);
 		assertTrue(violations.contains(cl1));
