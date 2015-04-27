@@ -1,26 +1,18 @@
 package action;
 
-import java.sql.Connection;
-import java.util.Date;
-import java.sql.SQLException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import utils.Logger;
-import bean.CalendarBean;
 import bean.Clinician;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.Schedule;
-import bean.Semester;
-import bean.SessionBean;
 import bean.TimeAwayBean;
-import dao.CalendarDAO;
-import dao.SessionsDAO;
 
 /**
  * Class that validates a generated schedule

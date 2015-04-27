@@ -16,7 +16,6 @@ import org.uispec4j.ListBox;
 import org.uispec4j.MenuBar;
 import org.uispec4j.MenuItem;
 import org.uispec4j.Panel;
-import org.uispec4j.RadioButton;
 import org.uispec4j.TabGroup;
 import org.uispec4j.Trigger;
 import org.uispec4j.UISpecTestCase;

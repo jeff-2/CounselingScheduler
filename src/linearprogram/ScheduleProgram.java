@@ -7,18 +7,12 @@ import gurobi.GRBLinExpr;
 import gurobi.GRBModel;
 import gurobi.GRBVar;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import bean.CalendarBean;
 import bean.Clinician;
 import bean.IAWeektype;
 import bean.Schedule;

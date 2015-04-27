@@ -1,20 +1,13 @@
 package bean;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-
-import javax.swing.DefaultListModel;
 
 import linearprogram.Week;
 
@@ -22,11 +15,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import action.GenerateUnfilledScheduleAction;
-import dao.ClinicianPreferencesDAO;
-import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
-import dao.TimeAwayDAO;
 
 public class ScheduleTest {
 

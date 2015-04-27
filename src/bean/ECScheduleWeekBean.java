@@ -12,7 +12,6 @@ import java.util.List;
 import dao.CalendarDAO;
 import dao.ConnectionFactory;
 import dao.HolidayDAO;
-import dao.ScheduleDAO;
 
 /**
  * Stores the information for one week in the EC schedule

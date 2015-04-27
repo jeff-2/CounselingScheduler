@@ -24,7 +24,6 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
-import runner.NewSemesterSettingsRunner;
 import validator.DateRangeValidator;
 import action.ImportClinicianMeetingsActionTest;
 import bean.CalendarBean;

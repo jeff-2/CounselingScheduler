@@ -1,10 +1,9 @@
 package linearprogram;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 import generator.TestDataGenerator;
 
 import java.io.File;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import utils.Logger;
-import dao.ConnectionFactory;
-import action.GenerateUnfilledScheduleAction;
 import bean.Clinician;
 import bean.ClinicianWeekBean;
 import bean.Schedule;

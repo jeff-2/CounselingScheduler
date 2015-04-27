@@ -1,44 +1,22 @@
 package action;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 import generator.TestDataGenerator;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.PrintStream;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.sql.Date;
 import java.util.Set;
 
-import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import utils.Logger;
 import bean.Clinician;
-import bean.ClinicianBean;
-import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
-import bean.IAWeektype;
 import bean.Schedule;
-import bean.Semester;
-import bean.SessionBean;
-import bean.SessionType;
 import bean.TimeAwayBean;
-import bean.Weekday;
-import dao.ClinicianDAO;
-import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
-import dao.SessionsDAO;
 
 
 
