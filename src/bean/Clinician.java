@@ -48,11 +48,10 @@ public class Clinician {
 	@Override
 	public boolean equals(Object oth) {
 		if(!(oth instanceof Clinician)) {
-			return this == oth;
+			return false;
 		}
 		Clinician other = (Clinician) oth;
-		return this.clinicianBean.equals(other.clinicianBean)
-				&& this.clinicianPreferencesBean.equals(oth);
+		return this.clinicianBean.equals(other.clinicianBean);
 	}
 
 	public boolean canCover(SessionBean session) {
