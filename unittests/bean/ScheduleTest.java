@@ -1,6 +1,6 @@
 package bean;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import generator.TestDataGenerator;
 
 import java.sql.Connection;
@@ -34,11 +34,11 @@ public class ScheduleTest {
 	@Test
 	public void testLoadScheduleFromDatabase() throws SQLException {
 		Schedule schedule = Schedule.loadScheduleFromDB();
-		assert(schedule.getCalendar() != null);
-		assert(schedule.getClinicians() != null);
-		assert(schedule.getCommitment(schedule.getClinicians().get(0)) != null);
-		assert(schedule.getHolidays() != null);
-		assert(schedule.getNumberOfWeeks() == 16);
+		assertTrue(schedule.getCalendar() != null);
+		assertTrue(schedule.getClinicians() != null);
+		assertTrue(schedule.getCommitment(schedule.getClinicians().get(0)) != null);
+		assertTrue(schedule.getHolidays() != null);
+		assertTrue(schedule.getNumberOfWeeks() == 16);
 	}
 	
 	@Test
@@ -60,9 +60,9 @@ public class ScheduleTest {
 	@Test
 	public void testSessionNameBeanListFills() throws SQLException {
 		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
-		assert(schedule.getECSessions().size() != 0);
-		assert(schedule.getIASessionsA().size() != 0);
-		assert(schedule.getIASessionsB().size() != 0);
+		assertTrue(schedule.getECSessions().size() != 0);
+		assertTrue(schedule.getIASessionsA().size() != 0);
+		assertTrue(schedule.getIASessionsB().size() != 0);
 	}
 	
 	@Test
@@ -70,24 +70,25 @@ public class ScheduleTest {
 		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
 
 		Date d = schedule.getCalendar().getStartDate();
+		int day = Weekday.getIndexOfDay(Weekday.dayName(d));
 		schedule.editEC(d, 8, "Nymphadora");
-		assert(schedule.getECClinician(schedule.getWeeks()
-				.indexOf(Week.getWeek(d, schedule.getCalendar())), 0, 8).equals("Nymphadora"));
+		assertTrue(schedule.getECClinician(schedule.getWeeks()
+				.indexOf(Week.getWeek(d, schedule.getCalendar())), day, 8).getClinicianBean().getName().equals("Nymphadora"));
 
 		schedule.editEC(d, 8, "Alice");
-		assert(schedule.getECClinician(schedule.getWeeks()
-				.indexOf(Week.getWeek(d, schedule.getCalendar())), 0, 8).equals("Alice"));
+		assertTrue(schedule.getECClinician(schedule.getWeeks()
+				.indexOf(Week.getWeek(d, schedule.getCalendar())), day, 8).getClinicianBean().getName().equals("Alice"));
 	}
 	
 	@Test
 	public void removeIA() throws SQLException {
 		Schedule schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
 		List<Clinician> iaClinicianList = schedule.getIAClinician(true, 0, 13);
-		String clinicianName = "Eric";
+		String clinicianName = iaClinicianList.get(0).getClinicianBean().getName();
 		
-		assert(searchForClinician(iaClinicianList, clinicianName));
+		assertTrue(searchForClinician(iaClinicianList, clinicianName));
 		schedule.removeIAClinician(true, 0, 13, clinicianName);
-		assert(!searchForClinician(iaClinicianList, clinicianName));
+		assertTrue(!searchForClinician(iaClinicianList, clinicianName));
 	}
 	
 	@Test
@@ -96,9 +97,9 @@ public class ScheduleTest {
 		List<Clinician> iaClinicianList = schedule.getIAClinician(false, 1, 11);		
 		String clinicianName = "Igor";
 		
-		assert(!searchForClinician(iaClinicianList, clinicianName));
+		assertTrue(!searchForClinician(iaClinicianList, clinicianName));
 		schedule.addIAClinician(false, 1, 11, clinicianName);
-		assert(searchForClinician(iaClinicianList, clinicianName));
+		assertTrue(searchForClinician(iaClinicianList, clinicianName));
 	}
 	
 	/**

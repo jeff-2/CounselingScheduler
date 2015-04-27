@@ -43,7 +43,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	private Connection conn;
 	private ClinicianDAO clinicianDAO;
 	private TestDataGenerator gen;
-	private ClinicianBean beanA, beanB, beanC, beanD;
+	private ClinicianBean beanA, beanC, beanD;
 	
 	@Before
 	protected void setUp() throws Exception {
@@ -56,7 +56,6 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		clinicianDAO = new ClinicianDAO(conn);
 		
 		beanA = new ClinicianBean(0, "Jeff");
-		beanB = new ClinicianBean(1, "Ryan");
 		beanC = new ClinicianBean(24, "Some Name");
 		beanD = new ClinicianBean(25, "Other Name");
 	}
