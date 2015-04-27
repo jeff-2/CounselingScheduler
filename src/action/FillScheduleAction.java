@@ -47,10 +47,8 @@ public class FillScheduleAction {
 			ArrayList<Integer> afternoonClinicianIDs = new ArrayList<Integer>();
 			int lastDayOfWeek = 5; //Friday is 4
 			
-			//System.out.println("a");
 			// Looping through EC sessions
 			for (SessionBean sb : sessions) {
-				//System.out.println("Starting loop iteration through session of ID: " + sb.getID());
 				if (sb.getType().equals(SessionType.IA)) {
 					continue;
 				}
@@ -63,7 +61,6 @@ public class FillScheduleAction {
 					morningClinicianIDs = new ArrayList<Integer>();
 					noonClinicianIDs = new ArrayList<Integer>();
 					afternoonClinicianIDs = new ArrayList<Integer>();
-					//System.out.println("Number of assignments: " + ecAssignments.keySet().size());
 					for (Integer key : ecAssignments.keySet()) {
 						if (ecAssignments.get(key) == 1) {
 							morningClinicianIDs.add(key);
@@ -74,32 +71,23 @@ public class FillScheduleAction {
 						}
 					}
 				}
-				
-				//System.out.println("asdf");
-				
 				// get new clinician id for session
 				List<Integer> clinicianID = new ArrayList<Integer>();
 				if (sb.getStartTime() == 8) {
-					//System.out.println("Morning clinicians length: " + morningClinicianIDs.size());
 					clinicianID.add(morningClinicianIDs.get(0));
 					morningClinicianIDs.remove(0);
 				} else if (sb.getStartTime() == 12) {
-					//System.out.println("Noon clinicians length: " + noonClinicianIDs.size());
 					clinicianID.add(noonClinicianIDs.get(0));
 					noonClinicianIDs.remove(0);
 				} else {
-					//System.out.println("Afternoon clinician IDs length: " + afternoonClinicianIDs.size());
 					clinicianID.add(afternoonClinicianIDs.get(0));
 					afternoonClinicianIDs.remove(0);
 				}
-				//System.out.println("About to insert EC session clinician. length should be 1. " + clinicianID.size());
 				sessionsDAO.insertSessionClinicians(sb.getID(), clinicianID);
 				
 				lastDayOfWeek = currDayOfWeek;
-				//System.out.println("Completed a loop for session ID: " + sb.getID());
 			}
 
-			//System.out.println("b");
 			// Generating IA schedule
 			List<List<Integer>> timeslot1 = new ArrayList<List<Integer>>();
 			List<List<Integer>> timeslot2 = new ArrayList<List<Integer>>();
@@ -123,7 +111,6 @@ public class FillScheduleAction {
 				timeslot4.add(extendedClinicians.subList(13, 16));
 			}
 			
-			//System.out.println("c");
 			// Loop over IA sessions
 			for (SessionBean sb : sessions) {
 				if (sb.getType().equals(SessionType.EC)) {
@@ -140,10 +127,9 @@ public class FillScheduleAction {
 					sessionsDAO.insertSessionClinicians(sb.getID(), timeslot4.get(dayOfWeek));
 				}
 			}
-			//System.out.println("done");
 
 		}
-		catch(Exception e) { /*System.out.println(e.getClass());System.out.println(e.getMessage());*/ }
+		catch(Exception e) { }
 	}
 	
 	/**
@@ -160,7 +146,6 @@ public class FillScheduleAction {
 		
 		// Ideal case with balanced first preferences
 		if (prefOneCounts[0] == 5 && prefOneCounts[1] == 5) {
-			//System.out.println("1st case");
 			ecAssignments = assignECSlotsForE5E5E5(clinicians);
 		}
 
@@ -171,7 +156,6 @@ public class FillScheduleAction {
 		if ((prefOneCounts[0] == 5 && prefOneCounts[1] != 5) ||
 				(prefOneCounts[1] == 5 && prefOneCounts[0] != 5) ||
 				(prefOneCounts[2] == 5 && prefOneCounts[0] != 5)) {
-			//System.out.println("2nd case");
 			ecAssignments = assignECSlotsForLT5E5GT5(clinicians, prefOneCounts);
 		}
 
@@ -182,9 +166,7 @@ public class FillScheduleAction {
 		if ((prefOneCounts[0] > 5 && prefOneCounts[1] > 5) ||
 				(prefOneCounts[0] > 5 && prefOneCounts[2] > 5) ||
 				(prefOneCounts[1] > 5 && prefOneCounts[2] > 5)) {
-			//System.out.println("Third case");
 			ecAssignments = assignECSlotsForLT5GT5GT5(clinicians, prefOneCounts);
-			//System.out.println("Third case success");
 		}
 
 		// Non-ideal case with two time slot counts < 5
@@ -195,7 +177,6 @@ public class FillScheduleAction {
 		if ((prefOneCounts[0] < 5 && prefOneCounts[1] < 5) ||
 				(prefOneCounts[0] < 5 && prefOneCounts[2] < 5) ||
 				(prefOneCounts[1] < 5 && prefOneCounts[2] < 5)) {
-			//System.out.println("4th case");
 			ecAssignments = assignECSlotsForLT5LT5GT5(clinicians, prefOneCounts);
 		}
 		
@@ -222,7 +203,6 @@ public class FillScheduleAction {
 	 * @return ecAssignments
 	 */
 	private HashMap<Integer, Integer> assignECSlotsForLT5E5GT5(List<ClinicianPreferencesBean> clinicians, int[] prefOneCounts) {
-		//System.out.println("Number of clinicians for assignment: " + clinicians.size());
 		HashMap<Integer, Integer> ecAssignments = new HashMap<Integer, Integer>();
 		int indexFor5 = -1;
 		int indexForLT5 = -1;
@@ -275,9 +255,6 @@ public class FillScheduleAction {
 			}
 		}
 
-		//System.out.println("Num clinicians left to assign: " + clinicians.size());
-		//System.out.println("Num clinicians already assigned: " + ecAssignments.keySet().size());
-		//System.out.println("Assignment counts: " + assignmentCounts[0] + " " + assignmentCounts[1] + " " + assignmentCounts[2]);
 		// In case we still aren't done, assign the rest randomly
 		if (clinicians.size() > 0) {
 			Collections.shuffle(clinicians);
@@ -287,18 +264,14 @@ public class FillScheduleAction {
 				ecAssignments.put(new Integer(clinicians.get(0).getClinicianID()), new Integer(indexForLT5 + 1));
 				assignmentCounts[indexForLT5]++;
 				clinicians.remove(0);
-				//System.out.println("Assignment counts: " + assignmentCounts[0] + " " + assignmentCounts[1] + " " + assignmentCounts[2]);
 			}
 			// Assign the remaining slots
 			for (int i = 0; i < 5; i++) {
 				ecAssignments.put(new Integer(clinicians.get(0).getClinicianID()), new Integer(indexForGT5 + 1));
 				assignmentCounts[indexForGT5]++;
 				clinicians.remove(0);
-				//System.out.println("Assignment counts: " + assignmentCounts[0] + " " + assignmentCounts[1] + " " + assignmentCounts[2]);
 			}
 		}
-		//System.out.println("Num clinicians remaining should be 0: " + clinicians.size());
-
 		return ecAssignments;
 	}
 
@@ -401,9 +374,6 @@ public class FillScheduleAction {
 		for (ClinicianPreferencesBean pref : clinicians) {
 			ecAssignments.put(new Integer(pref.getClinicianID()), new Integer(pref.getRanking(1)));
 		}
-		
-		//System.out.println("Created ecAssignments with this number of keys: " + ecAssignments.keySet().size());
-
 		return ecAssignments;
 	}
 
@@ -418,23 +388,17 @@ public class FillScheduleAction {
 
 		int indexForLT5a = -1;
 		int indexForLT5b = -1;
-		int indexForGT5 = -1;
 
 		if (prefOneCounts[0] > 5) {
-			indexForGT5 = 0;
 			indexForLT5a = 1;
 			indexForLT5b = 2;
 		} else if (prefOneCounts[1] > 5) {
-			indexForGT5 = 1;
 			indexForLT5a = 0;
 			indexForLT5b = 2;
 		} else {
-			indexForGT5 = 2;
 			indexForLT5a = 0;
 			indexForLT5b = 1;
 		}
-		
-		//System.out.println("1");
 
 		// Assign clinicians with first pref < 5
 		for (int i = 14; i >= 0; i--) {
@@ -444,9 +408,6 @@ public class FillScheduleAction {
 				clinicians.remove(i);
 			}
 		}
-		
-		//System.out.println("2");
-
 		Collections.shuffle(clinicians);
 
 		// Try to assign GT5 clinicians to second pref
@@ -465,8 +426,6 @@ public class FillScheduleAction {
 				countExcessAssignedLT5b++;
 			}
 		}
-		
-		//System.out.println("3");
 
 		Collections.shuffle(clinicians);
 
@@ -485,7 +444,6 @@ public class FillScheduleAction {
 				clinicians.remove(0);
 			}
 		}
-		//System.out.println("4");
 
 		// Assign the rest to pref one
 		for (int i = 0; i < 5; i++) {
@@ -506,7 +464,6 @@ public class FillScheduleAction {
 
 		for(ClinicianPreferencesBean pref : clinicianPrefs) {
 			if (rank == 1) {
-				////System.out.println("pref one: " + pref.id + " " + pref.getRanking(1));
 				counts[pref.getRanking(1) - 1]++;
 			}
 			if (rank == 2) {
