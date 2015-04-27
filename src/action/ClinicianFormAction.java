@@ -13,16 +13,41 @@ import dao.ClinicianPreferencesDAO;
 import dao.CommitmentsDAO;
 import dao.TimeAwayDAO;
 
+/**
+ * The Class ClinicianFormAction provides the functionality for submitting a form and handling
+ * inserting the preferences for a clinician or updating them if they already exist.
+ */
 public class ClinicianFormAction {
 	
+	/** The conn. */
 	private Connection conn;
+	
+	/** The preferences. */
 	private ClinicianPreferencesBean preferences;
+	
+	/** The commitments. */
 	private List<List<CommitmentBean>> commitments;
+	
+	/** The times away. */
 	private ListModel<TimeAwayBean> timesAway;
+	
+	/** The clinician preferences dao. */
 	private ClinicianPreferencesDAO clinicianPreferencesDao;
+	
+	/** The time away dao. */
 	private TimeAwayDAO timeAwayDao;
+	
+	/** The commitment dao. */
 	private CommitmentsDAO commitmentDao;
 	
+	/**
+	 * Instantiates a new clinician form action.
+	 *
+	 * @param conn the conn
+	 * @param preferences the preferences
+	 * @param commitments the commitments
+	 * @param timesAway the times away
+	 */
 	public ClinicianFormAction(Connection conn, ClinicianPreferencesBean preferences, List<List<CommitmentBean>> commitments, ListModel<TimeAwayBean> timesAway) {
 		this.conn = conn;
 		this.preferences = preferences;
@@ -36,7 +61,9 @@ public class ClinicianFormAction {
 	/**
 	 * Validates field in clinician form and submits clinician preferences and other entered data.
 	 *
+	 * @param isUpdate the is update
 	 * @throws SQLException the SQL exception
+	 * @throws InvalidFormDataException the invalid form data exception
 	 */
 	public void submit(boolean isUpdate) throws SQLException, InvalidFormDataException {
 		
@@ -48,9 +75,10 @@ public class ClinicianFormAction {
 	}
 	
 	/**
-	 * Returns true if submitting this form will overwrite prior clinician preferences
+	 * Returns true if submitting this form will overwrite prior clinician preferences.
+	 *
 	 * @return boolean indicating if submission will result in overwriting prior preferences
-	 * @throws SQLException
+	 * @throws SQLException the SQL exception
 	 */
 	public boolean willOverwritePreferences() throws SQLException {
 		ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);

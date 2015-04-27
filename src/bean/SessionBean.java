@@ -191,8 +191,8 @@ public class SessionBean implements Comparable<SessionBean> {
 	}
 	
 	public boolean removeClinician(Clinician clinician) {
-		if (this.clinicians.contains(clinician)) {
-			this.clinicians.remove(clinician);
+		if (this.clinicians.contains(clinician.getClinicianBean().getClinicianID())) {
+			this.clinicians.remove(new Integer(clinician.getClinicianBean().getClinicianID()));
 			return true;
 		}
 		return false;

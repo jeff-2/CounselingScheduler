@@ -24,7 +24,8 @@ import bean.TimeAwayBean;
 import bean.Weekday;
 
 /**
- * The Class ClinicianLoadPreferencesAction.
+ * The Class ClinicianLoadPreferencesAction handles loading the preferences for a particular
+ * clinician from the database so they can be used to populate the ClinicianForm.
  */
 public class ClinicianLoadPreferencesAction {
 	
