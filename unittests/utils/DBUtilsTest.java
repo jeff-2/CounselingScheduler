@@ -37,7 +37,7 @@ public class DBUtilsTest {
 			writeLines(configFile, Arrays.asList(new String [] {
 					"database=CounselingScheduler", "user=admin", "password=admin"
 			}));
-			String connectionUrl = DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
+			DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
 			fail();
 		} catch (ConnectionConfigException e) {
 			assertEquals("No URL is specified in the database connection configuration file", e.getMessage());
@@ -50,7 +50,7 @@ public class DBUtilsTest {
 			writeLines(configFile, Arrays.asList(new String [] { "url=jdbc:sqlserver://localhost",
 					"user=admin", "password=admin"
 			}));
-			String connectionUrl = DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
+			DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
 			fail();
 		} catch (ConnectionConfigException e) {
 			assertEquals("No database name is specified in the database connection configuration file", e.getMessage());
@@ -63,7 +63,7 @@ public class DBUtilsTest {
 			writeLines(configFile, Arrays.asList(new String [] { "url=jdbc:sqlserver://localhost",
 					"database=CounselingScheduler", "password=admin"
 			}));
-			String connectionUrl = DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
+			DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
 			fail();
 		} catch (ConnectionConfigException e) {
 			assertEquals("No username is specified in the database connection configuration file", e.getMessage());
@@ -76,7 +76,7 @@ public class DBUtilsTest {
 			writeLines(configFile, Arrays.asList(new String [] { "url=jdbc:sqlserver://localhost",
 					"database=CounselingScheduler", "user=admin"
 			}));
-			String connectionUrl = DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
+			DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
 			fail();
 		} catch (ConnectionConfigException e) {
 			assertEquals("No password is specified in the database connection configuration file", e.getMessage());
@@ -86,7 +86,7 @@ public class DBUtilsTest {
 	@Test
 	public void testMissingConfigFile() {
 		try {
-			String connectionUrl = DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
+			DBUtils.loadConnectionConfig(configFile.getAbsolutePath());
 			fail();
 		} catch (ConnectionConfigException e) {
 			assertEquals("Failed to load from database connection configuration file: " + configFile.getAbsolutePath(), e.getMessage());
