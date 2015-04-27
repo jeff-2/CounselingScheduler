@@ -63,9 +63,6 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 	 * Instantiates a new semester settings.
 	 */
 	public NewSemesterSettings() {
-		//super("Create New Semester Settings");
-		//panel = new JPanel();
-		//panel.
 		setLayout(new MigLayout("gap rel, fill"));
 		fileChooser = new JFileChooser();
 		fileChooser.setDialogTitle("Select Meeting Schedule");

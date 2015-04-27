@@ -7,13 +7,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * 
- * @author jmfoste2, lim92
+ * The Class OperatingHours provides the set of times the counseling center is open and utilities
+ * for converting between a time string (e.g. 8:00 am) and a 24 hour representation of that time (8)
+ * and back.
  *
+ * @author jmfoste2, lim92
  */
 public class OperatingHours {
 	
+	/** The Constant stringToInteger. */
 	private static final Map<String, Integer> stringToInteger;
+	
+	/** The Constant integerToString. */
 	private static final Map<Integer, String> integerToString;
 	
 	static {
@@ -38,10 +43,22 @@ public class OperatingHours {
 	    integerToString = Collections.unmodifiableMap(intToStr);
 	}
 	
+	/**
+	 * Gets set of operating hours.
+	 *
+	 * @return the operating hours
+	 */
 	public static Set<String> getOperatingHours() {
 		return stringToInteger.keySet();
 	}
 	
+	/**
+	 * Converts string representation of operating hour to 24 hour time (e.g. 8:00am -> 8).
+	 * Returns -1 if there is no corresponding operating hour.
+	 *
+	 * @param operatingHour the operating hour
+	 * @return the int
+	 */
 	public static int toInt(String operatingHour) {
 		Integer value = stringToInteger.get(operatingHour);
 		if (value == null) {
@@ -50,6 +67,12 @@ public class OperatingHours {
 		return value.intValue();
 	}
 	
+	/**
+	 * Converts 24 hour time to a string (e.g. 8 -> 8:00 am).
+	 *
+	 * @param operatingHour the operating hour
+	 * @return the string
+	 */
 	public static String toString(int operatingHour) {
 		return integerToString.get(operatingHour);
 	}

@@ -75,16 +75,25 @@ public class ClinicianBean implements Comparable<ClinicianBean> {
 		return clinicianID == clinician.clinicianID && name.equals(clinician.name);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return clinicianID;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(ClinicianBean other) {
 		return this.name.compareTo(other.name);
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return this.name;

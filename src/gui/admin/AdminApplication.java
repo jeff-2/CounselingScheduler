@@ -24,21 +24,53 @@ import action.GenerateUnfilledScheduleAction;
 import bean.Schedule;
 import dao.ConnectionFactory;
 
+/**
+ * The Class AdminApplication provides the interface for the administrator to
+ * setup and generate/edit the schedule. Combines admin components to provide this functionality.
+ */
 public class AdminApplication extends JFrame implements ActionListener {
 	
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 8557735241347619359L;
+	
+	/** The tabbed pane. */
 	private JTabbedPane tabbedPane;
+	
+	/** The editor. */
 	private ClinicianIDListEditor editor;
+	
+	/** The settings. */
 	private NewSemesterSettings settings;
+	
+	/** The ia. */
 	private IAScheduleFrame ia;
+	
+	/** The ec. */
 	private ECScheduleFrame ec;
+	
+	/** The menu bar. */
 	private JMenuBar menuBar;
+	
+	/** The menu. */
 	private JMenu menu;
+	
+	/** The print. */
 	private JMenuItem print;
+	
+	/** The save. */
 	private JMenuItem save;
+	
+	/** The generate. */
 	private JMenuItem generate;
+	
+	/** The schedule. */
 	private Schedule schedule;
 	
+	/**
+	 * Instantiates a new admin application.
+	 *
+	 * @throws SQLException the SQL exception
+	 */
 	public AdminApplication() throws SQLException {
 		super("Generate IA/EC schedule");
 		schedule = Schedule.loadScheduleFromDB();
@@ -60,6 +92,9 @@ public class AdminApplication extends JFrame implements ActionListener {
 		initializeFrame();
 	}
 	
+	/**
+	 * Initialize menu.
+	 */
 	private void initializeMenu() {
 		menuBar = new JMenuBar();
 		menu = new JMenu("File");
@@ -81,6 +116,9 @@ public class AdminApplication extends JFrame implements ActionListener {
 		menuBar.add(menu);
 	}
 	
+	/**
+	 * Initialize frame.
+	 */
 	private void initializeFrame() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setJMenuBar(menuBar);
@@ -89,6 +127,11 @@ public class AdminApplication extends JFrame implements ActionListener {
 		setVisible(true);
 	}
 	
+	/**
+	 * Runs the application.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String [] args) {
 		try {
 			UIManager.setLookAndFeel(
@@ -112,6 +155,9 @@ public class AdminApplication extends JFrame implements ActionListener {
 	
 	
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == generate) {

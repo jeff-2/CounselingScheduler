@@ -19,7 +19,7 @@ import bean.SessionType;
 import bean.Weekday;
 
 /**
- * Abstract class for assigning clinicians to slots in an unfilled schedule
+ * Class for assigning clinicians to slots in an unfilled schedule
  * @author ramusa2
  *
  */

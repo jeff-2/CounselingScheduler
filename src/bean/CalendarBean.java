@@ -220,4 +220,11 @@ public class CalendarBean {
 				&& ecMinHours == calendar.ecMinHours && semester == calendar.semester &&
 				meetingFilepath.equals(calendar.meetingFilepath);
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		throw new UnsupportedOperationException("Hash code is not implemented for this class");
+	}
 }

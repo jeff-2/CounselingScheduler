@@ -44,64 +44,47 @@ import dao.ConnectionFactory;
 public class ClinicianIDListEditor extends JPanel 
 implements ActionListener, KeyListener, ListSelectionListener {
 
-	/**
-	 * Generated Serial Version UID
-	 */
+	/** Generated Serial Version UID. */
 	private static final long serialVersionUID = -5942052228994817185L;
 	
-	/**
-	 * JLabel for new clinican name field
-	 */
+	/** JLabel for new clinican name field. */
 	private JLabel newFullnameLabel;
 	
-	/**
-	 * JTextField for entering the name of a new clinician
-	 */
+	/** JTextField for entering the name of a new clinician. */
 	private JTextField newFullnameField;
 
-	/**
-	 * JButton for adding the current clinician ID to the list
-	 */
+	/** JButton for adding the current clinician ID to the list. */
 	private JButton addButton;
 
-	/**
-	 * JButton for removing the currently selected clinican ID in the list
-	 */
+	/** JButton for removing the currently selected clinican ID in the list. */
 	private JButton removeButton;
 	
+	/** The edit button. */
 	private JButton editButton;
 
-	/**
-	 * JList storing the current list of Clinicians
-	 */
+	/** JList storing the current list of Clinicians. */
 	private JList<ClinicianBean> clinicianList;
 	
-	/**
-	 * JScrollPane displaying the current list of clinican IDs
-	 */
+	/** JScrollPane displaying the current list of clinican IDs. */
 	private JScrollPane listScrollPane;
 
-	/**
-	 * Connection DAO to database (could be remote)
-	 */
+	/** Connection DAO to database (could be remote). */
 	private ClinicianDAO dao;
 
+	/** The prefs dao. */
 	private ClinicianPreferencesDAO prefsDAO;
-	/**
-	 * Local cache of current list of clinicians
-	 */
+	
+	/** Local cache of current list of clinicians. */
 	private List<ClinicianBean> localClinicians;
 
 	/**
-	 * Create an empty client ID list
+	 * Create an empty client ID list.
 	 */
 	public ClinicianIDListEditor() {
-		//super("Edit Clinician ID List");
 		this.initializeConnectionToDB();
 		this.updateClinicianList();
 		setLayout(new MigLayout("gap rel 0", "grow"));
 		this.initializePanel();
-		//this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
 	}
 
 	/**
@@ -118,6 +101,11 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		}
 	}
 
+	/**
+	 * Handle db exception.
+	 *
+	 * @param e the e
+	 */
 	private void handleDBException(Exception e) {
 		e.printStackTrace();
 		JOptionPane.showMessageDialog(this,
@@ -126,6 +114,9 @@ implements ActionListener, KeyListener, ListSelectionListener {
 				JOptionPane.ERROR_MESSAGE);
 	}
 
+	/**
+	 * Update clinician list.
+	 */
 	private void updateClinicianList() {
 		try {
 			this.localClinicians = this.dao.loadClinicians();
@@ -136,14 +127,11 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	}
 
 	/**
-	 * Set up the components of this JPanel
+	 * Set up the components of this JPanel.
 	 */
 	private void initializePanel() {
 		// Set preferred size
 		setPreferredSize(new Dimension(550, 550));
-		// Set exit behavior
-		//this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		// Add label and full name field for new clinicians
 		this.newFullnameLabel = new JLabel("New Clinician Name:");
 		add(newFullnameLabel, "align label");
 		this.newFullnameField = new JTextField();
@@ -171,13 +159,10 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		add(listScrollPane, "grow, push, span");
 		// Pack and make visible
 		this.updateButtonStatus();
-		//this.getContentPane().add(panel);
-		//this.pack();
-		//this.setVisible(true);
 	}
 
 	/**
-	 * Update the JList to reflect the current list of clinicians in the database
+	 * Update the JList to reflect the current list of clinicians in the database.
 	 */
 	private void populateClinicianList() {
 		this.updateClinicianList();
@@ -191,6 +176,9 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		repaint();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == this.addButton) {
@@ -218,14 +206,12 @@ implements ActionListener, KeyListener, ListSelectionListener {
 	/**
 	 * If there is no new clinician ID text, gray out add user button.
 	 * If no selected clinician in list, gray out remove user button.
-	 * @param e 
 	 */
 	private void updateButtonStatus() {
 		boolean emptyClinicianID = this.newFullnameField.getText().isEmpty();
 		this.addButton.setEnabled(!emptyClinicianID);
 		boolean noListSelection = this.clinicianList.getSelectedIndex() == -1;
 		this.removeButton.setEnabled(!noListSelection);
-		// TODO: assert that preferences exist
 		try {
 			this.editButton.setEnabled(!noListSelection 
 				&& prefsDAO.preferencesExist(this.clinicianList.getSelectedValue().getClinicianID()));
@@ -270,6 +256,12 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		}
 	}
 
+	/**
+	 * Clinician name exists.
+	 *
+	 * @param newClinicianName the new clinician name
+	 * @return true, if successful
+	 */
 	private boolean clinicianNameExists(String newClinicianName) {
 		for(ClinicianBean c : this.localClinicians) {
 			if(c.getName().equals(newClinicianName)) {
@@ -295,12 +287,21 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		}	
 	}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
+	 */
 	@Override
 	public void keyTyped(KeyEvent e) {}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
+	 */
 	@Override
 	public void keyPressed(KeyEvent e) {}
 
+	/* (non-Javadoc)
+	 * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
+	 */
 	@Override
 	public void keyReleased(KeyEvent e) {
 		if(e.getSource() == this.newFullnameField) {
@@ -308,6 +309,9 @@ implements ActionListener, KeyListener, ListSelectionListener {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
+	 */
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		this.updateButtonStatus();

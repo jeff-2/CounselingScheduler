@@ -7,10 +7,19 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Properties;
 
+/**
+ * The Class DBUtils provides utilities for interacting with the database.
+ */
 public class DBUtils {
 	
+	/** The Constant CONFIG_FILEPATH. */
 	private static final String CONFIG_FILEPATH = "db_connection_config.properties";
 	
+	/**
+	 * Clear all tables except clinicians.
+	 *
+	 * @throws SQLException the SQL exception
+	 */
 	public static void clearAllTablesExceptClinicians() throws SQLException {
 		TestDataGenerator generator = new TestDataGenerator(ConnectionFactory.getInstance());
 		generator.clearCalendarTable();
@@ -22,10 +31,25 @@ public class DBUtils {
 		generator.clearSessionsTable();
 	}
 	
+	/**
+	 * Load connection config from the default config file. Returns connection url
+	 * specified by connection config file.
+	 *
+	 * @return the string
+	 * @throws ConnectionConfigException the connection config exception
+	 */
 	public static String loadConnectionConfig() throws ConnectionConfigException {
 		return loadConnectionConfig(CONFIG_FILEPATH);
 	}
 	
+	/**
+	 * Load connection config from the specified config file. Returns connection url
+	 * specified by connection config file.
+	 *
+	 * @param filePath the file path
+	 * @return the string
+	 * @throws ConnectionConfigException the connection config exception
+	 */
 	public static String loadConnectionConfig(String filePath) throws ConnectionConfigException {
 		StringBuilder connectionUrl = new StringBuilder();
 		Properties properties = new Properties();

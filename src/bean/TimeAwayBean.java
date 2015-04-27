@@ -140,4 +140,11 @@ public class TimeAwayBean {
 		return clinicianID == timeAway.clinicianID && description.equals(timeAway.description)
 				&& startDate.equals(timeAway.startDate) && endDate.equals(timeAway.endDate);
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		throw new UnsupportedOperationException("Hash code is not implemented for this class");
+	}
 }

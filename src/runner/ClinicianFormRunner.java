@@ -14,12 +14,17 @@ import dao.CalendarDAO;
 import dao.ConnectionFactory;
 
 /**
- * 
- * @author Yusheng Hou and Kevin Lim
+ * The Class ClinicianFormRunner runs the ClinicianForm application.
  *
+ * @author Yusheng Hou and Kevin Lim
  */
 public class ClinicianFormRunner {
 
+	/**
+	 * The main method.
+	 *
+	 * @param args the arguments
+	 */
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(

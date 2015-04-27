@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * The Class SessionBean.
+ * The Class SessionBean handles storage of data associated with a particular session.
  * 
  * @author jmfoste2, ramusa2
  */
@@ -47,6 +47,8 @@ public class SessionBean implements Comparable<SessionBean> {
 	 * @param sDate the s date
 	 * @param sType the s type
 	 * @param sClinicians the s clinicians
+	 * @param sSemester the s semester
+	 * @param sWeekType the s week type
 	 */
 	public SessionBean(int sID, int sTime, int sDur,  Weekday sDay, Date sDate, SessionType sType, List<Integer> sClinicians, Semester sSemester, IAWeektype sWeekType) {
 		id = sID;
@@ -186,10 +188,21 @@ public class SessionBean implements Comparable<SessionBean> {
 		this.clinicians = clinicians;
 	}
 	
+	/**
+	 * Adds the clinician.
+	 *
+	 * @param clinician the clinician
+	 */
 	public void addClinician(Clinician clinician) {
 		this.clinicians.add(clinician.getClinicianBean().getClinicianID());
 	}
 	
+	/**
+	 * Removes the clinician.
+	 *
+	 * @param clinician the clinician
+	 * @return true, if successful
+	 */
 	public boolean removeClinician(Clinician clinician) {
 		if (this.clinicians.contains(clinician.getClinicianBean().getClinicianID())) {
 			this.clinicians.remove(new Integer(clinician.getClinicianBean().getClinicianID()));
@@ -234,6 +247,9 @@ public class SessionBean implements Comparable<SessionBean> {
 		this.weekType = weekType;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		return this.id;
@@ -260,6 +276,9 @@ public class SessionBean implements Comparable<SessionBean> {
 				&& this.type == session.type && this.clinicians.equals(session.clinicians);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(SessionBean o) {
 		int res = (this.date.before(o.date)) ? -100 : (this.date.after(o.date) ? 100 : 0);

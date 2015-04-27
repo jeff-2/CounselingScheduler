@@ -156,4 +156,11 @@ public class CommitmentBean {
 				&& endHour == commitment.endHour && date.equals(commitment.date)
 				&& description.equals(commitment.description);
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		throw new UnsupportedOperationException("Hash code is not implemented for this class");
+	}
 }

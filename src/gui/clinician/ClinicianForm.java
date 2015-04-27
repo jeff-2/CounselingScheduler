@@ -43,34 +43,88 @@ import dao.ConnectionFactory;
  */
 public class ClinicianForm extends JPanel implements ActionListener {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -5377691259929030865L;
+	
+	/** The commitments pane. */
 	private JScrollPane timeAwayPane, commitmentsPane;
+	
+	/** The time away. */
 	private JList<TimeAwayBean> timeAway;
+	
+	/** The commitments. */
 	private JList<String> commitments;
+	
+	/** The time away end date. */
 	private JTextField timeAwayName, timeAwayStartDate, timeAwayEndDate;
+	
+	/** The name field. */
 	private JTextField commitmentDescription, nameField;
+	
+	/** The ec hours. */
 	private JTextField iaHours, ecHours;
+	
+	/** The time away label. */
 	private JLabel nameLabel, preferenceFormLabel, periodLabel, timeAwayLabel;
+	
+	/** The time away end date label. */
 	private JLabel timeAwayNameLabel, timeAwayStartDateLabel, timeAwayEndDateLabel;
+	
+	/** The commitment frequency label. */
 	private JLabel commitmentStartTimeLabel, commitmentEndTimeLabel, commitmentFrequencyLabel;
+	
+	/** The external commitment label. */
 	private JLabel commitmentDayLabel, commitmentDescriptionLabel, externalCommitmentLabel;
+	
+	/** The rank label. */
 	private JLabel timeLabel, rankLabel;
+	
+	/** The afternoon label. */
 	private JLabel morningLabel, noonLabel, afternoonLabel;
+	
+	/** The ec times label. */
 	private JLabel ecPreferencesLabel, conflictsLabel, iaTimesLabel, ecTimesLabel;
+	
+	/** The ec hours label. */
 	private JLabel iaHoursLabel, ecHoursLabel;
+	
+	/** The conflicts description. */
 	private JTextArea timeAwayDescription, ecPreferencesDescription, conflictsDescription;
+	
+	/** The remove time away button. */
 	private JButton addTimeAwayButton, removeTimeAwayButton;
+	
+	/** The remove commitment button. */
 	private JButton addCommitmentButton, removeCommitmentButton;
+	
+	/** The submit button. */
 	private JButton clearButton, submitButton;
+	
+	/** The frequency box. */
 	private JComboBox<String> daysOfWeekBox, startTimeBox, endTimeBox, frequencyBox;
+	
+	/** The afternoon rank box. */
 	private JComboBox<Integer> morningRankBox, noonRankBox, afternoonRankBox;
+	
+	/** The external commitment. */
 	private JCheckBox externalCommitment;
 	
+	/** The commitment list. */
 	private List<List<CommitmentBean>> commitmentList;
+	
+	/** The semester. */
 	private Semester semester;
+	
+	/** The year. */
 	private int year;
+	
+	/** The date range. */
 	private DateRange dateRange;
+	
+	/** The is admin. */
 	private boolean isAdmin;
+	
+	/** The clinician name. */
 	private String clinicianName;
 
 	/**
@@ -192,9 +246,10 @@ public class ClinicianForm extends JPanel implements ActionListener {
 	}
 	
 	/**
-	 * Setup textarea to mimic jlabel
-	 * @param textArea
-	 * @param font
+	 * Setup textarea to mimic jlabel.
+	 *
+	 * @param textArea the text area
+	 * @param font the font
 	 */
 	private void initializeTextArea(JTextArea textArea, Font font) {
 		textArea.setLineWrap(true);
@@ -545,17 +600,26 @@ public class ClinicianForm extends JPanel implements ActionListener {
 		this.repaint();
 	}
 	
+	/**
+	 * Clear admin fields.
+	 */
 	private void clearAdminFields() {
 		iaHours.setText("");
 		ecHours.setText("");
 	}
 	
+	/**
+	 * Clear time away fields.
+	 */
 	private void clearTimeAwayFields() {
 		timeAwayName.setText("");
 		timeAwayStartDate.setText("");
 		timeAwayEndDate.setText("");
 	}
 	
+	/**
+	 * Clear commitment fields.
+	 */
 	private void clearCommitmentFields() {
 		commitmentDescription.setText("");
 		externalCommitment.setSelected(false);
@@ -565,6 +629,9 @@ public class ClinicianForm extends JPanel implements ActionListener {
 		frequencyBox.setSelectedIndex(0);
 	}
 	
+	/**
+	 * Clear preference fields.
+	 */
 	private void clearPreferenceFields() {
 		morningRankBox.setSelectedIndex(0);
 		noonRankBox.setSelectedIndex(0);

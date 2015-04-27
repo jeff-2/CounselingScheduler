@@ -1,6 +1,7 @@
 package bean;
 
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class ClinicianPreferences handles the storage of clinician preferences.
  * 
@@ -138,7 +139,10 @@ public class ClinicianPreferencesBean {
 	}
 	
 	/**
-	 * Returns the ranking array
+	 * Returns the ranking array.
+	 *
+	 * @param startTime the start time
+	 * @return the ranking from time
 	 */
 	public int getRankingFromTime(int startTime) {
 		int timeToGet = startTime==8 ? 1 : (startTime==12 ? 2 : 3);
@@ -205,6 +209,16 @@ public class ClinicianPreferencesBean {
 				&& iaHours == preference.iaHours && ecHours == preference.ecHours;
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		throw new UnsupportedOperationException("Hash code is not implemented for this class");
+	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "morningRank:" + morningRank + " noonRank:" + noonRank + " afternoonRank:" + afternoonRank
 				+ " clinicianID:" + clinicianID + " iaHours:" + iaHours + " ecHours:" + ecHours;

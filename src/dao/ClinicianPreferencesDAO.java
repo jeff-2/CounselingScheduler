@@ -68,6 +68,13 @@ public class ClinicianPreferencesDAO extends DAO {
 		return preferences;
 	}
 	
+	/**
+	 * Returns true if there are preferences stored for the specified clinician id
+	 *
+	 * @param clinicianID the clinician id
+	 * @return true, if successful
+	 * @throws SQLException the SQL exception
+	 */
 	public boolean preferencesExist(int clinicianID) throws SQLException {
 		return loadClinicianPreferences(clinicianID) != null;
 	}
