@@ -18,14 +18,11 @@ public class Node {
 	
 	private int incomingFlow;
 	
-	private int outgoingCapacity;
-	
 	public Node(String name) {
 		label = name;
 		outgoing = new HashMap<Node, Edge>();
 		incoming = new HashMap<Node, Edge>();
 		incomingFlow = 0;
-		outgoingCapacity = 0;
 	}
 	
 	public String label() {
@@ -48,7 +45,6 @@ public class Node {
 		else {
 			e.addCapacity(capacity);
 		}
-		outgoingCapacity += capacity;
 	}
 
 	public void addIncomingFlow(int flowToAdd) {

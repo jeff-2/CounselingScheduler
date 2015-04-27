@@ -1,6 +1,5 @@
 package networkflow;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
@@ -18,13 +17,10 @@ public class ECFlowNetwork {
 	
 	private final HashMap<String, Node> nodes;
 	
-	private final ArrayList<Edge> ecEdges;
-	
 	public ECFlowNetwork() {
 		start = new Node("START");
 		end = new Node ("END");
 		nodes = new HashMap<String, Node>();
-		ecEdges = new ArrayList<Edge>();
 	}
 
 	public Node start() {
