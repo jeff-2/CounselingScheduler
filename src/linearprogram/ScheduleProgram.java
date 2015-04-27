@@ -90,6 +90,7 @@ public class ScheduleProgram {
 		try {
 			// Initialize model
 			env = new GRBEnv("ecilp.log");
+			env.set(GRB.IntParam.LogToConsole, 0);
 			model = new GRBModel(env);
 			GRBLinExpr objective = new GRBLinExpr();
 
