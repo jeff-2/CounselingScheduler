@@ -33,12 +33,12 @@ import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
+import utils.Utility;
 import action.ValidateScheduleAction;
 import bean.Clinician;
 import bean.IAWeektype;
 import bean.Schedule;
 import bean.SessionNameBean;
-import bean.Utility;
 import bean.Weekday;
 
 public class IAWeeklyComponent extends JPanel implements ActionListener,

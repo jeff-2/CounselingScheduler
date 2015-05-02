@@ -11,7 +11,6 @@ import javax.swing.DefaultListModel;
 import org.junit.Test;
 
 import action.InvalidFormDataException;
-import bean.Utility;
 
 public class UtilityTest {
 

@@ -22,12 +22,6 @@ import dao.HolidayDAO;
 public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 
     /**
-     * EC timeslots
-     */
-    public static final String[] timeslots = new String[] { "8:00", "Noon",
-	    "4:00" };
-
-    /**
      * List of the days for this week
      */
     private ArrayList<ECScheduleDayBean> days;
@@ -74,7 +68,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
     /**
      * Add a clinician to a day in this week
      */
-    public void addClinician(Date date, int timeslot, String clinician, int id) {
+    private void addClinician(Date date, int timeslot, String clinician, int id) {
 	Integer d = dateMap.get(date);
 	if (d != null) {
 	    this.days.get(d).addClinician(clinician, timeslot, id);

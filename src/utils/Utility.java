@@ -1,4 +1,4 @@
-package bean;
+package utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +7,7 @@ import javax.swing.ListModel;
 
 import action.InvalidFormDataException;
 
+// TODO: Auto-generated Javadoc
 /**
  * Contains commonly used static methods.
  *
@@ -68,10 +69,9 @@ public final class Utility {
     }
 
     /**
-     * Converts from ListModel of strings to List of strings
+     * Converts from ListModel of strings to List of strings.
      *
-     * @param model
-     *            the model
+     * @param model            the model
      * @return the list
      */
     public static List<String> toStringList(ListModel<String> model) {
@@ -80,5 +80,23 @@ public final class Utility {
 	    list.add(model.getElementAt(i));
 	}
 	return list;
+    }
+    
+    
+    /**
+     * Converts 24 hour time to a time string (0->12:00 am, 1->1:00 am, ... 23->11:00 pm)
+     * Precondition: hour specified is in the range [0, 23]
+     *
+     * @param hour the hour
+     * @return the string
+     */
+    public static String hourToString(int hour) {
+	String suffix;
+	if (hour < 12) {
+	    suffix = "am";
+	} else {
+	    suffix = "pm";
+	}
+	return hour + ":00 " + suffix;
     }
 }

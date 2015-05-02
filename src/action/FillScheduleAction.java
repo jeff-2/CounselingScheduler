@@ -23,7 +23,7 @@ import dao.SessionsDAO;
  */
 public class FillScheduleAction {
 
-    protected Connection conn;
+    private Connection conn;
 
     public FillScheduleAction(Connection connection) {
 	conn = connection;
@@ -169,8 +169,8 @@ public class FillScheduleAction {
 
 	// Almost-ideal case with only one time slot == 5
 	// Fill the 5 count and the <5 count time slots with first
-	// // preferences and split the remainder based on second
-	// // preferences.
+	// preferences and split the remainder based on second
+	// preferences.
 	if ((prefOneCounts[0] == 5 && prefOneCounts[1] != 5)
 		|| (prefOneCounts[1] == 5 && prefOneCounts[0] != 5)
 		|| (prefOneCounts[2] == 5 && prefOneCounts[0] != 5)) {
@@ -180,7 +180,7 @@ public class FillScheduleAction {
 	// Non-ideal case with one time slot count < 5
 	// Fill non-popular choice and then fill the other two
 	// Built on the assumption that after completely filling the
-	// // unpopular time slot, everyone else can get their first choice.
+	// unpopular time slot, everyone else can get their first choice.
 	if ((prefOneCounts[0] > 5 && prefOneCounts[1] > 5)
 		|| (prefOneCounts[0] > 5 && prefOneCounts[2] > 5)
 		|| (prefOneCounts[1] > 5 && prefOneCounts[2] > 5)) {
@@ -190,8 +190,8 @@ public class FillScheduleAction {
 	// Non-ideal case with two time slot counts < 5
 	// Fill non-popular choices and then fill the other one
 	// Built on the assumption that all clinicians left to be assigned
-	// // after the first round of assignments want the same time slot
-	// // for their first choice.
+	// after the first round of assignments want the same time slot
+	// for their first choice.
 	if ((prefOneCounts[0] < 5 && prefOneCounts[1] < 5)
 		|| (prefOneCounts[0] < 5 && prefOneCounts[2] < 5)
 		|| (prefOneCounts[1] < 5 && prefOneCounts[2] < 5)) {

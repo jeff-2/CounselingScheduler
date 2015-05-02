@@ -66,7 +66,6 @@ public class ScheduleProgram {
 	    this.sessionsByWeek.put(week, temp);
 	}
 	this.weeks = Week.getSemesterWeeks(this.schedule.getCalendar());
-	// this.weeks.addAll(this.sessionsByWeek.keySet());
 	Collections.sort(this.weeks);
 	for (Week week : this.weeks) {
 	    if (this.sessionsByWeek.get(week) == null) {
@@ -116,8 +115,7 @@ public class ScheduleProgram {
 				    .getName() + "_" + sessionString;
 			    if (sessionsIsEC) {
 				double[] prefs = new double[] { 0.0, 1.0, 2.0,
-					5.0 }; // TODO: check behavior with
-					       // these preference weights
+					5.0 };
 				int start = session.getStartTime();
 				int time = start == 8 ? 1 : (start == 12 ? 2
 					: 3);
@@ -147,13 +145,10 @@ public class ScheduleProgram {
 
 	    // Integrate variables
 	    model.update();
-	    // for(GRBVar var : model.getVars()) {
-	    // System.out.println(var.get(GRB.StringAttr.VarName));
-	    // }
 
 	    int afternoonECmin = ((weeks.size() * 5) / clinicianList.size()) - 1;
 
-	    // Add constraints: //
+	    // Add constraints:
 	    // Every EC session is filled by exactly one clinician,
 	    // every IA session is filled by at least the number we need
 	    for (SessionBean session : this.sessions) {
@@ -194,7 +189,7 @@ public class ScheduleProgram {
 			}
 		    }
 		    if (clinicianWeekVars.get(clinician).get(week) != null) {
-			if (week.type == IAWeektype.A) {
+			if (week.getWeektype().equals(IAWeektype.A)) {
 			    iasPerWeek = new GRBLinExpr();
 			}
 			GRBLinExpr ec_expr = new GRBLinExpr();
@@ -211,7 +206,7 @@ public class ScheduleProgram {
 				    String iaName = clinician
 					    .getClinicianBean().getName();
 				    iaName += "_" + label.split("_")[2]
-					    + "_13_IA_" + week.type;
+					    + "_13_IA_" + week.getWeektype();
 				    GRBVar nextIA = this.iaVars.get(iaName);
 				    if (nextIA != null) {
 					GRBLinExpr pairExpr = new GRBLinExpr();
@@ -293,10 +288,7 @@ public class ScheduleProgram {
 						+ "_islessthan1");
 			    }
 			}
-			if (week.type == IAWeektype.B) {
-			    // model.addConstr(iasPerWeek, GRB.GREATER_EQUAL,
-			    // iaHours-1,
-			    // clinician+"_"+week+"_ias_isequalto_"+iaHours);
+			if (week.getWeektype().equals(IAWeektype.B)) {
 			    model.addConstr(iasPerWeek, GRB.LESS_EQUAL,
 				    iaHours + 1, clinician + "_" + week
 					    + "_ias_isequalto_" + iaHours);

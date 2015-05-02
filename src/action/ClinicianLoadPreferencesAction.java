@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import utils.Utility;
 import validator.DateRangeValidator;
 import bean.ClinicianPreferencesBean;
 import bean.Commitment;
@@ -158,18 +159,18 @@ public class ClinicianLoadPreferencesAction {
 
 	    String commitmentString;
 	    if (frequency != null) {
-		commitmentString = "Meeting: " + b1.getDescription() + " "
-			+ frequency + " on " + dayOfWeek + " from "
-			+ b1.getStartHour() + " to " + b1.getEndHour();
+		commitmentString = b1.getDescription() + ": " + frequency
+			+ " on " + dayOfWeek + " from "
+			+ Utility.hourToString(b1.getStartHour()) + " to "
+			+ Utility.hourToString(b1.getEndHour());
 	    } else {
 		int year = calendar.get(Calendar.YEAR);
-		commitmentString = "Meeting: " + b1.getDescription() + " on "
+		commitmentString = b1.getDescription() + ": "
 			+ DateRangeValidator.formatDateLong(date) + ", " + year
-			+ " from " + b1.getStartHour() + " to "
-			+ b1.getEndHour();
+			+ " from " + Utility.hourToString(b1.getStartHour())
+			+ " to " + Utility.hourToString(b1.getEndHour());
 	    }
 	    commitmentStrings.add(commitmentString);
-	    continue;
 	}
 
 	return commitmentStrings;

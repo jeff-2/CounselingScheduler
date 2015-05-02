@@ -158,7 +158,6 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 	this.clinicianList.addListSelectionListener(this);
 	this.listScrollPane = new JScrollPane(clinicianList);
 	add(listScrollPane, "grow, push, span");
-	// Pack and make visible
 	this.updateButtonStatus();
     }
 

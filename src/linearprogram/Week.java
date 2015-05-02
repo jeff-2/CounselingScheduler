@@ -15,9 +15,9 @@ public class Week implements Comparable<Week> {
     private static HashMap<Week, Week> weekCache;
     private static HashMap<Date, Week> dayToWeekCache;
 
-    final Date start, end;
-    final IAWeektype type;
-    final int orderInSemester;
+    private Date start, end;
+    private IAWeektype type;
+    private int orderInSemester;
 
     private Week(Date s, Date e, int orderInSemester) {
 	this.start = s;
@@ -26,8 +26,12 @@ public class Week implements Comparable<Week> {
 	this.type = getWeekType(orderInSemester);
     }
 
-    public static IAWeektype getWeekType(int orderInSemester) {
+    private static IAWeektype getWeekType(int orderInSemester) {
 	return (orderInSemester % 2 == 0) ? IAWeektype.A : IAWeektype.B;
+    }
+    
+    public IAWeektype getWeektype() {
+	return type;
     }
 
     public synchronized static Week getWeek(Date day, CalendarBean calendar) {
@@ -100,7 +104,6 @@ public class Week implements Comparable<Week> {
 
     @Override
     public int compareTo(Week o) {
-	// return (int) Math.signum(o.start.getTime() - this.start.getTime());
 	return this.start.compareTo(o.start);
     }
 

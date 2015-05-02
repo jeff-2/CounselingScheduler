@@ -77,7 +77,7 @@ public abstract class Logger {
      * @param filename
      *            address of the target log file
      */
-    public static void openFileForLogging(String filename) {
+    private static void openFileForLogging(String filename) {
 	Logger.closeFileForLogging();
 	try {
 	    File logDir = new File(Logger.DEFAULT_DIR_NAME);
@@ -170,7 +170,7 @@ public abstract class Logger {
      * @param statement
      *            the message to print
      */
-    public static void logln(String statement) {
+    private static void logln(String statement) {
 	Logger.log(statement + "\n");
     }
 

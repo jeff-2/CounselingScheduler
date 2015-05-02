@@ -65,7 +65,7 @@ public class Schedule {
      */
     private HashMap<Integer, Clinician> clinicians;
 
-    protected Connection conn;
+    private Connection conn;
 
     public Schedule(Connection conn) {
 	this.conn = conn;
@@ -106,7 +106,22 @@ public class Schedule {
 
 	holidays = holidayDAO.loadHolidays();
 	sessions = sessionsDAO.loadSessions();
-	this.calendar = calendarDAO.loadCalendar();
+	
+	// if no calendar in db, use default calendar corresponding to next upcoming semester
+	try {
+	    calendar = calendarDAO.loadCalendar();
+	} catch (SQLException e) {
+	    Calendar cal = Calendar.getInstance();
+	    calendar = new CalendarBean();
+	    calendar.setEcMinHours(10);
+	    calendar.setIaMinHours(10);
+	    calendar.setId(calendarDAO.getNextAvailableId());
+	    Semester semester = Semester.getSemesterStartingClosestTo(cal.getTime());
+	    calendar.setSemester(semester);
+	    calendar.setStartDate(semester.getStartDate());
+	    calendar.setEndDate(semester.getEndDate());
+	    calendarDAO.insertCalendar(calendar);
+	}
 
 	weeks = Week.getSemesterWeeks(calendar);
 	ecSessions = new ArrayList<SessionNameBean>();
@@ -552,7 +567,7 @@ public class Schedule {
      * 
      * @param name
      *            Name of clinician
-     * @return Clinician object assosiated with clinician name
+     * @return Clinician object associated with clinician name
      */
     private Clinician nameToClinician(String name) {
 	for (Clinician c : clinicians.values()) {
@@ -561,5 +576,13 @@ public class Schedule {
 	    }
 	}
 	return null;
+    }
+    
+    /**
+     * Generates a title to display with current semester and year
+     * @return semester title
+     */
+    public String getSemesterTitle() {
+	return calendar.getSemester() + " " + calendar.getYear();
     }
 }

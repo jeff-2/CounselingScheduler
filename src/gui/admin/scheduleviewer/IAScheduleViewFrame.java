@@ -32,10 +32,10 @@ public class IAScheduleViewFrame extends JFrame {
      * 
      * @throws SQLException
      */
-    public IAScheduleViewFrame(List<List<List<String>>> weekACells,
+    public IAScheduleViewFrame(String semesterTitle, List<List<List<String>>> weekACells,
 	    List<List<List<String>>> weekBCells) throws SQLException {
 	super("View IA Schedule");
-	this.iaComponent = new IAScheduleComponent(weekACells, weekBCells);
+	this.iaComponent = new IAScheduleComponent(semesterTitle, weekACells, weekBCells);
 	this.panel = new JPanel();
 	this.panel.setPreferredSize(new Dimension(700, iaComponent
 		.requiredHeight()));

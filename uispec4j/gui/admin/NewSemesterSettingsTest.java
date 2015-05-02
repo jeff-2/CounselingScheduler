@@ -24,6 +24,7 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
+import runner.AdminApplicationRunner;
 import validator.DateRangeValidator;
 import action.ImportClinicianMeetingsActionTest;
 import bean.CalendarBean;
@@ -58,7 +59,7 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
      */
     protected void setUp() throws Exception {
 	super.setUp();
-	setAdapter(new MainClassAdapter(AdminApplication.class, new String[0]));
+	setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
 	con = ConnectionFactory.getInstance();
 	ImportClinicianMeetingsActionTest.generateExcelFile(new Object[][] {
 		{ "Meeting", "Duration", "Start Time", "End Time",

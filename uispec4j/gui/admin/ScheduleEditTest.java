@@ -25,8 +25,9 @@ import org.uispec4j.interception.PopupMenuInterceptor;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
+import runner.AdminApplicationRunner;
+import utils.Utility;
 import bean.IAWeektype;
-import bean.Utility;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 
@@ -48,7 +49,7 @@ public class ScheduleEditTest extends UISpecTestCase {
      */
     protected void setUp() throws Exception {
 	super.setUp();
-	setAdapter(new MainClassAdapter(AdminApplication.class, new String[0]));
+	setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
 	con = ConnectionFactory.getInstance();
 	gen = new TestDataGenerator(con);
     }

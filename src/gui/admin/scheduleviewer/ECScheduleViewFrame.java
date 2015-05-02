@@ -51,7 +51,6 @@ public class ECScheduleViewFrame extends JFrame {
 	this.ecComponent = ecComponent;
 	p.add(ecComponent);
 
-	// Finish
 	this.getContentPane().add(scrollPanel);
 	this.pack();
 	this.setVisible(true);

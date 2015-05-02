@@ -1,6 +1,5 @@
 package bean;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class ClinicianPreferences handles the storage of clinician preferences.
  * 

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import utils.Utility;
 import action.ImportClinicianMeetingsAction;
 import action.InvalidFormDataException;
 import bean.CalendarBean;
@@ -13,7 +14,6 @@ import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
 import bean.DateRange;
 import bean.TimeAwayBean;
-import bean.Utility;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;

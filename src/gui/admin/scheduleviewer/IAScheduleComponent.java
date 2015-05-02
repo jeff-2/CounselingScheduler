@@ -28,9 +28,11 @@ public class IAScheduleComponent extends JComponent implements Printable {
     private static final long serialVersionUID = -7813470335774759257L;
     private List<List<List<String>>> weekACells, weekBCells;
     private List<Integer> pageBreaks = null;
+    private String semesterTitle;
 
-    public IAScheduleComponent(List<List<List<String>>> weekACells,
+    public IAScheduleComponent(String semesterTitle, List<List<List<String>>> weekACells,
 	    List<List<List<String>>> weekBCells) {
+	this.semesterTitle = semesterTitle;
 	this.weekACells = weekACells;
 	this.weekBCells = weekBCells;
 	this.setVisible(true);
@@ -63,8 +65,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 
     private void buildGrid(Graphics2D g) {
 
-	// TODO: change string displayed
-	g.drawString("IA Schedule - Spring 2015", 300, 50);
+	g.drawString(semesterTitle, 300, 50);
 	g.drawString("Week A", 350, 75);
 	int xoffset = 50;
 	int yoffset = 100;

@@ -95,8 +95,8 @@ public class ClinicianLoadPreferencesActionTest {
     @Test
     public void testLoadCommitmentDescriptions() throws SQLException {
 	List<String> expected = new ArrayList<String>();
-	expected.add("Meeting: Doctor's appointment Weekly on Wednesday from 8 to 9");
-	expected.add("Meeting: Staff meeting on Friday, April 3, 2015 from 11 to 12");
+	expected.add("Doctor's appointment: Weekly on Wednesday from 8:00 am to 9:00 am");
+	expected.add("Staff meeting: Friday, April 3, 2015 from 11:00 am to 12:00 pm");
 	Collections.sort(expected);
 	List<List<CommitmentBean>> commitmentList = action.loadCommitments();
 	List<String> actual = action.loadCommitmentDescriptions(commitmentList);

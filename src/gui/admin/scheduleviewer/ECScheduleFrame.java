@@ -1,5 +1,6 @@
 package gui.admin.scheduleviewer;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -74,10 +75,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	controlPanel = new JPanel(new FlowLayout());
 	controlPanel.add(resetButton);
 
-	// Finish
 	this.setLayout(new FlowLayout());
-	this.add(scrollPanel);// , BorderLayout.CENTER);
-	this.add(controlPanel);// , BorderLayout.SOUTH);
+	this.add(scrollPanel);
+	this.add(controlPanel);
     }
 
     /**
@@ -94,7 +94,8 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 
 	JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1,
 		1, 0, 50));
-	editableSchedule.add(new JLabel("Spring 2015 - EC Schedule"));
+	editableSchedule.add(new JLabel(schedule.getSemesterTitle()
+		+ " - EC Schedule"));
 	for (ECScheduleWeekBean week : weeks) {
 	    ECWeeklyComponent curr = new ECWeeklyComponent(week,
 		    clinicianNames, schedule);
@@ -125,7 +126,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 		file = new File(file.getAbsoluteFile() + ".png");
 	    }
 	    try {
-		new ECScheduleComponent(cells).save(file);
+		new ECScheduleComponent(schedule.getSemesterTitle() + " - EC Schedule", cells).save(file);
 	    } catch (IOException e2) {
 		JOptionPane.showMessageDialog(this, "Unable to save to file: "
 			+ file.getAbsolutePath() + ". Please try again.",
@@ -138,7 +139,8 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	List<List<List<String>>> cells = getCells();
 	try {
 	    ECScheduleViewFrame frame = new ECScheduleViewFrame(
-		    new ECScheduleComponent(cells));
+		    new ECScheduleComponent(schedule.getSemesterTitle()
+			    + " - EC Schedule", cells));
 	    frame.printSchedule();
 	} catch (SQLException e1) {
 	    e1.printStackTrace();

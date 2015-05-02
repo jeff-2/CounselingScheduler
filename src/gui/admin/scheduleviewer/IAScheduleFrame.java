@@ -98,7 +98,8 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 		file = new File(file.getAbsoluteFile() + ".png");
 	    }
 	    try {
-		new IAScheduleComponent(
+		new IAScheduleComponent(schedule.getSemesterTitle()
+			+ " - IA Schedule",
 			((IAWeeklyComponent) this.weekA).toCellsArray(),
 			((IAWeeklyComponent) this.weekB).toCellsArray())
 			.save(file);
@@ -113,6 +114,7 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
     public void print() {
 	try {
 	    IAScheduleViewFrame frame = new IAScheduleViewFrame(
+		    schedule.getSemesterTitle() + " - IA Schedule",
 		    ((IAWeeklyComponent) this.weekA).toCellsArray(),
 		    ((IAWeeklyComponent) this.weekB).toCellsArray());
 	    frame.printSchedule();

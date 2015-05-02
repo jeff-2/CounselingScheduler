@@ -32,8 +32,8 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	    575 };
     private int[] pageBreaks = null;
 
-    public ECScheduleComponent(List<List<List<String>>> cells) {
-	title = "Title";
+    public ECScheduleComponent(String title, List<List<List<String>>> cells) {
+	this.title = title;
 	this.cells = cells;
 	this.setPreferredSize(new Dimension(600, 175 + cells.size() * 250));
     }

@@ -1,6 +1,5 @@
 package gui.admin;
 
-import generator.TestDataGenerator;
 import gui.admin.scheduleviewer.ECScheduleFrame;
 import gui.admin.scheduleviewer.IAScheduleFrame;
 
@@ -9,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -75,10 +73,10 @@ public class AdminApplication extends JFrame implements ActionListener {
      */
     public AdminApplication() throws SQLException {
 	super("Generate IA/EC schedule");
-	schedule = Schedule.loadScheduleFromDB();
+        schedule = Schedule.loadScheduleFromDB();
 	ia = new IAScheduleFrame(schedule);
-	ia.setName("IAScheduleFrame");
 	ec = new ECScheduleFrame(schedule);
+	ia.setName("IAScheduleFrame");
 	ec.setName("ECScheduleFrame");
 	tabbedPane = new JTabbedPane();
 	tabbedPane.setName("tabbedPane");
@@ -146,7 +144,6 @@ public class AdminApplication extends JFrame implements ActionListener {
 		    .println("Can't set system look and feel. Using default.");
 	}
 	try {
-	    TestDataGenerator.overwriteAndFillDemoData();
 	    new AdminApplication();
 	} catch (SQLException e) {
 	    JOptionPane
@@ -155,9 +152,7 @@ public class AdminApplication extends JFrame implements ActionListener {
 			    "Unable to launch application due to error with database. "
 				    + "Please check the database connection configuration properties file. ",
 			    "ERROR", JOptionPane.INFORMATION_MESSAGE);
-	} catch (ParseException e) {
-	    JOptionPane.showMessageDialog(null, "Some warning message",
-		    "ERROR", JOptionPane.INFORMATION_MESSAGE);
+	    e.printStackTrace();
 	}
     }
 

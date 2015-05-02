@@ -26,7 +26,7 @@ import dao.SessionsDAO;
  */
 public class GenerateUnfilledScheduleAction {
 
-    protected Connection conn;
+    private Connection conn;
 
     public GenerateUnfilledScheduleAction(Connection connection) {
 	conn = connection;
@@ -42,7 +42,6 @@ public class GenerateUnfilledScheduleAction {
 	sessionsDAO.clearSessions();
 	ArrayList<Date> workDays = this.getWorkDays(calBean);
 
-	// TODO: actually reflect admin prefs (but works for now/development)
 	int[] ecSlots = new int[] { 8, 12, 16 };
 	int[] iaSlots = new int[] { 11, 13, 14, 15 };
 	int ecClinicianMin = 1;

@@ -595,13 +595,12 @@ public class ClinicianForm extends JPanel implements ActionListener {
 	boolean isExternal = externalCommitment.isSelected();
 
 	try {
-	    String commitmentString = "";
+	    String commitmentString = description + ": "
+		    + (!frequency.isEmpty() ? frequency + " on " : "")
+		    + dayOfWeek + " from " + startTime + " to " + endTime;
 	    if (isExternal) {
-		commitmentString += "External ";
+		commitmentString += " [External]";
 	    }
-	    commitmentString += "Meeting: " + description + " " + frequency
-		    + " on " + dayOfWeek + " from " + startTime + " to "
-		    + endTime;
 	    List<CommitmentBean> list = ClinicianFormValidator
 		    .validateCommitment(dateRange, description, startTime,
 			    endTime, dayOfWeek, frequency, isExternal);

@@ -20,6 +20,7 @@ import org.uispec4j.interception.FileChooserHandler;
 import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowInterceptor;
 
+import runner.AdminApplicationRunner;
 import dao.ConnectionFactory;
 
 public class ScheduleSaveTest extends UISpecTestCase {
@@ -31,7 +32,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 
     protected void setUp() throws Exception {
 	super.setUp();
-	setAdapter(new MainClassAdapter(AdminApplication.class, new String[0]));
+	setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
 	conn = ConnectionFactory.getInstance();
 	gen = new TestDataGenerator(conn);
 	gen.clearTables();

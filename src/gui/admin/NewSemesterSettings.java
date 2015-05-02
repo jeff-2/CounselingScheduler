@@ -230,8 +230,10 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 			    int res = JOptionPane
 				    .showConfirmDialog(
 					    NewSemesterSettings.this,
-					    "Changing Semester Settings at this point will delete"
-						    + " all currently provided information. This will require re-submitting clinician preferences",
+					    "Changing Semester Settings will overwrite "
+						    + " any previously entered preferences or information. " 
+						    + "This will require re-submitting any previously provided "
+						    + "clinician preferences",
 					    "Warning",
 					    JOptionPane.OK_CANCEL_OPTION,
 					    JOptionPane.WARNING_MESSAGE);
@@ -293,11 +295,6 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 	addHolidayComponents();
 	addClinicianComponents();
 	addMeetingComponents();
-
-	// this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	// this.getContentPane().add(panel);
-	// this.pack();
-	// this.setVisible(true);
     }
 
     /*
@@ -442,7 +439,8 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 	semesterSeasonBox.setSelectedItem(calendar.getSemester());
 	IAHoursText.setText("" + calendar.getIaMinHours());
 	ECHoursText.setText("" + calendar.getEcMinHours());
-	File f = new File(calendar.getMeetingFilepath());
+	File f = new File(calendar.getMeetingFilepath() == null ? ""
+		: calendar.getMeetingFilepath());
 	if (f.exists()) {
 	    excelFilenameLabel.setText(calendar.getMeetingFilepath());
 	}

@@ -1,7 +1,6 @@
-package gui.clinician;
+package gui.admin;
 
 import generator.TestDataGenerator;
-import gui.admin.AdminApplication;
 
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
@@ -28,6 +27,7 @@ import org.uispec4j.interception.MainClassAdapter;
 import org.uispec4j.interception.WindowHandler;
 import org.uispec4j.interception.WindowInterceptor;
 
+import runner.AdminApplicationRunner;
 import bean.ClinicianBean;
 import bean.ClinicianPreferencesBean;
 import bean.CommitmentBean;
@@ -48,7 +48,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
     @Before
     protected void setUp() throws Exception {
 	super.setUp();
-	setAdapter(new MainClassAdapter(AdminApplication.class, new String[0]));
+	setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
 
 	conn = ConnectionFactory.getInstance();
 	gen = new TestDataGenerator(conn);
@@ -330,7 +330,7 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 			removeTimeAwayButton.click();
 			ListBox commitments = window.getListBox("commitments");
 			commitments
-				.select("Meeting: Some commitment on Thursday, April 9, 2015 from 11 to 12");
+				.select("Some commitment: Thursday, April 9, 2015 from 11:00 am to 12:00 pm");
 			Button removeCommitmentButton = window
 				.getButton("removeCommitmentButton");
 			removeCommitmentButton.click();

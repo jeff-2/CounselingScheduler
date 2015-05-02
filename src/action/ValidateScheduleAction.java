@@ -56,7 +56,7 @@ public class ValidateScheduleAction {
      *            a schedule
      * @return set of clinicians with those conflict
      */
-    public Set<Clinician> validateIAScheduleConflicts(Schedule sch) {
+    private Set<Clinician> validateIAScheduleConflicts(Schedule sch) {
 	Set<Clinician> retset = new HashSet<>();
 	List<Clinician> clinicians = sch.getClinicians();
 	Date startdate = sch.getCalendar().getStartDate();
@@ -379,7 +379,7 @@ public class ValidateScheduleAction {
      * @return set of clinicians with with less than a majority of preferred EC
      *         times
      */
-    public Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
+    private Set<Clinician> validateECAssignmentMeetsPreference(Schedule sch) {
 	List<Clinician> clinicians = sch.getClinicians();
 	Set<Clinician> retSet = new HashSet<>();
 	Map<Clinician, Integer> prefEC = new HashMap<>();
@@ -429,7 +429,7 @@ public class ValidateScheduleAction {
      *            a schedule
      * @return set of clinicians with too little or too many 4:00 EC sessions
      */
-    public Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
+    private Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
 	List<Clinician> clinicians = sch.getClinicians();
 	Set<Clinician> retSet = new HashSet<>();
 	Map<Clinician, Integer> fourEC = new HashMap<>();
