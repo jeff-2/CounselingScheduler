@@ -27,156 +27,207 @@ import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 
 public class ClinicianFormValidatorTest {
-	
-	private TestDataGenerator gen;
-	private CalendarBean calendar;
-	
-	@Before
-	public void setUp() throws Exception {
-		Connection conn = ConnectionFactory.getInstance();
-		gen = new TestDataGenerator(conn);
-		gen.clearTables();
-		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
-		clinicianDAO.insert(new ClinicianBean(0, "Bill"));
-		CalendarDAO calendarDAO = new CalendarDAO(conn);
-		calendar = new CalendarBean();
-		calendar.setId(0);
-		calendar.setSemester(Semester.Fall);
-		calendar.setStartDate(DateRangeValidator.parseDate("3/23/2015"));
-		calendar.setEndDate(DateRangeValidator.parseDate("5/10/2015"));
-		calendar.setIaMinHours(35);
-		calendar.setEcMinHours(44);
-		calendarDAO.insertCalendar(calendar); 
-	}
-	
-	@After
-	public void cleanUp() throws Exception {
-		gen.clearTables();
-	}
 
-	@Test
-	public void testValidateValidTimeAway() throws ParseException, InvalidFormDataException {
-		TimeAwayBean actual = ClinicianFormValidator.validateTimeAway("Bill", "1/25/2015", "1/27/2015");
-		TimeAwayBean expected = new TimeAwayBean(-1, "Bill", DateRangeValidator.parseDate("1/25/2015"), DateRangeValidator.parseDate("1/27/2015"));
-		assertEquals(expected, actual);
+    private TestDataGenerator gen;
+    private CalendarBean calendar;
+
+    @Before
+    public void setUp() throws Exception {
+	Connection conn = ConnectionFactory.getInstance();
+	gen = new TestDataGenerator(conn);
+	gen.clearTables();
+	ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+	clinicianDAO.insert(new ClinicianBean(0, "Bill"));
+	CalendarDAO calendarDAO = new CalendarDAO(conn);
+	calendar = new CalendarBean();
+	calendar.setId(0);
+	calendar.setSemester(Semester.Fall);
+	calendar.setStartDate(DateRangeValidator.parseDate("3/23/2015"));
+	calendar.setEndDate(DateRangeValidator.parseDate("5/10/2015"));
+	calendar.setIaMinHours(35);
+	calendar.setEcMinHours(44);
+	calendarDAO.insertCalendar(calendar);
+    }
+
+    @After
+    public void cleanUp() throws Exception {
+	gen.clearTables();
+    }
+
+    @Test
+    public void testValidateValidTimeAway() throws ParseException,
+	    InvalidFormDataException {
+	TimeAwayBean actual = ClinicianFormValidator.validateTimeAway("Bill",
+		"1/25/2015", "1/27/2015");
+	TimeAwayBean expected = new TimeAwayBean(-1, "Bill",
+		DateRangeValidator.parseDate("1/25/2015"),
+		DateRangeValidator.parseDate("1/27/2015"));
+	assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateInvalidTimeAwayEmptyName() {
+	try {
+	    ClinicianFormValidator.validateTimeAway("", "1/25/2015",
+		    "1/27/2015");
+	    fail();
+	} catch (InvalidFormDataException e) {
+	    assertEquals("You must enter in a description", e.getMessage());
+	    assertEquals("Adding invalid time away description", e.getContext());
 	}
-	
-	@Test
-	public void testValidateInvalidTimeAwayEmptyName() {
-		try {
-			ClinicianFormValidator.validateTimeAway("", "1/25/2015", "1/27/2015");
-			fail();
-		} catch (InvalidFormDataException e) {
-			assertEquals("You must enter in a description", e.getMessage());
-			assertEquals("Adding invalid time away description", e.getContext());
-		}
+    }
+
+    @Test
+    public void testValidateInvalidTimeAwayInvalidDate() {
+	try {
+	    ClinicianFormValidator.validateTimeAway("Bill", "15/25/2015",
+		    "1/27/2015");
+	    fail();
+	} catch (InvalidFormDataException e) {
+	    assertEquals(
+		    "Cannot add the time away to the list. "
+			    + "The date 15/25/2015 must be a valid date of the form mm/dd/yyyy. For example March 3, 1994 should be entered as 3/3/1994.",
+		    e.getMessage());
+	    assertEquals("Adding invalid time away", e.getContext());
 	}
-	
-	@Test
-	public void testValidateInvalidTimeAwayInvalidDate() {
-		try {
-			ClinicianFormValidator.validateTimeAway("Bill", "15/25/2015", "1/27/2015");
-			fail();
-		} catch (InvalidFormDataException e) {
-			assertEquals("Cannot add the time away to the list. " + "The date 15/25/2015 must be a valid date of the form mm/dd/yyyy. For example March 3, 1994 should be entered as 3/3/1994.", e.getMessage());
-			assertEquals("Adding invalid time away", e.getContext());
-		}
+    }
+
+    @Test
+    public void testValidateValidPreferencesNonAdmin()
+	    throws InvalidFormDataException, SQLException {
+	ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 3,
+		1, 2, 35, 44);
+	ClinicianPreferencesBean actual = ClinicianFormValidator
+		.validatePreferences("Bill", 3, 1, 2, null, null, false);
+	assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateValidPreferencesAdmin()
+	    throws InvalidFormDataException, SQLException {
+	ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 3,
+		1, 2, 15, 7);
+	ClinicianPreferencesBean actual = ClinicianFormValidator
+		.validatePreferences("Bill", 3, 1, 2, "15", "7", true);
+	assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateInvalidPreferencesInvalidName() throws SQLException {
+	try {
+	    ClinicianFormValidator.validatePreferences("Charles", 3, 1, 2,
+		    null, null, false);
+	    fail();
+	} catch (InvalidFormDataException e) {
+	    assertEquals("You must enter in a valid clinician name",
+		    e.getMessage());
+	    assertEquals("Adding invalid clinician name", e.getContext());
 	}
-	
-	@Test
-	public void testValidateValidPreferencesNonAdmin() throws InvalidFormDataException, SQLException {
-		ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 3, 1, 2, 35, 44);
-		ClinicianPreferencesBean actual = ClinicianFormValidator.validatePreferences("Bill", 3, 1, 2, null, null, false);
-		assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateInvalidPreferencesInvalidRanks()
+	    throws SQLException {
+	try {
+	    ClinicianFormValidator.validatePreferences("Bill", 3, 1, 1, null,
+		    null, false);
+	    fail();
+	} catch (InvalidFormDataException e) {
+	    assertEquals(
+		    "You must enter unique ranks for each time preference",
+		    e.getMessage());
+	    assertEquals("Adding clinician ec preferences", e.getContext());
 	}
-	
-	@Test
-	public void testValidateValidPreferencesAdmin() throws InvalidFormDataException, SQLException {
-		ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 3, 1, 2, 15, 7);
-		ClinicianPreferencesBean actual = ClinicianFormValidator.validatePreferences("Bill", 3, 1, 2, "15", "7", true);
-		assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateValidCommitmentBiweeklyNonExternal()
+	    throws InvalidFormDataException, ParseException {
+	List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
+	expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator
+		.parseDate("3/23/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator
+		.parseDate("4/6/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator
+		.parseDate("4/20/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator
+		.parseDate("5/4/2015"), "meeting"));
+	List<CommitmentBean> actual = ClinicianFormValidator
+		.validateCommitment(new DateRange(calendar.getStartDate(),
+			calendar.getEndDate()), "meeting", "9:30am", "10:00am",
+			"Monday", "Biweekly", false);
+	assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateValidCommitmentWeeklyExternal()
+	    throws InvalidFormDataException, ParseException {
+	List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("3/23/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("3/30/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("4/6/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("4/13/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("4/20/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("4/27/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator
+		.parseDate("5/4/2015"), "meeting"));
+	List<CommitmentBean> actual = ClinicianFormValidator
+		.validateCommitment(new DateRange(calendar.getStartDate(),
+			calendar.getEndDate()), "meeting", "10:00am",
+			"10:30am", "Monday", "Weekly", true);
+	assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateValidCommitmentMonthlyNonExternal()
+	    throws InvalidFormDataException, ParseException {
+	List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
+	expected.add(new CommitmentBean(-1, 10, 11, DateRangeValidator
+		.parseDate("4/6/2015"), "meeting"));
+	expected.add(new CommitmentBean(-1, 10, 11, DateRangeValidator
+		.parseDate("5/4/2015"), "meeting"));
+	List<CommitmentBean> actual = ClinicianFormValidator
+		.validateCommitment(new DateRange(calendar.getStartDate(),
+			calendar.getEndDate()), "meeting", "10:00am",
+			"10:30am", "Monday", "Monthly", false);
+	assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testValidateInvalidCommitmentInvalidTimes() {
+	try {
+	    ClinicianFormValidator.validateCommitment(
+		    new DateRange(calendar.getStartDate(), calendar
+			    .getEndDate()), "meeting", "10:30am", "10:00am",
+		    "Monday", "Biweekly", false);
+	    fail();
+	} catch (InvalidFormDataException e) {
+	    assertEquals(
+		    "The start time must be before the end time of the commitment",
+		    e.getMessage());
+	    assertEquals("Adding invalid time range for commitment",
+		    e.getContext());
 	}
-	
-	@Test
-	public void testValidateInvalidPreferencesInvalidName() throws SQLException {
-		try {
-			ClinicianFormValidator.validatePreferences("Charles", 3, 1, 2, null, null, false);
-			fail();
-		} catch (InvalidFormDataException e) {
-			assertEquals("You must enter in a valid clinician name", e.getMessage());
-			assertEquals("Adding invalid clinician name", e.getContext());
-		}
+    }
+
+    @Test
+    public void testValidateInvalidCommitmentInvalidDescription() {
+	try {
+	    ClinicianFormValidator.validateCommitment(
+		    new DateRange(calendar.getStartDate(), calendar
+			    .getEndDate()), "", "9:00am", "10:00am", "Monday",
+		    "Biweekly", false);
+	    fail();
+	} catch (InvalidFormDataException e) {
+	    assertEquals("You must enter in a description", e.getMessage());
+	    assertEquals("Adding invalid commitment description",
+		    e.getContext());
 	}
-	
-	@Test
-	public void testValidateInvalidPreferencesInvalidRanks() throws SQLException {
-		try {
-			ClinicianFormValidator.validatePreferences("Bill", 3, 1, 1, null, null, false);
-			fail();
-		} catch (InvalidFormDataException e) {
-			assertEquals("You must enter unique ranks for each time preference", e.getMessage());
-			assertEquals("Adding clinician ec preferences", e.getContext());
-		}
-	}
-	
-	@Test
-	public void testValidateValidCommitmentBiweeklyNonExternal() throws InvalidFormDataException, ParseException {
-		List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
-		expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator.parseDate("3/23/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator.parseDate("4/6/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator.parseDate("4/20/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 10, DateRangeValidator.parseDate("5/4/2015"), "meeting"));
-		List<CommitmentBean> actual = ClinicianFormValidator.validateCommitment(new DateRange(calendar.getStartDate(), calendar.getEndDate()),
-				"meeting", "9:30am", "10:00am", "Monday", "Biweekly", false);
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testValidateValidCommitmentWeeklyExternal() throws InvalidFormDataException, ParseException {
-		List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("3/23/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("3/30/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("4/6/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("4/13/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("4/20/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("4/27/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 9, 11, DateRangeValidator.parseDate("5/4/2015"), "meeting"));
-		List<CommitmentBean> actual = ClinicianFormValidator.validateCommitment(new DateRange(calendar.getStartDate(), calendar.getEndDate()),
-				"meeting", "10:00am", "10:30am", "Monday", "Weekly", true);
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testValidateValidCommitmentMonthlyNonExternal() throws InvalidFormDataException, ParseException {
-		List<CommitmentBean> expected = new ArrayList<CommitmentBean>();
-		expected.add(new CommitmentBean(-1, 10, 11, DateRangeValidator.parseDate("4/6/2015"), "meeting"));
-		expected.add(new CommitmentBean(-1, 10, 11, DateRangeValidator.parseDate("5/4/2015"), "meeting"));
-		List<CommitmentBean> actual = ClinicianFormValidator.validateCommitment(new DateRange(calendar.getStartDate(), calendar.getEndDate()),
-				"meeting", "10:00am", "10:30am", "Monday", "Monthly", false);
-		assertEquals(expected, actual);
-	}
-	
-	@Test
-	public void testValidateInvalidCommitmentInvalidTimes() {
-		try {
-			ClinicianFormValidator.validateCommitment(new DateRange(calendar.getStartDate(), calendar.getEndDate()),
-					"meeting", "10:30am", "10:00am", "Monday", "Biweekly", false);
-			fail();
-		} catch (InvalidFormDataException e) {
-			assertEquals("The start time must be before the end time of the commitment", e.getMessage());
-			assertEquals("Adding invalid time range for commitment", e.getContext());
-		}
-	}
-	
-	@Test
-	public void testValidateInvalidCommitmentInvalidDescription() {
-		try {
-			ClinicianFormValidator.validateCommitment(new DateRange(calendar.getStartDate(), calendar.getEndDate()),
-					"", "9:00am", "10:00am", "Monday", "Biweekly", false);
-			fail();
-		} catch (InvalidFormDataException e) {
-			assertEquals("You must enter in a description", e.getMessage());
-			assertEquals("Adding invalid commitment description", e.getContext());
-		}
-	}
+    }
 }

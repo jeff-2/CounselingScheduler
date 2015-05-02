@@ -21,54 +21,58 @@ import javax.swing.JScrollPane;
  */
 public class IAScheduleViewFrame extends JFrame {
 
-	private static final long serialVersionUID = -4271567771784608985L;
-	
-	private JPanel panel;
-	private JScrollPane pane;
-	private IAScheduleComponent iaComponent;
-	
-	/**
-	 * Create an empty client ID list
-	 * @throws SQLException 
-	 */
-	public IAScheduleViewFrame(List<List<List<String>>> weekACells, List<List<List<String>>> weekBCells) throws SQLException {
-		super("View IA Schedule");
-		this.iaComponent = new IAScheduleComponent(weekACells, weekBCells);
-		this.panel = new JPanel();
-		this.panel.setPreferredSize(new Dimension(700, iaComponent.requiredHeight()));
-		this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
-		this.panel.setBackground(Color.WHITE);
-		this.panel.add(iaComponent);
-		this.pane = new JScrollPane(this.panel);
-		this.pane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		this.setContentPane(this.pane);
-		this.initializeFrame();
-		this.setLocationRelativeTo(null); 	// Center JFrame in middle of screen
-	}
+    private static final long serialVersionUID = -4271567771784608985L;
 
-	/**
-	 * Set up the components of this JFrame, pack, and make it visible
-	 */
-	private void initializeFrame() {
-		this.getContentPane().setPreferredSize(new Dimension(700, 800));
-		this.pack();
-		this.setVisible(true);
-	}
+    private JPanel panel;
+    private JScrollPane pane;
+    private IAScheduleComponent iaComponent;
 
-	private void openPrintDialog() {
-        PrinterJob job = PrinterJob.getPrinterJob();
-        job.setPrintable((Printable) iaComponent);
-        boolean ok = job.printDialog();
-        if (ok) {
-            try {
-                 job.print();
-            } catch (PrinterException ex) {
-             /* The job did not successfully complete */
-            }
-        }
+    /**
+     * Create an empty client ID list
+     * 
+     * @throws SQLException
+     */
+    public IAScheduleViewFrame(List<List<List<String>>> weekACells,
+	    List<List<List<String>>> weekBCells) throws SQLException {
+	super("View IA Schedule");
+	this.iaComponent = new IAScheduleComponent(weekACells, weekBCells);
+	this.panel = new JPanel();
+	this.panel.setPreferredSize(new Dimension(700, iaComponent
+		.requiredHeight()));
+	this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
+	this.panel.setBackground(Color.WHITE);
+	this.panel.add(iaComponent);
+	this.pane = new JScrollPane(this.panel);
+	this.pane
+		.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+	this.setContentPane(this.pane);
+	this.initializeFrame();
+	this.setLocationRelativeTo(null); // Center JFrame in middle of screen
+    }
+
+    /**
+     * Set up the components of this JFrame, pack, and make it visible
+     */
+    private void initializeFrame() {
+	this.getContentPane().setPreferredSize(new Dimension(700, 800));
+	this.pack();
+	this.setVisible(true);
+    }
+
+    private void openPrintDialog() {
+	PrinterJob job = PrinterJob.getPrinterJob();
+	job.setPrintable((Printable) iaComponent);
+	boolean ok = job.printDialog();
+	if (ok) {
+	    try {
+		job.print();
+	    } catch (PrinterException ex) {
+		/* The job did not successfully complete */
+	    }
 	}
-	
-	public void printSchedule() {
-		this.openPrintDialog();
-	}
+    }
+
+    public void printSchedule() {
+	this.openPrintDialog();
+    }
 }

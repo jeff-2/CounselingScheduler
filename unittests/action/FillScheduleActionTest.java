@@ -21,51 +21,54 @@ import dao.SessionsDAO;
  *
  */
 public class FillScheduleActionTest {
-	
-	private Connection conn;
-	private TestDataGenerator gen;
-	private SessionsDAO sessionsDAO;
-	
-	@Before
-	public void setUp() throws Exception {
-		conn = ConnectionFactory.getInstance();
-		gen = new TestDataGenerator(conn);
-		gen.clearTables();
-		gen.generateStandardDataset();
-		sessionsDAO = new SessionsDAO(conn);
-		GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(conn);
-		action.generateUnfilledSchedule();
-		FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
-		fillScheduleAction.fillSchedule();
-	}
-	
-	@Test
-	public void iaSessionsHaveMultipleCliniciansTest() throws Exception{
-		List<SessionBean> allSessions = sessionsDAO.loadSessions();
-		int numOfNotThreeOrFive = 0;
-		for (SessionBean sb : allSessions) {
-			if (sb.getType().equals(SessionType.IA)) {
-				int numClinicians = sessionsDAO.loadSessionClinicians(sb.getID()).size();
-				if (!(numClinicians == 3 || numClinicians == 5)) {
-					numOfNotThreeOrFive++;
-				}
-			}
+
+    private Connection conn;
+    private TestDataGenerator gen;
+    private SessionsDAO sessionsDAO;
+
+    @Before
+    public void setUp() throws Exception {
+	conn = ConnectionFactory.getInstance();
+	gen = new TestDataGenerator(conn);
+	gen.clearTables();
+	gen.generateStandardDataset();
+	sessionsDAO = new SessionsDAO(conn);
+	GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(
+		conn);
+	action.generateUnfilledSchedule();
+	FillScheduleAction fillScheduleAction = new FillScheduleAction(conn);
+	fillScheduleAction.fillSchedule();
+    }
+
+    @Test
+    public void iaSessionsHaveMultipleCliniciansTest() throws Exception {
+	List<SessionBean> allSessions = sessionsDAO.loadSessions();
+	int numOfNotThreeOrFive = 0;
+	for (SessionBean sb : allSessions) {
+	    if (sb.getType().equals(SessionType.IA)) {
+		int numClinicians = sessionsDAO.loadSessionClinicians(
+			sb.getID()).size();
+		if (!(numClinicians == 3 || numClinicians == 5)) {
+		    numOfNotThreeOrFive++;
 		}
-		assertEquals(0, numOfNotThreeOrFive);
+	    }
 	}
-	
-	@Test
-	public void ecSessionsOneToOneTest() throws Exception {
-		List<SessionBean> allSessions = sessionsDAO.loadSessions();
-		for (SessionBean sb : allSessions) {
-			if (sb.getType().equals(SessionType.EC)) {
-				assertEquals(1, sessionsDAO.loadSessionClinicians(sb.getID()).size());
-			}
-		}	
+	assertEquals(0, numOfNotThreeOrFive);
+    }
+
+    @Test
+    public void ecSessionsOneToOneTest() throws Exception {
+	List<SessionBean> allSessions = sessionsDAO.loadSessions();
+	for (SessionBean sb : allSessions) {
+	    if (sb.getType().equals(SessionType.EC)) {
+		assertEquals(1, sessionsDAO.loadSessionClinicians(sb.getID())
+			.size());
+	    }
 	}
-	
-	@After
-	public void tearDown() throws Exception {
-		gen.clearTables();
-	}
+    }
+
+    @After
+    public void tearDown() throws Exception {
+	gen.clearTables();
+    }
 }

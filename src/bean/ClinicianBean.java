@@ -4,98 +4,111 @@ package bean;
  * The Class Clinician handles the storage of clinician data.
  */
 public class ClinicianBean implements Comparable<ClinicianBean> {
-	
-	/** The clinician id. */
-	private int clinicianID;
-	
-	/** The name. */
-	private String name;
-	
-	/**
-	 * Instantiates a new clinician.
-	 *
-	 * @param id the id
-	 * @param n the n
-	 */
-	public ClinicianBean(int id, String n) {
-		clinicianID = id;
-		name = n;
-	}
 
-	/**
-	 * Gets the clinician id.
-	 *
-	 * @return the clinician id
-	 */
-	public int getClinicianID() {
-		return clinicianID;
-	}
+    /** The clinician id. */
+    private int clinicianID;
 
-	/**
-	 * Sets the clinician id.
-	 *
-	 * @param id the new clinician id
-	 */
-	public void setClinicianID(int id) {
-		clinicianID = id;
-	}
+    /** The name. */
+    private String name;
 
-	/**
-	 * Gets the name.
-	 *
-	 * @return the name
-	 */
-	public String getName() {
-		return name;
-	}
+    /**
+     * Instantiates a new clinician.
+     *
+     * @param id
+     *            the id
+     * @param n
+     *            the n
+     */
+    public ClinicianBean(int id, String n) {
+	clinicianID = id;
+	name = n;
+    }
 
-	/**
-	 * Sets the name.
-	 *
-	 * @param n the new name
-	 */
-	public void setName(String n) {
-		name = n;
-	}
+    /**
+     * Gets the clinician id.
+     *
+     * @return the clinician id
+     */
+    public int getClinicianID() {
+	return clinicianID;
+    }
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
-	public boolean equals(Object other) {
-		if (this == other) {
-			return true;
-		}
-		if (other == null) {
-			return false;
-		}
-		if (!(other instanceof ClinicianBean)) {
-			return false;
-		}
-		ClinicianBean clinician = (ClinicianBean)other;
-		return clinicianID == clinician.clinicianID && name.equals(clinician.name);
+    /**
+     * Sets the clinician id.
+     *
+     * @param id
+     *            the new clinician id
+     */
+    public void setClinicianID(int id) {
+	clinicianID = id;
+    }
+
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
+    public String getName() {
+	return name;
+    }
+
+    /**
+     * Sets the name.
+     *
+     * @param n
+     *            the new name
+     */
+    public void setName(String n) {
+	name = n;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    public boolean equals(Object other) {
+	if (this == other) {
+	    return true;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 */
-	@Override
-	public int hashCode() {
-		return clinicianID;
+	if (other == null) {
+	    return false;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	@Override
-	public int compareTo(ClinicianBean other) {
-		return this.name.compareTo(other.name);
+	if (!(other instanceof ClinicianBean)) {
+	    return false;
 	}
-	
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return this.name;
-	}
+	ClinicianBean clinician = (ClinicianBean) other;
+	return clinicianID == clinician.clinicianID
+		&& name.equals(clinician.name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode() {
+	return clinicianID;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(ClinicianBean other) {
+	return this.name.compareTo(other.name);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+	return this.name;
+    }
 }

@@ -12,42 +12,43 @@ import java.util.List;
 import dao.ConnectionFactory;
 
 public class DBBuilder {
-	
-	private static final String DROP_TABLES = "sql/dropTables.sql";
-	private static final String CREATE_TABLES = "sql/createTables.sql";
 
-	public static void main(String[] args) {
-		try {
-			rebuildAll();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    private static final String DROP_TABLES = "sql/dropTables.sql";
+    private static final String CREATE_TABLES = "sql/createTables.sql";
 
-	public static void rebuildAll() throws SQLException, IOException {
-		dropTables();
-		createTables();
+    public static void main(String[] args) {
+	try {
+	    rebuildAll();
+	} catch (SQLException e) {
+	    e.printStackTrace();
+	} catch (IOException e) {
+	    e.printStackTrace();
 	}
+    }
 
-	public static void dropTables() throws SQLException, IOException {
-		executeSQLFile(DROP_TABLES);
-	}
+    public static void rebuildAll() throws SQLException, IOException {
+	dropTables();
+	createTables();
+    }
 
-	public static void createTables() throws SQLException, IOException {
-		executeSQLFile(CREATE_TABLES);
-	}
+    public static void dropTables() throws SQLException, IOException {
+	executeSQLFile(DROP_TABLES);
+    }
 
-	public static void executeSQLFile(String path) throws SQLException, IOException {
-		byte [] file = Files.readAllBytes(Paths.get(path));
-		String fileContents = new String(file);
-		List<String> queries = Arrays.asList(fileContents.split(";"));
-		Connection conn = ConnectionFactory.getInstance();
-		Statement stmt = conn.createStatement();
-		for (String query : queries) {
-			stmt.execute(query);
-		}
-		stmt.close();
+    public static void createTables() throws SQLException, IOException {
+	executeSQLFile(CREATE_TABLES);
+    }
+
+    public static void executeSQLFile(String path) throws SQLException,
+	    IOException {
+	byte[] file = Files.readAllBytes(Paths.get(path));
+	String fileContents = new String(file);
+	List<String> queries = Arrays.asList(fileContents.split(";"));
+	Connection conn = ConnectionFactory.getInstance();
+	Statement stmt = conn.createStatement();
+	for (String query : queries) {
+	    stmt.execute(query);
 	}
+	stmt.close();
+    }
 }
