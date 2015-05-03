@@ -49,7 +49,7 @@ public class ECWeeklyComponent extends JPanel implements ActionListener {
 	/** The combo boxes. */
 	private List<JComboBox<String>> comboBoxes;
 
-	/** The session i ds. */
+	/** The session ids. */
 	private Map<String, String> sessionIDs;
 
 	/** The schedule. */
@@ -110,9 +110,7 @@ public class ECWeeklyComponent extends JPanel implements ActionListener {
 					comboBoxes.add(assignedClinician);
 					sessionIDs.put(key, ids.get(r).get(c));
 					assignedClinician.setName("" + ids.get(r).get(c));
-
 				}
-
 				pane[r][c] = comp;
 				add(comp);
 				comp.setBorder(BorderFactory.createLineBorder(Color.black));
@@ -121,7 +119,7 @@ public class ECWeeklyComponent extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Converts the ec schedule components to a grid of strings.
+	 * Converts the EC schedule components to a grid of strings.
 	 *
 	 * @return the list
 	 */
@@ -185,7 +183,6 @@ public class ECWeeklyComponent extends JPanel implements ActionListener {
 			JOptionPane.showMessageDialog(this, errorString,
 					"Validation Error", JOptionPane.ERROR_MESSAGE);
 		}
-
 	}
 
 	/**

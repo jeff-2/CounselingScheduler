@@ -67,7 +67,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 
 	/**
-	 * Required height for this ia schedule.
+	 * Required height for this IA schedule.
 	 *
 	 * @return the int
 	 */
@@ -91,10 +91,10 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 
 	/**
-	 * Builds the grid for this ia schedule.
+	 * Builds the grid for this IA schedule.
 	 *
 	 * @param g
-	 *            the g
+	 *            the graphics
 	 */
 	private void buildGrid(Graphics2D g) {
 
@@ -122,20 +122,20 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 
 	/**
-	 * Draw row of the ia schedule.
+	 * Draw row of the IA schedule.
 	 *
 	 * @param g
-	 *            the g
+	 *            the graphics
 	 * @param x
-	 *            the x
+	 *            the x-position
 	 * @param y
-	 *            the y
+	 *            the y-position
 	 * @param rowLabel
 	 *            the row label
 	 * @param entries
-	 *            the entries
+	 *            the string entries
 	 * @param cols
-	 *            the cols
+	 *            the columns
 	 * @return the int
 	 */
 	private int drawRow(Graphics2D g, int x, int y, String rowLabel,
@@ -252,7 +252,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 
 	/**
-	 * Gets image representation of this ia schedule.
+	 * Gets image representation of this IA schedule.
 	 *
 	 * @param component
 	 *            the component
@@ -272,7 +272,7 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
 
 	/**
-	 * Save this ia schedule to an image.
+	 * Save this IA schedule to an image.
 	 *
 	 * @param imageFile
 	 *            the image file

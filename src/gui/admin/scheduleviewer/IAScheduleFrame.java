@@ -60,7 +60,7 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	 * Create an empty client ID list.
 	 *
 	 * @param s
-	 *            the s
+	 *            the schedule
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
@@ -111,7 +111,7 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Saves the ia schedule to an image.
+	 * Saves the IA schedule to an image.
 	 */
 	public void save() {
 		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -134,7 +134,7 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Prints the ia schedule.
+	 * Prints the IA schedule.
 	 */
 	public void print() {
 		try {

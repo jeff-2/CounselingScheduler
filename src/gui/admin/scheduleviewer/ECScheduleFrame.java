@@ -43,7 +43,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	/** The scroll panel. */
 	private JScrollPane scrollPanel;
 
-	/** The ec components. */
+	/** The EC components. */
 	private List<ECWeeklyComponent> ecComponents;
 
 	/** The reset button. */
@@ -62,16 +62,13 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	 * Create an empty client ID list.
 	 *
 	 * @param s
-	 *            the s
+	 *            the schedule
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
 	public ECScheduleFrame(Schedule s) throws SQLException {
 		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
 		this.schedule = s;
-
-		this.scrollPanel = new JScrollPane();
-
 		this.scrollPanel = new JScrollPane();
 		loadEditableSchedule();
 		this.scrollPanel.setPreferredSize(new Dimension(700, 750));
@@ -118,15 +115,13 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 			editableSchedule.add(curr);
 			ecComponents.add(curr);
 		}
-
 		editableSchedule.setBackground(Color.white);
-
 		scrollPanel.setViewportView(editableSchedule);
 		repaint();
 	}
 
 	/**
-	 * Gets the representation of the ec schedule as a grid of strings.
+	 * Gets the representation of the EC schedule as a grid of strings.
 	 *
 	 * @return the cells as strings in the ec schedule
 	 */
@@ -140,7 +135,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Saves the ec schedule to an image file.
+	 * Saves the EC schedule to an image file.
 	 */
 	public void save() {
 		List<List<List<String>>> cells = getCells();
@@ -161,7 +156,7 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Prints the ec schedule.
+	 * Prints the EC schedule.
 	 */
 	public void print() {
 		List<List<List<String>>> cells = getCells();

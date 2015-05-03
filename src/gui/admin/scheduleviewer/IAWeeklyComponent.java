@@ -69,7 +69,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	private static final int[] rowLabels = { 11, 12, 13, 14, 15 };
 
 	/**
-	 * Converts ia components to grid of strings.
+	 * Converts IA components to a grid of strings.
 	 *
 	 * @return the list
 	 */
@@ -226,7 +226,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	 *            the day
 	 * @param time
 	 *            the time
-	 * @return the clinicians
+	 * @return list of clinicians
 	 */
 	private List<String> getClinicians(List<SessionNameBean> sessions,
 			Weekday day, int time) {
@@ -277,7 +277,7 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 		 * @param row
 		 *            the row
 		 * @param col
-		 *            the col
+		 *            the column
 		 * @param weeklyComponent
 		 *            the weekly component
 		 */
@@ -328,7 +328,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 				support.setDropAction(action);
 				return true;
 			}
-
 			return false;
 		}
 
@@ -402,7 +401,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 		 * )
 		 */
 		public Transferable createTransferable(JComponent comp) {
-
 			@SuppressWarnings("unchecked")
 			JList<String> l = (JList<String>) ((JScrollPane) pane[row][column])
 					.getViewport().getView();
@@ -424,7 +422,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 			if (action != MOVE) {
 				return;
 			}
-
 			String componentName = comp.getName();
 			exportIsTypeA = componentName.split("-")[0].equals("A");
 			exportDay = Integer.parseInt(componentName.split("-")[1]);
@@ -459,7 +456,6 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 
 			JOptionPane.showMessageDialog(weeklyComponent, errorString,
 					"Validation Error", JOptionPane.ERROR_MESSAGE);
-
 		}
 	}
 

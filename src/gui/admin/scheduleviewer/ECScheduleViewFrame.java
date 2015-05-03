@@ -27,11 +27,11 @@ public class ECScheduleViewFrame extends JFrame {
 	/** The scroll panel. */
 	private JScrollPane scrollPanel;
 
-	/** The ec component. */
+	/** The EC component. */
 	private ECScheduleComponent ecComponent;
 
 	/**
-	 * Create an empty client ID list.
+	 * Creates an empty client ID list.
 	 *
 	 * @param ecComponent
 	 *            the ec component
@@ -80,7 +80,7 @@ public class ECScheduleViewFrame extends JFrame {
 	}
 
 	/**
-	 * Prints the ec schedule.
+	 * Prints the EC schedule.
 	 */
 	public void printSchedule() {
 		this.openPrintDialog();

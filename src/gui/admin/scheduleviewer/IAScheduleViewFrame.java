@@ -29,7 +29,7 @@ public class IAScheduleViewFrame extends JFrame {
 	/** The pane. */
 	private JScrollPane pane;
 
-	/** The ia component. */
+	/** The IA component. */
 	private IAScheduleComponent iaComponent;
 
 	/**
@@ -38,9 +38,9 @@ public class IAScheduleViewFrame extends JFrame {
 	 * @param semesterTitle
 	 *            the semester title
 	 * @param weekACells
-	 *            the week a cells
+	 *            the week A cells for the IA schedule
 	 * @param weekBCells
-	 *            the week b cells
+	 *            the week B cells for the IA schedule
 	 * @throws SQLException
 	 *             the SQL exception
 	 */
@@ -90,7 +90,7 @@ public class IAScheduleViewFrame extends JFrame {
 	}
 
 	/**
-	 * Prints the ia schedule.
+	 * Prints the IA schedule.
 	 */
 	public void printSchedule() {
 		this.openPrintDialog();

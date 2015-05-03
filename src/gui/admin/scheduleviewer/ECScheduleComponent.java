@@ -78,15 +78,15 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	 * Draws a row of the ec schedule.
 	 *
 	 * @param g
-	 *            the g
+	 *            the graphics
 	 * @param x
-	 *            the x
+	 *            the x-position
 	 * @param y
-	 *            the y
+	 *            the y-position
 	 * @param cells
 	 *            the cells
 	 * @param cols
-	 *            the cols
+	 *            the columns
 	 * @return the int
 	 */
 	private int drawRow(Graphics2D g, int x, int y, List<String> cells,
