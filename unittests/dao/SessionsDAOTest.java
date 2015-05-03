@@ -41,7 +41,9 @@ public class SessionsDAOTest {
 	private List<Integer> clinicians;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, clearing the database tables, and
+	 * inserting two clinicians to the database for testing.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -63,7 +65,7 @@ public class SessionsDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

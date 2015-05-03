@@ -31,7 +31,8 @@ public class CommitmentsDAOTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, then clearing the commitments table
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -45,7 +46,7 @@ public class CommitmentsDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the commitments table.
 	 *
 	 * @throws Exception
 	 *             the exception

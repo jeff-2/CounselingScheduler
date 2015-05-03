@@ -26,7 +26,7 @@ public class DBUtilsTest {
 	private File configFile;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by creating a temporary config file.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -37,7 +37,7 @@ public class DBUtilsTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Deletes the temporary config file.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception

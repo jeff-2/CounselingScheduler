@@ -29,7 +29,8 @@ public class ScheduleProgramTest {
 	private Schedule schedule;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by generating demo data and assigning clinicians
+	 * to appointment slots using the linear program.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -41,7 +42,7 @@ public class ScheduleProgramTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Deletes the log files created from the assignments.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -57,7 +58,7 @@ public class ScheduleProgramTest {
 	}
 
 	/**
-	 * Test that all ec sessions are filled.
+	 * Test that all EC sessions are filled.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -74,7 +75,7 @@ public class ScheduleProgramTest {
 	}
 
 	/**
-	 * Test that all ia sessions are filled.
+	 * Test that all IA sessions are filled.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -93,7 +94,7 @@ public class ScheduleProgramTest {
 	}
 
 	/**
-	 * Test that each clinician has no more than one ec per week.
+	 * Test that each clinician has no more than one EC per week.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -118,7 +119,7 @@ public class ScheduleProgramTest {
 	}
 
 	/**
-	 * Test that each clinician has no more than one ia per day.
+	 * Test that each clinician has no more than one IA per day.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception

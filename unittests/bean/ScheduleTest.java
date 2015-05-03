@@ -30,7 +30,8 @@ public class ScheduleTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, clearing
+	 * the tables, and generating the standard dataset.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -75,7 +76,7 @@ public class ScheduleTest {
 	}
 
 	/**
-	 * Test assignment of clinicians to schedule is done.
+	 * Test assignment of clinicians to schedule finishes.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -103,7 +104,7 @@ public class ScheduleTest {
 	}
 
 	/**
-	 * Test edit ec schedule.
+	 * Test edit EC schedule.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -132,7 +133,7 @@ public class ScheduleTest {
 	}
 
 	/**
-	 * Test removing an ia clinician.
+	 * Test removing an IA clinician.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -150,7 +151,7 @@ public class ScheduleTest {
 	}
 
 	/**
-	 * Tests adding an ia clinician.
+	 * Tests adding an IA clinician.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -189,7 +190,7 @@ public class ScheduleTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

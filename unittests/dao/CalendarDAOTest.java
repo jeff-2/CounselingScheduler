@@ -34,7 +34,8 @@ public class CalendarDAOTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, then clearing the calendar table.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -48,7 +49,7 @@ public class CalendarDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the calendar table in the database.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -116,6 +117,5 @@ public class CalendarDAOTest {
 		stmt.execute("INSERT INTO Calendar (id, startDate, endDate, iaMinHours,"
 				+ "ecMinHours, term) VALUES(0, '2000-01-02', '2000-01-03', 5, 6, 0),"
 				+ "(1, '2000-02-02', '2000-02-03', 7, 8, 0)");
-
 	}
 }

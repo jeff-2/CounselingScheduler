@@ -39,7 +39,8 @@ public class ClinicianFormValidatorTest {
 	private CalendarBean calendar;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection and
+	 * generating test data.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -63,7 +64,7 @@ public class ClinicianFormValidatorTest {
 	}
 
 	/**
-	 * Clean up.
+	 * Clean up. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

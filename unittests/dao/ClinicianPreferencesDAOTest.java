@@ -30,7 +30,9 @@ public class ClinicianPreferencesDAOTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, then clearing the clinician preferences 
+	 * table
 	 *
 	 * @throws Exception
 	 *             the exception

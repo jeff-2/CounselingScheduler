@@ -36,7 +36,7 @@ public class TestDataGenerator {
 	 * Instantiates a new test data generator.
 	 *
 	 * @param con
-	 *            the con
+	 *            the connection to the database
 	 */
 	public TestDataGenerator(Connection con) {
 		this.conn = con;
@@ -438,5 +438,4 @@ public class TestDataGenerator {
 		gen.clearTables();
 		gen.generateStandardDataset();
 	}
-
 }

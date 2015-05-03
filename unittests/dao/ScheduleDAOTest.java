@@ -15,7 +15,7 @@ import action.GenerateUnfilledScheduleAction;
 import bean.SessionNameBean;
 
 /**
- * A JUnit test for the ScheduleDAO class.
+ * A JUnit tester for the ScheduleDAO class.
  *
  * @author ramusa2, lim92
  */
@@ -31,7 +31,9 @@ public class ScheduleDAOTest {
 	private ScheduleDAO scheduleDAO;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, then clearing the tables, 
+	 * and filling up a semester schedule with the test data.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -51,7 +53,7 @@ public class ScheduleDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

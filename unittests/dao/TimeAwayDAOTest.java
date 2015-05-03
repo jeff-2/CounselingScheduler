@@ -31,8 +31,9 @@ public class TimeAwayDAOTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
-	 *
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, then clearing the timeaway table.
+	 * 
 	 * @throws Exception
 	 *             the exception
 	 */
@@ -45,7 +46,7 @@ public class TimeAwayDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears timeaway table in database.
 	 *
 	 * @throws Exception
 	 *             the exception

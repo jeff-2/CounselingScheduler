@@ -31,7 +31,8 @@ public class ClinicianDAOTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
+	 * SSets the test up by getting the database connection, 
+	 * generating test data, then clearing the clinicians table
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -45,7 +46,7 @@ public class ClinicianDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the clinicians table.
 	 *
 	 * @throws Exception
 	 *             the exception

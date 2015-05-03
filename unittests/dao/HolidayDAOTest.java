@@ -34,7 +34,8 @@ public class HolidayDAOTest {
 	private TestDataGenerator gen;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * generating test data, then clearing the holiday table
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -48,7 +49,7 @@ public class HolidayDAOTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the holiday table.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -80,7 +81,6 @@ public class HolidayDAOTest {
 		assertEquals(new java.sql.Date(holiday.getEndDate().getTime()),
 				output.getEndDate());
 		assertEquals(holiday.getName(), output.getName());
-
 	}
 
 	/**
@@ -105,5 +105,4 @@ public class HolidayDAOTest {
 
 		return holiday;
 	}
-
 }
