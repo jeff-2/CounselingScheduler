@@ -9,11 +9,9 @@ import bean.DateRange;
 /**
  * The Class DateRangeValidator.
  * 
- * @author jmfoste2 lim92
- * 
+ * @author jmfoste2, lim92
  */
 public class DateRangeValidator {
-
 	private static final SimpleDateFormat dateFormat;
 	private static final SimpleDateFormat longDateFormat;
 
@@ -74,7 +72,6 @@ public class DateRangeValidator {
 					"The year must be a year of the form yyyy, where yyyy is less than 10000",
 					0);
 		}
-
 		return d;
 	}
 

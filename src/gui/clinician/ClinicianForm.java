@@ -369,7 +369,6 @@ public class ClinicianForm extends JPanel implements ActionListener {
 	 * Initialize panel.
 	 */
 	private void initializePanel() {
-
 		setLayout(new MigLayout("gap unrel", "grow"));
 		setPreferredSize(new Dimension(700, 800));
 		add(nameLabel, "align label, split 2, span");
@@ -524,7 +523,8 @@ public class ClinicianForm extends JPanel implements ActionListener {
 			int result = JOptionPane
 					.showConfirmDialog(
 							this,
-							"Are you sure you wish to update your preferences? Your prior preferences will be overwritten.",
+							"Are you sure you wish to update your preferences? "
+							+ "Your prior preferences will be overwritten.",
 							"Update clinician preferences",
 							JOptionPane.YES_NO_OPTION);
 			if (result == JOptionPane.NO_OPTION
@@ -546,7 +546,8 @@ public class ClinicianForm extends JPanel implements ActionListener {
 		JOptionPane
 				.showMessageDialog(
 						this,
-						"Failed to connect to the remote SQL database; please contact the network administrator.",
+						"Failed to connect to the remote SQL database; please "
+						+ "contact the network administrator.",
 						"Database connection error", JOptionPane.ERROR_MESSAGE);
 	}
 
@@ -573,8 +574,8 @@ public class ClinicianForm extends JPanel implements ActionListener {
 		try {
 			TimeAwayBean timeAwayBean = ClinicianFormValidator
 					.validateTimeAway(name, startDate, endDate);
-			DefaultListModel<TimeAwayBean> model = (DefaultListModel<TimeAwayBean>) timeAway
-					.getModel();
+			DefaultListModel<TimeAwayBean> model = (DefaultListModel<TimeAwayBean>) 
+					timeAway.getModel();
 			model.add(model.size(), timeAwayBean);
 			clearTimeAwayFields();
 		} catch (InvalidFormDataException e) {
@@ -605,8 +606,8 @@ public class ClinicianForm extends JPanel implements ActionListener {
 					.validateCommitment(dateRange, description, startTime,
 							endTime, dayOfWeek, frequency, isExternal);
 			commitmentList.add(list);
-			DefaultListModel<String> model = (DefaultListModel<String>) commitments
-					.getModel();
+			DefaultListModel<String> model = (DefaultListModel<String>) 
+					commitments.getModel();
 			model.add(model.size(), commitmentString);
 			clearCommitmentFields();
 		} catch (InvalidFormDataException e) {
@@ -620,8 +621,8 @@ public class ClinicianForm extends JPanel implements ActionListener {
 	private void removeTimeAway() {
 		int index = timeAway.getSelectedIndex();
 		if (index >= 0) {
-			DefaultListModel<TimeAwayBean> oldModel = (DefaultListModel<TimeAwayBean>) timeAway
-					.getModel();
+			DefaultListModel<TimeAwayBean> oldModel = (DefaultListModel<TimeAwayBean>) 
+					timeAway.getModel();
 			oldModel.remove(index);
 		}
 	}
@@ -632,8 +633,8 @@ public class ClinicianForm extends JPanel implements ActionListener {
 	private void removeCommitment() {
 		int index = commitments.getSelectedIndex();
 		if (index >= 0) {
-			DefaultListModel<String> oldModel = (DefaultListModel<String>) commitments
-					.getModel();
+			DefaultListModel<String> oldModel = (DefaultListModel<String>) 
+					commitments.getModel();
 			oldModel.remove(index);
 			commitmentList.remove(index);
 		}
@@ -713,14 +714,14 @@ public class ClinicianForm extends JPanel implements ActionListener {
 				.loadCommitmentDescriptions(commitmentList);
 
 		// populate form with data
-		DefaultListModel<String> commitmentsModel = (DefaultListModel<String>) commitments
-				.getModel();
+		DefaultListModel<String> commitmentsModel = (DefaultListModel<String>) 
+				commitments.getModel();
 		for (String commitment : commitmentStrings) {
 			commitmentsModel.addElement(commitment);
 		}
 		nameField.setText(clinicianName);
-		DefaultListModel<TimeAwayBean> timeAwayModel = (DefaultListModel<TimeAwayBean>) timeAway
-				.getModel();
+		DefaultListModel<TimeAwayBean> timeAwayModel = (DefaultListModel<TimeAwayBean>) 
+				timeAway.getModel();
 		for (TimeAwayBean timeAway : timesAway) {
 			timeAwayModel.addElement(timeAway);
 		}

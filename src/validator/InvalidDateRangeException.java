@@ -7,7 +7,7 @@ package validator;
  * @author nbeltr2
  */
 public class InvalidDateRangeException extends Exception {
-
+	
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = -7022376673173182715L;
 

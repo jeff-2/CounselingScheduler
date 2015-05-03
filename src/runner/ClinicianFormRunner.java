@@ -58,5 +58,4 @@ public class ClinicianFormRunner {
 		frame.pack();
 		frame.setVisible(true);
 	}
-
 }

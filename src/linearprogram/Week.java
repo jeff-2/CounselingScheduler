@@ -10,8 +10,10 @@ import java.util.List;
 import bean.CalendarBean;
 import bean.IAWeektype;
 
+/**
+ * Caches the available days of a semester into weeks
+ */
 public class Week implements Comparable<Week> {
-
 	private static HashMap<Week, Week> weekCache;
 	private static HashMap<Date, Week> dayToWeekCache;
 
@@ -30,10 +32,25 @@ public class Week implements Comparable<Week> {
 		return (orderInSemester % 2 == 0) ? IAWeektype.A : IAWeektype.B;
 	}
 
+	/**
+	 * Gets the week type
+	 * 
+	 * @return type of week A or B
+	 */
 	public IAWeektype getWeektype() {
 		return type;
 	}
 
+	/**
+	 * Gets the week based on the day and calendar given. Generates cache of
+	 * days to week if not yet generated.
+	 * 
+	 * @param day
+	 * 			the day as a Date
+	 * @param calendar
+	 * 			the calendar
+	 * @return Week
+	 */
 	public synchronized static Week getWeek(Date day, CalendarBean calendar) {
 		if (dayToWeekCache == null) {
 			buildCache(calendar);
@@ -41,6 +58,13 @@ public class Week implements Comparable<Week> {
 		return dayToWeekCache.get(day);
 	}
 
+	/**
+	 * Gets the list of weeks in a semester
+	 * 
+	 * @param calendarBean
+	 * 			the calendarBean
+	 * @return list of weeks for the semester
+	 */
 	public static List<Week> getSemesterWeeks(CalendarBean calendarBean) {
 		buildCache(calendarBean);
 		List<Week> weeks = new ArrayList<Week>();
@@ -87,10 +111,16 @@ public class Week implements Comparable<Week> {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	public int hashCode() {
 		return this.start.hashCode();
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object oth) {
 		if (!(oth instanceof Week)) {
@@ -102,11 +132,17 @@ public class Week implements Comparable<Week> {
 				&& this.type.equals(other.type);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(Week o) {
 		return this.start.compareTo(o.start);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "week" + orderInSemester;
 	}

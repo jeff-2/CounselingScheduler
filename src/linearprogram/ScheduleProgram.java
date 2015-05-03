@@ -24,7 +24,6 @@ import bean.Weekday;
  * Solves an integer linear program to construct an optimal IA and EC schedule.
  * 
  * @author ramusa2
- *
  */
 public class ScheduleProgram {
 
@@ -45,6 +44,16 @@ public class ScheduleProgram {
 	private HashMap<String, GRBVar> iaVars;
 	private HashMap<String, GRBVar> ecVars;
 
+	/**
+	 * Given a schedule (which includes sessions and a list of clinicians,
+	 * including their availability), assign an optimal set of clinicians to
+	 * each session.
+	 */
+	public static void assignClinicians(Schedule scheduleToAssign) {
+		ScheduleProgram program = new ScheduleProgram(scheduleToAssign);
+		program.assignClinicians();
+	}
+	
 	private ScheduleProgram(Schedule scheduleToAssign) {
 		this.schedule = scheduleToAssign;
 		this.clinicianList = this.schedule.getClinicians();
@@ -350,15 +359,4 @@ public class ScheduleProgram {
 			}
 		}
 	}
-
-	/**
-	 * Given a schedule (which includes sessions and a list of clinicians,
-	 * including their availability), assign an optimal set of clinicians to
-	 * each session.
-	 */
-	public static void assignClinicians(Schedule scheduleToAssign) {
-		ScheduleProgram program = new ScheduleProgram(scheduleToAssign);
-		program.assignClinicians();
-	}
-
 }

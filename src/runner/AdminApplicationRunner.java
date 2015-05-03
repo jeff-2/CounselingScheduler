@@ -19,8 +19,7 @@ public class AdminApplicationRunner {
 	 *
 	 * @param args
 	 *            the arguments
-	 * @throws ParseException
-	 *             , SQLException
+	 * @throws ParseException, SQLException
 	 */
 	public static void main(String[] args) throws ParseException, SQLException {
 		try {
