@@ -16,16 +16,26 @@ import dao.ConnectionFactory;
 import dao.SessionsDAO;
 
 /**
- * 
- * @author dtli2, lim92
+ * The Class FillScheduleActionTest tests the functionality of FillScheduleAction.
  *
+ * @author dtli2, lim92
  */
 public class FillScheduleActionTest {
 
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The sessions dao. */
     private SessionsDAO sessionsDAO;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -40,6 +50,11 @@ public class FillScheduleActionTest {
 	fillScheduleAction.fillSchedule();
     }
 
+    /**
+     * Test that ia sessions have multiple clinicians.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void iaSessionsHaveMultipleCliniciansTest() throws Exception {
 	List<SessionBean> allSessions = sessionsDAO.loadSessions();
@@ -56,6 +71,11 @@ public class FillScheduleActionTest {
 	assertEquals(0, numOfNotThreeOrFive);
     }
 
+    /**
+     * Test that exactly one clinician is assigned to each ce sessions.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void ecSessionsOneToOneTest() throws Exception {
 	List<SessionBean> allSessions = sessionsDAO.loadSessions();
@@ -67,6 +87,11 @@ public class FillScheduleActionTest {
 	}
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearTables();

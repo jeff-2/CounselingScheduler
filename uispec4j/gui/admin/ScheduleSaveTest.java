@@ -23,13 +23,24 @@ import org.uispec4j.interception.WindowInterceptor;
 import runner.AdminApplicationRunner;
 import dao.ConnectionFactory;
 
+/**
+ * The Class ScheduleSaveTest tests the save functionality for both IA and EC schedules.
+ */
 public class ScheduleSaveTest extends UISpecTestCase {
 
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The Constant filePath. */
     private static final String filePath = new File("tmp.png")
 	    .getAbsolutePath();
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#setUp()
+     */
     protected void setUp() throws Exception {
 	super.setUp();
 	setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
@@ -39,6 +50,11 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	gen.generateStandardDataset();
     }
 
+    /**
+     * Test save ec schedule overwrites an existing saved schedule with the same name.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public void testSaveECScheduleOverwrite() throws IOException {
 	String s = "Hello World!";
 	byte data[] = s.getBytes();
@@ -70,6 +86,9 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	assertTrue(f.getTotalSpace() > data.length);
     }
 
+    /**
+     * Tests saving an ec schedule.
+     */
     public void testSaveECSchedule() {
 	Window window = this.getMainWindow();
 
@@ -92,6 +111,9 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	assertTrue(f.exists());
     }
 
+    /**
+     * Test saving an ia schedule.
+     */
     public void testSaveIASchedule() {
 	Window window = this.getMainWindow();
 
@@ -114,6 +136,9 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	assertTrue(f.exists());
     }
 
+    /**
+     * Test cancel when saving an ia schedule.
+     */
     public void testCancelSaveIASchedule() {
 	Window window = this.getMainWindow();
 
@@ -136,6 +161,9 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	assertFalse(f.exists());
     }
 
+    /**
+     * Test cancel when saving an ec schedule.
+     */
     public void testCancelSaveECSchedule() {
 	Window window = this.getMainWindow();
 
@@ -158,6 +186,9 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	assertFalse(f.exists());
     }
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#tearDown()
+     */
     protected void tearDown() throws Exception {
 	super.tearDown();
 	gen.clearTables();

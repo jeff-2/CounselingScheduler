@@ -23,13 +23,28 @@ import bean.SessionBean;
 import bean.SessionType;
 import bean.Weekday;
 
+/**
+ * The Class SessionsDAOTest tests the functionality of the SessionsDAO.
+ */
 public class SessionsDAOTest {
 
+    /** The sessions dao. */
     private SessionsDAO sessionsDAO;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The clinicians. */
     private List<Integer> clinicians;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -46,11 +61,21 @@ public class SessionsDAOTest {
 	clinicianDAO.insert(new ClinicianBean(1, "Ryan"));
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearTables();
     }
 
+    /**
+     * Test insertion of valid session into the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testInsertValidSession() throws Exception {
 
@@ -66,6 +91,11 @@ public class SessionsDAOTest {
 	assertEquals(expectedSessions, actualSessions);
     }
 
+    /**
+     * Test loading sessions from database when sessions table is empty.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadSessionsEmpty() throws Exception {
 	List<SessionBean> expectedSessions = new ArrayList<SessionBean>();
@@ -73,6 +103,11 @@ public class SessionsDAOTest {
 	assertEquals(expectedSessions, actualSessions);
     }
 
+    /**
+     * Test loading sessions from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadSessions() throws Exception {
 	SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday,
@@ -94,6 +129,11 @@ public class SessionsDAOTest {
 	assertEquals(expectedSessions, actualSessions);
     }
 
+    /**
+     * Test deleting valid session from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testDeleteValidSession() throws Exception {
 	SessionBean session = new SessionBean(0, 8, 1, Weekday.Wednesday,
@@ -114,6 +154,12 @@ public class SessionsDAOTest {
 	assertEquals(expectedSessions, actualSessions);
     }
 
+    /**
+     * Test invalid ec sessions.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testInvalidECSessions() throws ParseException, SQLException {
 	SessionsDAO sessionsDAO = new SessionsDAO(conn);
@@ -126,6 +172,12 @@ public class SessionsDAOTest {
 	assertNotEquals(0, invalidSessions.size());
     }
 
+    /**
+     * Test invalid ia sessions.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testInvalidIASessions() throws ParseException, SQLException {
 	SessionsDAO sessionsDAO = new SessionsDAO(conn);
@@ -138,6 +190,12 @@ public class SessionsDAOTest {
 	assertNotEquals(0, invalidSessions.size());
     }
 
+    /**
+     * Test weekly ec session constraint violation.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testWeeklyECSessionConstraintViolation() throws SQLException,
 	    ParseException {
@@ -154,6 +212,12 @@ public class SessionsDAOTest {
 	assertEquals(1, invalidSessions.size());
     }
 
+    /**
+     * Test daily ia session constraint violation.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testDailyIASessionConstraintViolation() throws SQLException,
 	    ParseException {
@@ -170,6 +234,12 @@ public class SessionsDAOTest {
 	assertEquals(1, invalidSessions.size());
     }
 
+    /**
+     * Test alternating ia friday constraint violation.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testAlternatingIAFridayConstraintViolation()
 	    throws SQLException, ParseException {
@@ -186,6 +256,12 @@ public class SessionsDAOTest {
 	assertEquals(1, invalidSessions.size());
     }
 
+    /**
+     * Test noon ec constraint violation.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testNoonECConstraintViolation() throws SQLException,
 	    ParseException {

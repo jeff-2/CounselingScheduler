@@ -29,18 +29,43 @@ import dao.ClinicianDAO;
 import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 
+/**
+ * The Class ImportClinicianMeetingsActionTest tests the functionality of ImportClinicianMeetingsAction.
+ */
 public class ImportClinicianMeetingsActionTest {
 
+    /** The commitments dao. */
     private CommitmentsDAO commitmentsDAO;
+    
+    /** The clinician dao. */
     private ClinicianDAO clinicianDAO;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The action. */
     private ImportClinicianMeetingsAction action;
+    
+    /** The test data. */
     private Object[][] testData;
+    
+    /** The start date. */
     private Date startDate;
+    
+    /** The end date. */
     private Date endDate;
+    
+    /** The ryan id. */
     private int jeffID, nathanID, ryanID;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -60,6 +85,12 @@ public class ImportClinicianMeetingsActionTest {
 	endDate = DateRangeValidator.parseDate("3/9/2015");
     }
 
+    /**
+     * Test importing an empty meetings file.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testImportEmptyFile() throws SQLException, IOException {
 	testData = new Object[0][0];
@@ -73,6 +104,12 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file with an invalid start time is caught.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testCatchInvalidStartTime() throws SQLException, IOException {
 	testData = new Object[][] {
@@ -94,6 +131,12 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file with an invalid end time is caught.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testCatchInvalidEndTime() throws SQLException, IOException {
 	testData = new Object[][] {
@@ -115,6 +158,12 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file with an invalid meeting name is caught.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testCatchInvalidMeetingName() throws SQLException, IOException {
 	testData = new Object[][] {
@@ -136,6 +185,12 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file with invalid staff members are caught.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testCatchInvalidStaffMembers() throws SQLException, IOException {
 	testData = new Object[][] {
@@ -157,6 +212,12 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file with an invalid frequency is caught.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testCatchInvalidFrequency() throws SQLException, IOException {
 	testData = new Object[][] {
@@ -178,6 +239,12 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file with invalid days is caught.
+     *
+     * @throws SQLException the SQL exception
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     @Test
     public void testCatchInvalidDays() throws SQLException, IOException {
 	testData = new Object[][] {
@@ -199,6 +266,11 @@ public class ImportClinicianMeetingsActionTest {
 	}
     }
 
+    /**
+     * Tests an excel file that has a monthly frequency with a particular day of the month.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testImportMonthlyDays() throws Exception {
 	testData = new Object[][] {
@@ -243,6 +315,11 @@ public class ImportClinicianMeetingsActionTest {
 	assertEquals(commitments, expectedCommitments);
     }
 
+    /**
+     * Tests an excel file with a biweekly frequency.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testImportBiweekly() throws Exception {
 	testData = new Object[][] {
@@ -282,6 +359,11 @@ public class ImportClinicianMeetingsActionTest {
 	assertEquals(commitments, expectedCommitments);
     }
 
+    /**
+     * Tests an excel file with monthly frequency and dates specified.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testImportMonthlyDates() throws Exception {
 	testData = new Object[][] {
@@ -336,6 +418,11 @@ public class ImportClinicianMeetingsActionTest {
 	assertEquals(commitments, expectedCommitments);
     }
 
+    /**
+     * Tests an excel file with a weekly frequency.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testImportWeekly() throws Exception {
 	testData = new Object[][] {
@@ -392,6 +479,11 @@ public class ImportClinicianMeetingsActionTest {
 	assertEquals(commitments, expectedCommitments);
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	File f = new File("tmpFile.xlsx");
@@ -399,6 +491,13 @@ public class ImportClinicianMeetingsActionTest {
 	gen.clearTables();
     }
 
+    /**
+     * Generate excel file from the given grid of test data provided.
+     *
+     * @param testData the test data
+     * @return the file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public static File generateExcelFile(Object[][] testData)
 	    throws IOException {
 	XSSFWorkbook workbook = new XSSFWorkbook();

@@ -17,15 +17,27 @@ import validator.DateRangeValidator;
 import bean.HolidayBean;
 
 /**
+ * The Class HolidayDAOTest tests the functionality of HolidayDAO.
+ *
  * @author nbeltr2
  * @author dtli2
  */
 public class HolidayDAOTest {
 
+    /** The holiday dao. */
     private HolidayDAO holidayDAO;
+    
+    /** The con. */
     private Connection con;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Before
     public void setUp() throws SQLException {
 	con = ConnectionFactory.getInstance();
@@ -34,11 +46,22 @@ public class HolidayDAOTest {
 	gen.clearHolidayTable();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws SQLException the SQL exception
+     */
     @After
     public void tearDown() throws SQLException {
 	gen.clearHolidayTable();
     }
 
+    /**
+     * Test insert holiday into database.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testInsertHoliday() throws ParseException, SQLException {
 	HolidayBean holiday = new HolidayBean();
@@ -56,6 +79,12 @@ public class HolidayDAOTest {
 
     }
 
+    /**
+     * Gets the first holiday table row.
+     *
+     * @return the first holiday table row
+     * @throws SQLException the SQL exception
+     */
     private HolidayBean getFirstHolidayTableRow() throws SQLException {
 	Statement stmt = con.createStatement();
 

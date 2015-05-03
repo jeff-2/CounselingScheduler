@@ -23,14 +23,31 @@ import dao.ConnectionFactory;
 import dao.HolidayDAO;
 import dao.TimeAwayDAO;
 
+/**
+ * The Class TestDataGenerator provides functionality to clear different tables
+ * in the database and provide standard test data.
+ */
 public class TestDataGenerator {
 
+    /** The conn. */
     private Connection conn;
 
+    /**
+     * Instantiates a new test data generator.
+     *
+     * @param con the con
+     */
     public TestDataGenerator(Connection con) {
 	this.conn = con;
     }
 
+    /**
+     * The main method clears the tables and fills with standard data.
+     *
+     * @param args the arguments
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     public static void main(String[] args) throws SQLException, ParseException {
 	TestDataGenerator gen = new TestDataGenerator(
 		ConnectionFactory.getInstance());
@@ -38,6 +55,11 @@ public class TestDataGenerator {
 	gen.generateStandardDataset();
     }
 
+    /**
+     * Clear all the tables.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearTables() throws SQLException {
 	clearCalendarTable();
 	clearHolidayTable();
@@ -49,48 +71,88 @@ public class TestDataGenerator {
 	clearSessionCliniciansTable();
     }
 
+    /**
+     * Clear calendar table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearCalendarTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM Calendar");
 	stmt.close();
     }
 
+    /**
+     * Clear holiday table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearHolidayTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM Holiday");
 	stmt.close();
     }
 
+    /**
+     * Clear clinicians table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearCliniciansTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM Clinicians");
 	stmt.close();
     }
 
+    /**
+     * Clear clinician preferences table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearClinicianPreferencesTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM ClinicianPreferences");
 	stmt.close();
     }
 
+    /**
+     * Clear commitments table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearCommitmentsTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM Commitments");
 	stmt.close();
     }
 
+    /**
+     * Clear time away table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearTimeAwayTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM TimeAway");
 	stmt.close();
     }
 
+    /**
+     * Clear sessions table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearSessionsTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM Sessions");
 	stmt.close();
     }
 
+    /**
+     * Clear session clinicians table.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void clearSessionCliniciansTable() throws SQLException {
 	Statement stmt = conn.createStatement();
 	stmt.execute("DELETE FROM SessionClinicians");
@@ -98,10 +160,10 @@ public class TestDataGenerator {
     }
 
     /**
-     * Fills the database with static demo data
-     * 
-     * @throws ParseException
-     * @throws SQLException
+     * Fills the database with static demo data.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
      */
     public void generateStandardDataset() throws ParseException, SQLException {
 	this.generateStandardClinicianData();
@@ -113,12 +175,22 @@ public class TestDataGenerator {
 	this.generateUnfilledSchedule();
     }
 
+    /**
+     * Generate unfilled schedule.
+     *
+     * @throws SQLException the SQL exception
+     */
     private void generateUnfilledSchedule() throws SQLException {
 	GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(
 		conn);
 	action.generateUnfilledSchedule();
     }
 
+    /**
+     * Generate standard clinician data.
+     *
+     * @throws SQLException the SQL exception
+     */
     private void generateStandardClinicianData() throws SQLException {
 	ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
 	clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
@@ -147,6 +219,11 @@ public class TestDataGenerator {
 	clinicianDAO.insert(new ClinicianBean(23, "Rachel"));
     }
 
+    /**
+     * Generate standard clinician preferences data.
+     *
+     * @throws SQLException the SQL exception
+     */
     private void generateStandardClinicianPreferencesData() throws SQLException {
 	ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(
 		conn);
@@ -200,6 +277,12 @@ public class TestDataGenerator {
 		3, 35, 44));
     }
 
+    /**
+     * Generate standard commitments data.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     private void generateStandardCommitmentsData() throws SQLException,
 	    ParseException {
 	CommitmentsDAO commitmentsDAO = new CommitmentsDAO(conn);
@@ -223,6 +306,12 @@ public class TestDataGenerator {
 		.parseDate("4/7/2015"), "Manager meeting"));
     }
 
+    /**
+     * Generated standard time away data.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     private void generatedStandardTimeAwayData() throws SQLException,
 	    ParseException {
 	TimeAwayDAO timeAwayDAO = new TimeAwayDAO(conn);
@@ -241,6 +330,12 @@ public class TestDataGenerator {
 		.parse("4/17/2015"), format.parse("4/17/2015")));
     }
 
+    /**
+     * Generate standard calendar data.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void generateStandardCalendarData() throws ParseException,
 	    SQLException {
 	CalendarDAO calendarDAO = new CalendarDAO(conn);
@@ -255,6 +350,12 @@ public class TestDataGenerator {
 	calendarDAO.insertCalendar(calendar);
     }
 
+    /**
+     * Generate standard holiday data.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     private void generateStandardHolidayData() throws ParseException,
 	    SQLException {
 	HolidayDAO holidayDAO = new HolidayDAO(conn);
@@ -270,6 +371,12 @@ public class TestDataGenerator {
 	holidayDAO.insertHoliday(springBreak, 0, springBreak.getID());
     }
 
+    /**
+     * Generate empty semester dataset.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void generateEmptySemesterDataset() throws ParseException,
 	    SQLException {
 	// generate a one-weekend calendar
@@ -288,6 +395,12 @@ public class TestDataGenerator {
 
     }
 
+    /**
+     * Overwrite any current data and fill with demo data.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     public static void overwriteAndFillDemoData() throws SQLException,
 	    ParseException {
 	TestDataGenerator gen = new TestDataGenerator(

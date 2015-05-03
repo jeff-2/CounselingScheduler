@@ -38,13 +38,26 @@ import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
 import dao.TimeAwayDAO;
 
+/**
+ * The Class ClinicianIDListEditorTest tests the full functionality of ClinicianIDListEditor.
+ */
 public class ClinicianIDListEditorTest extends UISpecTestCase {
 
+    /** The conn. */
     private Connection conn;
+    
+    /** The clinician dao. */
     private ClinicianDAO clinicianDAO;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The bean d. */
     private ClinicianBean beanA, beanC, beanD;
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#setUp()
+     */
     @Before
     protected void setUp() throws Exception {
 	super.setUp();
@@ -60,12 +73,21 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	beanD = new ClinicianBean(25, "Other Name");
     }
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#tearDown()
+     */
     @After
     public void tearDown() throws Exception {
 	super.tearDown();
 	gen.clearTables();
     }
 
+    /**
+     * Types the given text character by character into the given text box.
+     *
+     * @param inputBox the input box
+     * @param text the text
+     */
     private void typeText(TextBox inputBox, String text) {
 	for (char c : text.toCharArray()) {
 	    if (Character.isUpperCase(c)) {
@@ -76,6 +98,11 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	}
     }
 
+    /**
+     * Gets the clinician list.
+     *
+     * @return the clinician list
+     */
     private List<ClinicianBean> getClinicianList() {
 	List<ClinicianBean> clinicians = new ArrayList<ClinicianBean>();
 	clinicians.add(new ClinicianBean(0, "Jeff"));
@@ -105,6 +132,11 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	return clinicians;
     }
 
+    /**
+     * Test reject duplicate clinicians.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testRejectDuplicateClinicians() throws Exception {
 	Window window = this.getMainWindow();
@@ -139,6 +171,11 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	assertEquals(clinicians, expectedClinicians);
     }
 
+    /**
+     * Test add clinicians.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testAddClinicians() throws Exception {
 	Window window = this.getMainWindow();
@@ -169,6 +206,11 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	assertEquals(clinicians, expectedClinicians);
     }
 
+    /**
+     * Test add clinician, remove clinician and then readd that clinician.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testAddRemoveReadd() throws Exception {
 	Window window = this.getMainWindow();
@@ -206,6 +248,11 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	assertEquals(clinicians, expectedClinicians);
     }
 
+    /**
+     * Test remove clinicians.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testRemoveClinicians() throws Exception {
 	Window window = this.getMainWindow();
@@ -250,6 +297,12 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	assertEquals(clinicians, expectedClinicians);
     }
 
+    /**
+     * Test load clinician preferences.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void testLoadClinicianPreferences() throws ParseException,
 	    SQLException {
 	gen.generateStandardDataset();
@@ -296,6 +349,12 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		}).run();
     }
 
+    /**
+     * Test update clinician preferences.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void testUpdateClinicianPreferences() throws ParseException,
 	    SQLException {
 	gen.generateStandardDataset();
@@ -375,6 +434,12 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 	assertEquals(expectedPreferences, preferences);
     }
 
+    /**
+     * Test update with missing ia hours.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void testUpdateWithMissingIAHours() throws ParseException,
 	    SQLException {
 	gen.generateStandardDataset();
@@ -415,6 +480,12 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		}).run();
     }
 
+    /**
+     * Test update with missing ec hours.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void testUpdateWithMissingECHours() throws ParseException,
 	    SQLException {
 	gen.generateStandardDataset();
@@ -455,6 +526,12 @@ public class ClinicianIDListEditorTest extends UISpecTestCase {
 		}).run();
     }
 
+    /**
+     * Test load empty preferences.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     public void testLoadEmptyPreferences() throws ParseException, SQLException {
 	gen.generateStandardDataset();
 	Window window = this.getMainWindow();

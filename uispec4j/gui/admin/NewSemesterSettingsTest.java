@@ -39,17 +39,26 @@ import dao.ConnectionFactory;
 import dao.HolidayDAO;
 
 /**
- * The Class NewSemesterSettingsTest.
+ * The Class NewSemesterSettingsTest tests the full functionality of NewSemesterSettings.
  * 
  * @author jmfoste2
  * @author nbeltr2
  */
 public class NewSemesterSettingsTest extends UISpecTestCase {
 
+    /** The con. */
     private Connection con;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The holiday dao. */
     private HolidayDAO holidayDAO;
+    
+    /** The calendar dao. */
     private CalendarDAO calendarDAO;
+    
+    /** The commitments dao. */
     private CommitmentsDAO commitmentsDAO;
 
     /*
@@ -80,6 +89,9 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	clinicianDAO.insert(new ClinicianBean(2, "Nathan"));
     }
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#tearDown()
+     */
     protected void tearDown() throws Exception {
 	super.tearDown();
 	gen.clearTables();
@@ -88,7 +100,7 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
     }
 
     /**
-     * Adds a holiday.
+     * Adds a holiday to the UI list.
      */
     public void addHoliday() {
 	Window window = this.getMainWindow();
@@ -139,6 +151,11 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 			"Spring Break from Saturday, March 21 to Sunday, March 29"));
     }
 
+    /**
+     * Test add valid calendar.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testAddValidCalendar() throws SQLException {
 	Window window = this.getMainWindow();
 	Panel semesterPanel = window.getPanel("NewSemesterSettings");
@@ -178,6 +195,11 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	assertEquals(1, countRowsInCalendarTable());
     }
 
+    /**
+     * Test invalid semester dates.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testInvalidSemesterDates() throws SQLException {
 	Window window = this.getMainWindow();
 	Panel semesterPanel = window.getPanel("NewSemesterSettings");
@@ -200,6 +222,9 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	assertEquals(1, countRowsInCalendarTable());
     }
 
+    /**
+     * Test invalid holiday dates.
+     */
     public void testInvalidHolidayDates() {
 	Window window = this.getMainWindow();
 	Panel semesterPanel = window.getPanel("NewSemesterSettings");
@@ -221,6 +246,12 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 			"Spring Break from Saturday, March 21 to Sunday, March 29"));
     }
 
+    /**
+     * Test import meeting schedule.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     public void testImportMeetingSchedule() throws SQLException, ParseException {
 	Window window = this.getMainWindow();
 	Panel semesterPanel = window.getPanel("NewSemesterSettings");
@@ -320,6 +351,11 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	assertEquals(expectedCalendar, calendar);
     }
 
+    /**
+     * Test select meeting schedule.
+     *
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public void testSelectMeetingSchedule() throws IOException {
 	String filePath = new File("tmpFile.xlsx").getAbsolutePath();
 	Window window = this.getMainWindow();
@@ -337,6 +373,9 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	assertEquals(filePath, filePathBox.getText());
     }
 
+    /**
+     * Test remove meeting schedule.
+     */
     public void testRemoveMeetingSchedule() {
 	String filePath = new File("tmpFile.xlsx").getAbsolutePath();
 	Window window = this.getMainWindow();
@@ -357,6 +396,12 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	assertEquals("No File Selected", filePathBox.getText());
     }
 
+    /**
+     * Count rows in holiday table.
+     *
+     * @return the int
+     * @throws SQLException the SQL exception
+     */
     private int countRowsInHolidayTable() throws SQLException {
 	Statement stmt = con.createStatement();
 
@@ -366,6 +411,12 @@ public class NewSemesterSettingsTest extends UISpecTestCase {
 	return res.getInt("count");
     }
 
+    /**
+     * Count rows in calendar table.
+     *
+     * @return the int
+     * @throws SQLException the SQL exception
+     */
     private int countRowsInCalendarTable() throws SQLException {
 	Statement stmt = con.createStatement();
 

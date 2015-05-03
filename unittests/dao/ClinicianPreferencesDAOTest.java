@@ -14,16 +14,26 @@ import org.junit.Test;
 import bean.ClinicianPreferencesBean;
 
 /**
- * 
- * @author jmfoste2, lim92
+ * The Class ClinicianPreferencesDAOTest tests the ClinicianPreferencesDAO.
  *
+ * @author jmfoste2, lim92
  */
 public class ClinicianPreferencesDAOTest {
 
+    /** The clinician preferences dao. */
     private ClinicianPreferencesDAO clinicianPreferencesDAO;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -32,11 +42,21 @@ public class ClinicianPreferencesDAOTest {
 	gen.clearClinicianPreferencesTable();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearClinicianPreferencesTable();
     }
 
+    /**
+     * Test insert valid clinician preferences into the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testInsertValidClinicianPreferences() throws Exception {
 	ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0,
@@ -48,6 +68,11 @@ public class ClinicianPreferencesDAOTest {
 	assertEquals(preferences, actual);
     }
 
+    /**
+     * Test insertion of duplicate clinician preferences.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = SQLException.class)
     public void testInsertDuplicateClinicianPreferences() throws Exception {
 	ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0,
@@ -56,6 +81,11 @@ public class ClinicianPreferencesDAOTest {
 	clinicianPreferencesDAO.insert(preferences);
     }
 
+    /**
+     * Test loading clinician preferences when there are none.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadClinicianPreferencesEmpty() throws Exception {
 	ClinicianPreferencesBean actual = clinicianPreferencesDAO
@@ -63,6 +93,11 @@ public class ClinicianPreferencesDAOTest {
 	assertNull(actual);
     }
 
+    /**
+     * Test update clinician preferences.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testUpdateClinicianPreferences() throws Exception {
 	ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0,
@@ -77,6 +112,11 @@ public class ClinicianPreferencesDAOTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test deletion of valid clinician preferences.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testDeleteValidClinician() throws Exception {
 	ClinicianPreferencesBean preferences = new ClinicianPreferencesBean(0,

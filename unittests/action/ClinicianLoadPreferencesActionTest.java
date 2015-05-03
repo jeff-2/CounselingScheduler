@@ -21,12 +21,25 @@ import bean.CommitmentBean;
 import bean.TimeAwayBean;
 import dao.ConnectionFactory;
 
+/**
+ * The Class ClinicianLoadPreferencesActionTest test the functionality of ClinicianLoadPreferencesAction.
+ */
 public class ClinicianLoadPreferencesActionTest {
 
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The action. */
     private ClinicianLoadPreferencesAction action;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -36,11 +49,22 @@ public class ClinicianLoadPreferencesActionTest {
 	action = new ClinicianLoadPreferencesAction(conn, "Jeff");
     }
 
+    /**
+     * Clean up.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void cleanUp() throws Exception {
 	gen.clearTables();
     }
 
+    /**
+     * Test load times away.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testLoadTimesAway() throws SQLException, ParseException {
 	List<TimeAwayBean> expected = new ArrayList<TimeAwayBean>();
@@ -51,6 +75,11 @@ public class ClinicianLoadPreferencesActionTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test load clinician preferences.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testLoadClinicianPreferences() throws SQLException {
 	ClinicianPreferencesBean expected = new ClinicianPreferencesBean(0, 2,
@@ -59,6 +88,12 @@ public class ClinicianLoadPreferencesActionTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test load commitments.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testLoadCommitments() throws SQLException, ParseException {
 	List<List<CommitmentBean>> expected = new ArrayList<List<CommitmentBean>>();
@@ -92,6 +127,11 @@ public class ClinicianLoadPreferencesActionTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test load commitment descriptions.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testLoadCommitmentDescriptions() throws SQLException {
 	List<String> expected = new ArrayList<String>();

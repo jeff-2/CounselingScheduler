@@ -26,11 +26,22 @@ import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 
+/**
+ * The Class ClinicianFormValidatorTest tests the ClinicianFormValidator functionality.
+ */
 public class ClinicianFormValidatorTest {
 
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The calendar. */
     private CalendarBean calendar;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	Connection conn = ConnectionFactory.getInstance();
@@ -49,11 +60,22 @@ public class ClinicianFormValidatorTest {
 	calendarDAO.insertCalendar(calendar);
     }
 
+    /**
+     * Clean up.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void cleanUp() throws Exception {
 	gen.clearTables();
     }
 
+    /**
+     * Test validation of a valid time away.
+     *
+     * @throws ParseException the parse exception
+     * @throws InvalidFormDataException the invalid form data exception
+     */
     @Test
     public void testValidateValidTimeAway() throws ParseException,
 	    InvalidFormDataException {
@@ -65,6 +87,9 @@ public class ClinicianFormValidatorTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test validation of time away with empty name.
+     */
     @Test
     public void testValidateInvalidTimeAwayEmptyName() {
 	try {
@@ -77,6 +102,9 @@ public class ClinicianFormValidatorTest {
 	}
     }
 
+    /**
+     * Test validation of time away with an invalid date.
+     */
     @Test
     public void testValidateInvalidTimeAwayInvalidDate() {
 	try {
@@ -92,6 +120,12 @@ public class ClinicianFormValidatorTest {
 	}
     }
 
+    /**
+     * Test validation of valid preferences as a non admin.
+     *
+     * @throws InvalidFormDataException the invalid form data exception
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testValidateValidPreferencesNonAdmin()
 	    throws InvalidFormDataException, SQLException {
@@ -102,6 +136,12 @@ public class ClinicianFormValidatorTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test validation on preferences as an admin.
+     *
+     * @throws InvalidFormDataException the invalid form data exception
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testValidateValidPreferencesAdmin()
 	    throws InvalidFormDataException, SQLException {
@@ -112,6 +152,11 @@ public class ClinicianFormValidatorTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test validation on preferences with an invalid name.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testValidateInvalidPreferencesInvalidName() throws SQLException {
 	try {
@@ -125,6 +170,11 @@ public class ClinicianFormValidatorTest {
 	}
     }
 
+    /**
+     * Test validation on a preferences with invalid ranks.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testValidateInvalidPreferencesInvalidRanks()
 	    throws SQLException {
@@ -140,6 +190,12 @@ public class ClinicianFormValidatorTest {
 	}
     }
 
+    /**
+     * Test validation on a valid biweekly commitment that is non external.
+     *
+     * @throws InvalidFormDataException the invalid form data exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testValidateValidCommitmentBiweeklyNonExternal()
 	    throws InvalidFormDataException, ParseException {
@@ -159,6 +215,12 @@ public class ClinicianFormValidatorTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test validation on a valid weekly commitment that is external.
+     *
+     * @throws InvalidFormDataException the invalid form data exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testValidateValidCommitmentWeeklyExternal()
 	    throws InvalidFormDataException, ParseException {
@@ -184,6 +246,12 @@ public class ClinicianFormValidatorTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test validation on a valid monthly commitment which is not external.
+     *
+     * @throws InvalidFormDataException the invalid form data exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testValidateValidCommitmentMonthlyNonExternal()
 	    throws InvalidFormDataException, ParseException {
@@ -199,6 +267,9 @@ public class ClinicianFormValidatorTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test validation with invalid commitment times.
+     */
     @Test
     public void testValidateInvalidCommitmentInvalidTimes() {
 	try {
@@ -216,6 +287,9 @@ public class ClinicianFormValidatorTest {
 	}
     }
 
+    /**
+     * Test validation with a commitment with an invalid description.
+     */
     @Test
     public void testValidateInvalidCommitmentInvalidDescription() {
 	try {

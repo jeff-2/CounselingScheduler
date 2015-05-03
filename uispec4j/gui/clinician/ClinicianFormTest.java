@@ -37,21 +37,39 @@ import dao.ConnectionFactory;
 import dao.TimeAwayDAO;
 
 /**
- * 
- * @author jmfoste2, lim92
+ * The Class ClinicianFormTest tests the full functionality of the ClinicianForm.
  *
+ * @author jmfoste2, lim92
  */
 public class ClinicianFormTest extends UISpecTestCase {
 
+    /** The conn. */
     private Connection conn;
+    
+    /** The commitments. */
     private List<CommitmentBean> commitments;
+    
+    /** The preferences. */
     private ClinicianPreferencesBean preferences;
+    
+    /** The time away. */
     private List<TimeAwayBean> timeAway;
+    
+    /** The clinician preferences dao. */
     private ClinicianPreferencesDAO clinicianPreferencesDAO;
+    
+    /** The commitments dao. */
     private CommitmentsDAO commitmentsDAO;
+    
+    /** The time away dao. */
     private TimeAwayDAO timeAwayDao;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#setUp()
+     */
     @Before
     protected void setUp() throws Exception {
 	super.setUp();
@@ -62,6 +80,7 @@ public class ClinicianFormTest extends UISpecTestCase {
 	gen = new TestDataGenerator(conn);
 	gen.clearTables();
 
+	// insert test data
 	CalendarDAO calendarDAO = new CalendarDAO(conn);
 	SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy");
 	CalendarBean calendar = new CalendarBean();
@@ -112,6 +131,9 @@ public class ClinicianFormTest extends UISpecTestCase {
 		.parseDate("1/6/1970")));
     }
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#tearDown()
+     */
     @After
     public void tearDown() throws Exception {
 	super.tearDown();
@@ -119,9 +141,9 @@ public class ClinicianFormTest extends UISpecTestCase {
     }
 
     /**
-     * Tests whether the clear button clears the field
-     * 
-     * @throws Exception
+     * Tests whether the clear button clears the field.
+     *
+     * @throws Exception the exception
      */
     public void testClearField() throws Exception {
 	Window window = this.getMainWindow();
@@ -174,6 +196,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	commitments.contentEquals("");
     }
 
+    /**
+     * Test submit clinician form with external commitment and biweekly frequency.
+     *
+     * @throws Exception the exception
+     */
     public void testInsertClinicianFormExternalB() throws Exception {
 	insertData("Monthly", true);
 	ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO
@@ -193,6 +220,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(timeAway, actualTimeAway);
     }
 
+    /**
+     * Test submit clinician form with external commitment and biweekly frequency.
+     *
+     * @throws Exception the exception
+     */
     public void testInsertClinicianFormExternalA() throws Exception {
 	insertData("Biweekly", true);
 
@@ -221,6 +253,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(timeAway, actualTimeAway);
     }
 
+    /**
+     * Test submit clinician form with biweekly frequency for commitments.
+     *
+     * @throws Exception the exception
+     */
     public void testInsertClinicianFormBiweekly() throws Exception {
 	insertData("Biweekly", false);
 
@@ -249,6 +286,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(timeAway, actualTimeAway);
     }
 
+    /**
+     * Test submit clinician form with monthly for commitments.
+     *
+     * @throws Exception the exception
+     */
     public void testInsertClinicianFormMonthly() throws Exception {
 	insertData("Monthly", false);
 
@@ -269,6 +311,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(timeAway, actualTimeAway);
     }
 
+    /**
+     * Test submit clinician form with weekly frequency for commitments
+     *
+     * @throws Exception the exception
+     */
     public void testInsertClinicianFormWeekly() throws Exception {
 	insertData("Weekly", false);
 
@@ -283,6 +330,13 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(timeAway, actualTimeAway);
     }
 
+    /**
+     * Enters data into the clinician form.
+     *
+     * @param frequency the frequency
+     * @param isExternal the is external
+     * @throws Exception the exception
+     */
     private void enterData(String frequency, boolean isExternal)
 	    throws Exception {
 	Window window = this.getMainWindow();
@@ -352,6 +406,13 @@ public class ClinicianFormTest extends UISpecTestCase {
 	afternoonRankBox.select("3");
     }
 
+    /**
+     * Inserts clinician preferences into form and submits with specified frequency and whether it is external or not.
+     *
+     * @param frequency the frequency
+     * @param isExternal the is external
+     * @throws Exception the exception
+     */
     private void insertData(String frequency, boolean isExternal)
 	    throws Exception {
 	enterData(frequency, isExternal);
@@ -361,6 +422,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	submitButton.click();
     }
 
+    /**
+     * Test canceling update clinician preferences via the clinician form.
+     *
+     * @throws Exception the exception
+     */
     public void testCancelUpdateClinicianForm() throws Exception {
 	insertData("Weekly", false);
 	Window window = this.getMainWindow();
@@ -386,6 +452,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(timeAway, actualTimeAway);
     }
 
+    /**
+     * Test updating clinician preferences via the clinician form.
+     *
+     * @throws Exception the exception
+     */
     public void testUpdateClinicianForm() throws Exception {
 	insertData("Weekly", false);
 	Window window = this.getMainWindow();
@@ -435,6 +506,11 @@ public class ClinicianFormTest extends UISpecTestCase {
 	assertEquals(otherTimeAway, actualTimeAway);
     }
 
+    /**
+     * Populates the form with data.
+     *
+     * @throws Exception the exception
+     */
     private void loadOtherData() throws Exception {
 	Window window = this.getMainWindow();
 	TextBox nameField = window.getTextBox("nameField");

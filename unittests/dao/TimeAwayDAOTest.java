@@ -15,16 +15,26 @@ import validator.DateRangeValidator;
 import bean.TimeAwayBean;
 
 /**
- * 
- * @author jmfoste2, lim92
+ * The Class TimeAwayDAOTest tests the functionality of the TimeAwayDAO.
  *
+ * @author jmfoste2, lim92
  */
 public class TimeAwayDAOTest {
 
+    /** The time away dao. */
     private TimeAwayDAO timeAwayDAO;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -33,11 +43,21 @@ public class TimeAwayDAOTest {
 	gen.clearTimeAwayTable();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearTimeAwayTable();
     }
 
+    /**
+     * Test insertion of valid time away into database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testInsertValidTimeAway() throws Exception {
 	TimeAwayBean expected = new TimeAwayBean(0, "description",
@@ -53,6 +73,11 @@ public class TimeAwayDAOTest {
 	assertEquals(expectedTimeAway, actualTimeAway);
     }
 
+    /**
+     * Tests loading time away from database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadTimeAway() throws Exception {
 	TimeAwayBean timeAwayOne = new TimeAwayBean(0, "desc",
@@ -72,6 +97,11 @@ public class TimeAwayDAOTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Tests loading time away when table in database is empty empty.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadTimeAwayEmpty() throws Exception {
 	List<TimeAwayBean> actual = timeAwayDAO.loadTimeAway(0);
@@ -79,6 +109,11 @@ public class TimeAwayDAOTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test deleting a time away from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testDeleteTimeAway() throws Exception {
 	TimeAwayBean timeAwayBean = new TimeAwayBean(0, "desc",

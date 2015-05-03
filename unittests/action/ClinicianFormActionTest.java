@@ -28,21 +28,44 @@ import dao.ConnectionFactory;
 import dao.TimeAwayDAO;
 
 /**
- * @author jmfoste2, lim92
+ * The Class ClinicianFormActionTest tests the functionality of ClinicianFormAction.
  *
+ * @author jmfoste2, lim92
  */
 public class ClinicianFormActionTest {
 
+    /** The action. */
     private ClinicianFormAction action;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The commitments. */
     private List<List<CommitmentBean>> commitments;
+    
+    /** The preferences. */
     private ClinicianPreferencesBean preferences;
+    
+    /** The time away. */
     private DefaultListModel<TimeAwayBean> timeAway;
+    
+    /** The clinician preferences dao. */
     private ClinicianPreferencesDAO clinicianPreferencesDAO;
+    
+    /** The commitments dao. */
     private CommitmentsDAO commitmentsDAO;
+    
+    /** The time away dao. */
     private TimeAwayDAO timeAwayDAO;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -80,17 +103,33 @@ public class ClinicianFormActionTest {
 		timeAway);
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearTables();
     }
 
+    /**
+     * Test whether preferences will be overwritten with no current preferences.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testCheckWillOverwritePreferencesWithNoPreferences()
 	    throws SQLException {
 	assertFalse(action.willOverwritePreferences());
     }
 
+    /**
+     * Test whether preferences will be overwritten preferences when preferences already exist.
+     *
+     * @throws SQLException the SQL exception
+     * @throws InvalidFormDataException the invalid form data exception
+     */
     @Test
     public void testCheckWillOverwritePreferencesWithPreferences()
 	    throws SQLException, InvalidFormDataException {
@@ -98,6 +137,11 @@ public class ClinicianFormActionTest {
 	assertTrue(action.willOverwritePreferences());
     }
 
+    /**
+     * Test submit preferences and overwrite existing preferences.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testSubmitAndOverwrite() throws Exception {
 
@@ -144,6 +188,11 @@ public class ClinicianFormActionTest {
 	assertEquals(expectedTimesAway, actualTimeAway);
     }
 
+    /**
+     * Test submit preferences with no pre-existing preferences.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testSubmit() throws Exception {
 	action.submit(false);

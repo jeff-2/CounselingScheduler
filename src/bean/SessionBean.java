@@ -3,7 +3,6 @@ package bean;
 import java.util.Date;
 import java.util.List;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class SessionBean handles storage of data associated with a particular
  * session.

@@ -15,16 +15,26 @@ import org.junit.Test;
 import bean.ClinicianBean;
 
 /**
- * 
- * @author jmfoste2, lim92
+ * The Class ClinicianDAOTest tests the functionality of ClinicianDAO.
  *
+ * @author jmfoste2, lim92
  */
 public class ClinicianDAOTest {
 
+    /** The clinician dao. */
     private ClinicianDAO clinicianDAO;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -33,11 +43,21 @@ public class ClinicianDAOTest {
 	gen.clearCliniciansTable();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearCliniciansTable();
     }
 
+    /**
+     * Test insert valid clinician into the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testInsertValidClinician() throws Exception {
 	ClinicianBean clinician = new ClinicianBean(0, "Jeff");
@@ -51,6 +71,11 @@ public class ClinicianDAOTest {
 	assertEquals(clinicianDAO.getNextClinicianID(), 1);
     }
 
+    /**
+     * Test insert duplicate clinician into the database.
+     *
+     * @throws Exception the exception
+     */
     @Test(expected = SQLException.class)
     public void testInsertDuplicateClinician() throws Exception {
 	ClinicianBean clinician = new ClinicianBean(1, "Jeff");
@@ -58,6 +83,11 @@ public class ClinicianDAOTest {
 	clinicianDAO.insert(clinician);
     }
 
+    /**
+     * Test load clinicians from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadClinicians() throws Exception {
 	ClinicianBean clinicianBeanOne = new ClinicianBean(0, "Jeff");
@@ -73,6 +103,11 @@ public class ClinicianDAOTest {
 	assertEquals(clinicianDAO.getNextClinicianID(), 2);
     }
 
+    /**
+     * Test load clinicians when there are none.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadCliniciansEmpty() throws Exception {
 	List<ClinicianBean> actual = clinicianDAO.loadClinicians();
@@ -80,6 +115,11 @@ public class ClinicianDAOTest {
 	assertEquals(actual, expected);
     }
 
+    /**
+     * Test delete valid clinician from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testDeleteValidClinician() throws Exception {
 	ClinicianBean expected = new ClinicianBean(0, "Jeff");
@@ -91,6 +131,11 @@ public class ClinicianDAOTest {
 	assertEquals(expectedClinicians, actualClinicians);
     }
 
+    /**
+     * Test get valid clinician id from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testGetValidClinicianID() throws Exception {
 	ClinicianBean expected = new ClinicianBean(0, "Jeff");
@@ -100,6 +145,11 @@ public class ClinicianDAOTest {
 	assertEquals(expected.getClinicianID(), actualID);
     }
 
+    /**
+     * Test get clinician id for a clinician which does not exist in the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testGetInvalidClinicianID() throws Exception {
 	int actualID = clinicianDAO.getClinicianID("Jeff");

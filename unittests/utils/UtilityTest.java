@@ -12,11 +12,20 @@ import org.junit.Test;
 
 import action.InvalidFormDataException;
 
+/**
+ * The Class UtilityTest tests the functionality of Utility.
+ */
 public class UtilityTest {
 
+    /** The Constant FIELD. */
     private static final String FIELD = "field";
+    
+    /** The Constant CONTEXT. */
     private static final String CONTEXT = "context";
 
+    /**
+     * Test that converting from empty DefaultListModel to list of strings works.
+     */
     @Test
     public void testToStringListEmpty() {
 	DefaultListModel<String> model = new DefaultListModel<String>();
@@ -25,6 +34,9 @@ public class UtilityTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Tests converting from non-empty DefaultListModel to string list works.
+     */
     @Test
     public void testToStringList() {
 	DefaultListModel<String> model = new DefaultListModel<String>();
@@ -38,6 +50,11 @@ public class UtilityTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test parse int works with string representing valid integer.
+     *
+     * @throws InvalidFormDataException the invalid form data exception
+     */
     @Test
     public void testParseIntValid() throws InvalidFormDataException {
 	int expected = 42;
@@ -45,6 +62,9 @@ public class UtilityTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test parse int catches an invalid string representing an integer.
+     */
     @Test
     public void testParseIntInvalid() {
 	try {
@@ -57,6 +77,9 @@ public class UtilityTest {
 	}
     }
 
+    /**
+     * Test parse time can convert from string time in the morning to 24 hour time.
+     */
     @Test
     public void testParseValidTimeMorning() {
 	int expected = 10;
@@ -64,6 +87,9 @@ public class UtilityTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test parse time can convert string time in the afternoon to 24 hour time.
+     */
     @Test
     public void testParseValidTimeAfternoon() {
 	int expected = 14;
@@ -71,6 +97,9 @@ public class UtilityTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test parse time can convert from string time in the morning to 24 hour time rounding up.
+     */
     @Test
     public void testParseValidTimeMorningRoundUp() {
 	int expected = 9;
@@ -78,6 +107,9 @@ public class UtilityTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test parse time from string time in the afternoon to 24 hour time rounding up.
+     */
     @Test
     public void testParseValidTimeAfternoonRoundUp() {
 	int expected = 15;

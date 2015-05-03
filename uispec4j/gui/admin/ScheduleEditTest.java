@@ -32,14 +32,17 @@ import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 
 /**
- * Tests schedule edits
+ * The Class ScheduleEditTest tests the edit functionality for both IA and EC schedules.
  * 
  * @author Yusheng, Denise
  *
  */
 public class ScheduleEditTest extends UISpecTestCase {
 
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The con. */
     private Connection con;
 
     /*
@@ -54,39 +57,79 @@ public class ScheduleEditTest extends UISpecTestCase {
 	gen = new TestDataGenerator(con);
     }
 
+    /* (non-Javadoc)
+     * @see org.uispec4j.UISpecTestCase#tearDown()
+     */
     protected void tearDown() throws Exception {
 	super.tearDown();
 	gen.clearTables();
     }
 
+    /**
+     * Test first ec selection.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testFirstECSelection() throws SQLException {
 	testEditECScheduleCatchWindow("0");
     }
 
+    /**
+     * Test second ec selection.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testSecondECSelection() throws SQLException {
 	testEditECScheduleCatchWindow("1");
     }
 
+    /**
+     * Test third ec selection.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testThirdECSelection() throws SQLException {
 	testEditECScheduleCatchWindow("2");
     }
 
+    /**
+     * Test remove clinician ia schedule week a.
+     */
     public void testRemoveClinicianIAScheduleWeekA() {
 	testRemoveClinicianIAScheduleWeektype(IAWeektype.A);
     }
 
+    /**
+     * Test remove clinician ia schedule week b.
+     */
     public void testRemoveClinicianIAScheduleWeekB() {
 	testRemoveClinicianIAScheduleWeektype(IAWeektype.B);
     }
 
+    /**
+     * Test add clinician ia schedule week a.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testAddClinicianIAScheduleWeekA() throws SQLException {
 	testAddClinicianIAScheduleWeektype(IAWeektype.A);
     }
 
+    /**
+     * Test add clinician ia schedule week b.
+     *
+     * @throws SQLException the SQL exception
+     */
     public void testAddClinicianIAScheduleWeekB() throws SQLException {
 	testAddClinicianIAScheduleWeektype(IAWeektype.B);
     }
 
+    /**
+     * Test add clinician ia schedule weektype.
+     *
+     * @param weekType the week type
+     * @throws SQLException the SQL exception
+     */
     public void testAddClinicianIAScheduleWeektype(IAWeektype weekType)
 	    throws SQLException {
 	Window iaSchedule = navigateScheduleWindow("IA");
@@ -121,6 +164,11 @@ public class ScheduleEditTest extends UISpecTestCase {
 	assertTrue(jList.contains(c));
     }
 
+    /**
+     * Test remove clinician ia schedule weektype.
+     *
+     * @param weekType the week type
+     */
     public void testRemoveClinicianIAScheduleWeektype(IAWeektype weekType) {
 	Window iaSchedule = navigateScheduleWindow("IA");
 
@@ -138,9 +186,10 @@ public class ScheduleEditTest extends UISpecTestCase {
     }
 
     /**
-     * Go to the a schedule window
-     * 
-     * @return
+     * Navigate to the schedule window.
+     *
+     * @param scheduleType the schedule type
+     * @return the window
      */
     public Window navigateScheduleWindow(String scheduleType) {
 	Window window = this.getMainWindow();
@@ -160,6 +209,11 @@ public class ScheduleEditTest extends UISpecTestCase {
 	return window;
     }
 
+    /**
+     * Test edit ec schedule and catch the constraints broken notification window.
+     *
+     * @param boxnum the boxnum
+     */
     public void testEditECScheduleCatchWindow(final String boxnum) {
 	final Window ecSchedule = navigateScheduleWindow("EC");
 
@@ -177,9 +231,10 @@ public class ScheduleEditTest extends UISpecTestCase {
     }
 
     /**
-     * Tests whether selecting new name in the EC schedule works
-     * 
-     * @throws SQLException
+     * Tests whether selecting new name in the EC schedule works.
+     *
+     * @param boxnum the boxnum
+     * @throws SQLException the SQL exception
      */
     public void testEditECSchedule(String boxnum) throws SQLException {
 	Window ecSchedule = navigateScheduleWindow("EC");
@@ -193,9 +248,9 @@ public class ScheduleEditTest extends UISpecTestCase {
 
     /**
      * Tests whether reseting the EC schedule after making unsaved edits reverts
-     * back to original version
-     * 
-     * @throws SQLException
+     * back to original version.
+     *
+     * @throws SQLException the SQL exception
      */
     public void testResetECSchedule() throws SQLException {
 
@@ -232,9 +287,9 @@ public class ScheduleEditTest extends UISpecTestCase {
 
     /**
      * Tests whether reseting the IA schedule after making unsaved edits reverts
-     * back to the original version
-     * 
-     * @throws SQLException
+     * back to the original version.
+     *
+     * @throws SQLException the SQL exception
      */
     public void testResetIASchedule() throws SQLException {
 	Window iaSchedule = navigateScheduleWindow("IA");

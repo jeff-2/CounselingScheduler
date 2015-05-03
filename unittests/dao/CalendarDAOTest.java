@@ -17,14 +17,27 @@ import bean.CalendarBean;
 import bean.Semester;
 
 /**
+ * The Class CalendarDAOTest tests the functionality of CalendarDAO.
+ *
  * @author nbeltr2
  * @author dtli2
  */
 public class CalendarDAOTest {
+    
+    /** The calendar dao. */
     private CalendarDAO calendarDAO;
+    
+    /** The con. */
     private Connection con;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Before
     public void setUp() throws SQLException {
 	con = ConnectionFactory.getInstance();
@@ -33,22 +46,43 @@ public class CalendarDAOTest {
 	gen.clearCalendarTable();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws SQLException the SQL exception
+     */
     @After
     public void tearDown() throws SQLException {
 	gen.clearCalendarTable();
     }
 
+    /**
+     * Test that there are no calendars initially.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testNoCalendarsYet() throws SQLException {
 	assertEquals(calendarDAO.getNextAvailableId(), 0);
     }
 
+    /**
+     * Test get next available calendar id.
+     *
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testGetNextAvailableId() throws SQLException {
 	generateCalendarData();
 	assertEquals(calendarDAO.getNextAvailableId(), 2);
     }
 
+    /**
+     * Test insert calendar into the database.
+     *
+     * @throws ParseException the parse exception
+     * @throws SQLException the SQL exception
+     */
     @Test
     public void testInsertCalendar() throws ParseException, SQLException {
 	CalendarBean calendar = new CalendarBean();
@@ -64,6 +98,11 @@ public class CalendarDAOTest {
 	assertEquals(calendar, output);
     }
 
+    /**
+     * Inserts some calendar data into the database.
+     *
+     * @throws SQLException the SQL exception
+     */
     private void generateCalendarData() throws SQLException {
 	Statement stmt = con.createStatement();
 

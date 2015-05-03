@@ -21,18 +21,29 @@ import dao.ConnectionFactory;
 import dao.SessionsDAO;
 
 /**
- * JUnit test for generating an unfilled schedule
- * 
- * @author ramusa2, jmfoste2
+ * JUnit test for generating an unfilled schedule.
  *
+ * @author ramusa2, jmfoste2
  */
 public class GenerateUnfilledScheduleTest {
 
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The sessions dao. */
     private SessionsDAO sessionsDAO;
+    
+    /** The action. */
     private GenerateUnfilledScheduleAction action;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -42,6 +53,12 @@ public class GenerateUnfilledScheduleTest {
 	action = new GenerateUnfilledScheduleAction(conn);
     }
 
+    /**
+     * Test generate unfilled schedule.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testGenerateUnfilledSchedule() throws SQLException,
 	    ParseException {
@@ -67,6 +84,12 @@ public class GenerateUnfilledScheduleTest {
 			|| end.equals(calBean.getEndDate()), true);
     }
 
+    /**
+     * Test generate unfilled empty schedule.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Test
     public void testGenerateUnfilledEmptySchedule() throws SQLException,
 	    ParseException {
@@ -76,6 +99,11 @@ public class GenerateUnfilledScheduleTest {
 	assertEquals(sessions.size(), 0);
     }
 
+    /**
+     * Clean up.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void cleanUp() throws Exception {
 	gen.clearTables();

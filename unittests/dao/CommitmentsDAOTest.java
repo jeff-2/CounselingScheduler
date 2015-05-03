@@ -15,16 +15,26 @@ import validator.DateRangeValidator;
 import bean.CommitmentBean;
 
 /**
- * 
- * @author jmfoste2, lim92
+ * The Class CommitmentsDAOTest tests the functionality of the CommitmentsDAO.
  *
+ * @author jmfoste2, lim92
  */
 public class CommitmentsDAOTest {
 
+    /** The commitments dao. */
     private CommitmentsDAO commitmentsDAO;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws Exception the exception
+     */
     @Before
     public void setUp() throws Exception {
 	conn = ConnectionFactory.getInstance();
@@ -33,11 +43,21 @@ public class CommitmentsDAOTest {
 	gen.clearCommitmentsTable();
     }
 
+    /**
+     * Tear down.
+     *
+     * @throws Exception the exception
+     */
     @After
     public void tearDown() throws Exception {
 	gen.clearCommitmentsTable();
     }
 
+    /**
+     * Test insert valid commitment into the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testInsertValidCommitment() throws Exception {
 	CommitmentBean expected = new CommitmentBean(1, 4, 5,
@@ -52,6 +72,11 @@ public class CommitmentsDAOTest {
 	assertEquals(expectedCommitments, actualCommitments);
     }
 
+    /**
+     * Test load commitments from database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadCommitments() throws Exception {
 	CommitmentBean commitmentBeanOne = new CommitmentBean(1, 8, 9,
@@ -69,6 +94,11 @@ public class CommitmentsDAOTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test load commitments when there are none.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testLoadCommitmentsEmpty() throws Exception {
 	List<CommitmentBean> actual = commitmentsDAO.loadCommitments(1);
@@ -76,6 +106,11 @@ public class CommitmentsDAOTest {
 	assertEquals(expected, actual);
     }
 
+    /**
+     * Test delete commitment from the database.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testDeleteCommitment() throws Exception {
 	CommitmentBean commitmentBean = new CommitmentBean(1, 8, 9,

@@ -18,17 +18,29 @@ import org.junit.Test;
  */
 public class LoggerTest {
 
+    /** The log file dir. */
     private String logFileDir = "tempLogs/";
+    
+    /** The log file prefix. */
     private String logFilePrefix = "temp";
+    
+    /** The log file name. */
     private String logFileName = "";
 
+    /** The out content. */
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
+    /**
+     * Sets the test up.
+     */
     @Before
     public void setUp() {
 	System.setOut(new PrintStream(outContent));
     }
 
+    /**
+     * Test pre setup of logging.
+     */
     @Test
     public void testPreSetup() {
 	assertEquals(Logger.logFileIsOpen(), false);
@@ -38,6 +50,9 @@ public class LoggerTest {
 	assertEquals(Logger.getDebugStatus(), false);
     }
 
+    /**
+     * Test initialize logging.
+     */
     @Test
     public void testInitialize() {
 	Logger.setLogDir(logFileDir);
@@ -51,6 +66,9 @@ public class LoggerTest {
 	assertEquals(Logger.getDebugStatus(), false);
     }
 
+    /**
+     * Test writing to log file.
+     */
     @Test
     public void testWriting() {
 	Logger.setLogStatus(false);
@@ -63,6 +81,11 @@ public class LoggerTest {
 	assertEquals(statement, console);
     }
 
+    /**
+     * Test closing the log file.
+     *
+     * @throws Exception the exception
+     */
     @Test
     public void testClose() throws Exception {
 	Logger.closeFileForLogging();
@@ -70,6 +93,9 @@ public class LoggerTest {
 	assertEquals(Logger.getLogStatus(), false);
     }
 
+    /**
+     * Clean up.
+     */
     @After
     public void cleanUp() {
 	System.setOut(null);

@@ -18,13 +18,29 @@ import bean.Schedule;
 import bean.TimeAwayBean;
 import dao.ConnectionFactory;
 
+/**
+ * The Class ValidateScheduleActionTest tests the ValidateScheduleAction functionality.
+ */
 public class ValidateScheduleActionTest {
 
+    /** The validate action. */
     private ValidateScheduleAction validateAction;
+    
+    /** The conn. */
     private Connection conn;
+    
+    /** The gen. */
     private TestDataGenerator gen;
+    
+    /** The sch. */
     private Schedule sch;
 
+    /**
+     * Sets the test up.
+     *
+     * @throws SQLException the SQL exception
+     * @throws ParseException the parse exception
+     */
     @Before
     public void setUp() throws SQLException, ParseException {
 	conn = ConnectionFactory.getInstance();
@@ -36,6 +52,9 @@ public class ValidateScheduleActionTest {
 	validateAction = new ValidateScheduleAction();
     }
 
+    /**
+     * Test validate ec schedule with conflicts.
+     */
     @Test
     public void testValidateECScheduleConflicts() {
 	Clinician cl1 = sch.getECClinician(1, 2, 8);
@@ -56,6 +75,9 @@ public class ValidateScheduleActionTest {
 	assertTrue(violations.contains(cl2));
     }
 
+    /**
+     * Test validate same day noon ec, ia conflicts.
+     */
     @Test
     public void testValidateSameDayNoonECIAConflicts() {
 	Clinician cl1 = sch.getECClinician(1, 2, 12);
@@ -70,6 +92,9 @@ public class ValidateScheduleActionTest {
 	assertTrue(violations.contains(cl2));
     }
 
+    /**
+     * Test validate afternoon meeting morning ec conflicts.
+     */
     @Test
     public void testValidateAfternoonMeetingMorningECConflicts() {
 	Clinician cl1 = sch.getECClinician(1, 2, 8);
@@ -90,6 +115,9 @@ public class ValidateScheduleActionTest {
 	assertTrue(violations.contains(cl2));
     }
 
+    /**
+     * Test validate morning meeting afternoon ec conflicts.
+     */
     @Test
     public void testValidateMorningMeetingAfternoonECConflicts() {
 	Clinician cl1 = sch.getECClinician(1, 2, 16);
@@ -110,6 +138,9 @@ public class ValidateScheduleActionTest {
 	assertTrue(violations.contains(cl2));
     }
 
+    /**
+     * Test validate one ia per day.
+     */
     @Test
     public void testValidateOneIAPerDay() {
 	Clinician cl1 = sch.getIAClinician(true, 0, 11).get(0);
@@ -123,6 +154,9 @@ public class ValidateScheduleActionTest {
 	assertTrue(violations.contains(cl2));
     }
 
+    /**
+     * Test validate one ec per week.
+     */
     @Test
     public void testValidateOneECPerWeek() {
 	Clinician cl1 = sch.getECClinician(1, 0, 8);
