@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -17,9 +18,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import action.GenerateUnfilledScheduleAction;
+import bean.ClinicianBean;
 import bean.Schedule;
+import dao.ClinicianDAO;
+import dao.ClinicianPreferencesDAO;
 import dao.ConnectionFactory;
 
 /**
@@ -27,7 +33,7 @@ import dao.ConnectionFactory;
  * setup and generate/edit the schedule. Combines admin components to provide
  * this functionality.
  */
-public class AdminApplication extends JFrame implements ActionListener {
+public class AdminApplication extends JFrame implements ActionListener, ChangeListener {
 
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 8557735241347619359L;
@@ -73,12 +79,13 @@ public class AdminApplication extends JFrame implements ActionListener {
      */
     public AdminApplication() throws SQLException {
 	super("Generate IA/EC schedule");
-        schedule = Schedule.loadScheduleFromDB();
+	schedule = Schedule.loadScheduleFromDB();
 	ia = new IAScheduleFrame(schedule);
 	ec = new ECScheduleFrame(schedule);
 	ia.setName("IAScheduleFrame");
 	ec.setName("ECScheduleFrame");
 	tabbedPane = new JTabbedPane();
+	tabbedPane.addChangeListener(this);
 	tabbedPane.setName("tabbedPane");
 	editor = new ClinicianIDListEditor();
 	editor.setName("ClinicianIDListEditor");
@@ -108,11 +115,13 @@ public class AdminApplication extends JFrame implements ActionListener {
 		ActionEvent.CTRL_MASK));
 	print.addActionListener(this);
 	print.setName("Print");
+	print.setEnabled(false);
 	save = new JMenuItem("Save");
 	save.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S,
 		ActionEvent.CTRL_MASK));
 	save.addActionListener(this);
 	save.setName("Save");
+	save.setEnabled(false);
 	menu.add(generate);
 	menu.add(print);
 	menu.add(save);
@@ -165,6 +174,35 @@ public class AdminApplication extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == generate) {
+	    // ensure that all clinician preferences are entered first
+	    List<ClinicianBean> clinicians = null;
+	    try {
+		ClinicianDAO clinicianDAO = new ClinicianDAO(ConnectionFactory.getInstance());
+		clinicians = clinicianDAO.loadClinicians();
+
+		if (clinicians.size() == 0) {
+		    JOptionPane
+		    .showMessageDialog(
+			    null,
+			    "A schedule can't be generated without any clinicians.",
+			    "ERROR", JOptionPane.INFORMATION_MESSAGE);
+		    return;
+		}
+		ClinicianPreferencesDAO preferencesDAO = new ClinicianPreferencesDAO(ConnectionFactory.getInstance());
+		for (ClinicianBean clinician : clinicians) {
+		    if (!preferencesDAO.preferencesExist(clinician.getClinicianID())) {
+			JOptionPane
+			    .showMessageDialog(
+				    null,
+				    "A schedule can't be generated because " + clinician.getName()
+				    + " has not entered his/her preferences.",
+				    "ERROR", JOptionPane.INFORMATION_MESSAGE);
+			return;
+		    }
+		}
+	    } catch (SQLException ex) {
+		ex.printStackTrace();
+	    }
 	    try {
 		Connection conn = ConnectionFactory.getInstance();
 		GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(
@@ -194,6 +232,20 @@ public class AdminApplication extends JFrame implements ActionListener {
 	    } else if (tabbedPane.getSelectedComponent() == ia) {
 		ia.save();
 	    }
+	}
+    }
+
+    @Override
+    public void stateChanged(ChangeEvent e) {
+	// only enable print and save options when viewing ia or ec schedule
+	if (e.getSource() == tabbedPane && save != null && print != null) {
+        	if (tabbedPane.getSelectedComponent() == ec || tabbedPane.getSelectedComponent() == ia) {
+        	    save.setEnabled(true);
+        	    print.setEnabled(true);
+        	} else if (tabbedPane.getSelectedComponent() == editor || tabbedPane.getSelectedComponent() == settings) {
+        	    save.setEnabled(false);
+        	    print.setEnabled(false);
+        	}
 	}
     }
 }

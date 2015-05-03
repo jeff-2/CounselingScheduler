@@ -31,7 +31,9 @@ import bean.DateRange;
 import dao.CalendarDAO;
 import dao.ClinicianDAO;
 import dao.ClinicianPreferencesDAO;
+import dao.CommitmentsDAO;
 import dao.ConnectionFactory;
+import dao.TimeAwayDAO;
 
 /**
  * A GUI element for adding and removing clinicians from the clinician ID list.
@@ -73,6 +75,12 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 
     /** The prefs dao. */
     private ClinicianPreferencesDAO prefsDAO;
+    
+    /** The times away dao. */
+    private TimeAwayDAO timesAwayDAO;
+    
+    /** The commitment dao. */
+    private CommitmentsDAO commitmentDAO;
 
     /** Local cache of current list of clinicians. */
     private List<ClinicianBean> localClinicians;
@@ -96,6 +104,8 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 	    Connection conn = ConnectionFactory.getInstance();
 	    dao = new ClinicianDAO(conn);
 	    prefsDAO = new ClinicianPreferencesDAO(conn);
+	    timesAwayDAO = new TimeAwayDAO(conn);
+	    commitmentDAO = new CommitmentsDAO(conn);
 	} catch (Exception e) {
 	    handleDBException(e);
 	}
@@ -291,6 +301,9 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 	    ClinicianBean oldClinician = this.clinicianList.getModel()
 		    .getElementAt(index);
 	    this.dao.delete(oldClinician.getClinicianID());
+	    this.timesAwayDAO.delete(oldClinician.getClinicianID());
+	    this.commitmentDAO.delete(oldClinician.getClinicianID());
+	    this.prefsDAO.delete(oldClinician.getClinicianID());
 	    this.populateClinicianList();
 	} catch (Exception e) {
 	    handleDBException(e);

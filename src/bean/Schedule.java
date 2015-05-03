@@ -281,8 +281,8 @@ public class Schedule {
 		}
 	    } else {
 		// This is an EC session.
-		schedule.ec.get(weekNum).put(sb,
-			schedule.clinicians.get(clinicianIDs.get(0)));
+    		schedule.ec.get(weekNum).put(sb,
+    			schedule.clinicians.get(clinicianIDs.get(0)));
 	    }
 	    // Fill sessionsByClinician and the ec SessionNameBean lists
 	    for (Integer id : clinicianIDs) {
