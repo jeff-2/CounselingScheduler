@@ -41,7 +41,6 @@ import dao.TimeAwayDAO;
  * 
  * @author ramusa2
  * @author dtli2
- * 
  */
 public class ClinicianIDListEditor extends JPanel implements ActionListener,
 		KeyListener, ListSelectionListener {
@@ -115,7 +114,7 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 	 * Handle db exception.
 	 *
 	 * @param e
-	 *            the e
+	 *            the exception
 	 */
 	private void handleDBException(Exception e) {
 		e.printStackTrace();
@@ -149,6 +148,7 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 		this.newFullnameField.setName("newFullnameField");
 		this.newFullnameField.addKeyListener(this);
 		add(newFullnameField, "span, grow, wrap 15px");
+		
 		// Add "Add" and "Remove" buttons
 		this.addButton = new JButton("Add Clinician");
 		this.addButton.setName("addButton");
@@ -162,6 +162,7 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 		this.editButton.setName("editButton");
 		this.editButton.addActionListener(this);
 		add(editButton, "gapleft 15, sizegroup bttn, wrap");
+		
 		// Add list & scrollpane
 		this.clinicianList = new JList<ClinicianBean>();
 		this.populateClinicianList();
@@ -351,5 +352,4 @@ public class ClinicianIDListEditor extends JPanel implements ActionListener,
 	public void valueChanged(ListSelectionEvent e) {
 		this.updateButtonStatus();
 	}
-
 }

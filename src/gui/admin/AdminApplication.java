@@ -241,9 +241,11 @@ public class AdminApplication extends JFrame implements ActionListener,
 		}
 	}
 
+	/**
+	 * Only enables print and save options when viewing ia or ec schedules
+	 */
 	@Override
 	public void stateChanged(ChangeEvent e) {
-		// only enable print and save options when viewing ia or ec schedule
 		if (e.getSource() == tabbedPane && save != null && print != null) {
 			if (tabbedPane.getSelectedComponent() == ec
 					|| tabbedPane.getSelectedComponent() == ia) {

@@ -358,7 +358,7 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 	}
 
 	/**
-	 * Creates the semester.
+	 * Creates the semester using parameters set in textboxes.
 	 *
 	 * @return true, if successful
 	 */
