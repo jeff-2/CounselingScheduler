@@ -29,134 +29,140 @@ import dao.ConnectionFactory;
  */
 public class IAScheduleFrame extends JPanel implements ActionListener {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -4271567771784608985L;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -4271567771784608985L;
 
-    /** The clinician dao. */
-    private ClinicianDAO clinicianDao;
-    
-    /** The panel. */
-    private JSplitPane panel;
-    
-    /** The week a. */
-    private JPanel weekA;
-    
-    /** The week b. */
-    private JPanel weekB;
-    
-    /** The reset button. */
-    private JButton resetButton;
-    
-    /** The control panel. */
-    private JPanel controlPanel;
-    
-    /** The file chooser. */
-    private JFileChooser fileChooser;
-    
-    /** The schedule. */
-    private Schedule schedule;
+	/** The clinician dao. */
+	private ClinicianDAO clinicianDao;
 
-    /**
-     * Create an empty client ID list.
-     *
-     * @param s the s
-     * @throws SQLException the SQL exception
-     */
-    public IAScheduleFrame(Schedule s) throws SQLException {
-	clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
-	this.schedule = s;
+	/** The panel. */
+	private JSplitPane panel;
 
-	this.panel = new JSplitPane();
-	this.panel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
-	this.panel.setResizeWeight(0.5);
-	this.panel.setDividerSize(25);
-	this.panel.setPreferredSize(new Dimension(1000, 750));
-	this.loadEditableSchedule();
+	/** The week a. */
+	private JPanel weekA;
 
-	resetButton = new JButton("Reset");
-	resetButton.addActionListener(this);
+	/** The week b. */
+	private JPanel weekB;
 
-	controlPanel = new JPanel(new FlowLayout());
-	controlPanel.add(resetButton);
+	/** The reset button. */
+	private JButton resetButton;
 
-	fileChooser = new JFileChooser();
-	fileChooser.setDialogTitle("Save Schedule");
-	fileChooser
-		.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+	/** The control panel. */
+	private JPanel controlPanel;
 
-	this.add(this.panel, BorderLayout.CENTER);
-	this.add(controlPanel, BorderLayout.SOUTH);
-    }
+	/** The file chooser. */
+	private JFileChooser fileChooser;
 
-    /**
-     * Loads a JPanel that displays an editable IA schedule with data from the
-     * database.
-     *
-     * @throws SQLException the SQL exception
-     */
-    private void loadEditableSchedule() throws SQLException {
-	List<String> clinicianNames = clinicianDao.loadClinicianNames();
+	/** The schedule. */
+	private Schedule schedule;
 
-	this.weekA = new IAWeeklyComponent(schedule.getIASessionsA(),
-		clinicianNames, IAWeektype.A, schedule);
-	this.weekB = new IAWeeklyComponent(schedule.getIASessionsB(),
-		clinicianNames, IAWeektype.B, schedule);
+	/**
+	 * Create an empty client ID list.
+	 *
+	 * @param s
+	 *            the s
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	public IAScheduleFrame(Schedule s) throws SQLException {
+		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
+		this.schedule = s;
 
-	this.panel.setLeftComponent(weekA);
-	this.panel.setRightComponent(weekB);
-	repaint();
-    }
-
-    /**
-     * Saves the ia schedule to an image.
-     */
-    public void save() {
-	if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-	    File file = fileChooser.getSelectedFile();
-	    if (!file.getName().contains(".")) {
-		file = new File(file.getAbsoluteFile() + ".png");
-	    }
-	    try {
-		new IAScheduleComponent(schedule.getSemesterTitle()
-			+ " - IA Schedule",
-			((IAWeeklyComponent) this.weekA).toCellsArray(),
-			((IAWeeklyComponent) this.weekB).toCellsArray())
-			.save(file);
-	    } catch (IOException e2) {
-		JOptionPane.showMessageDialog(this, "Unable to save to file: "
-			+ file.getAbsolutePath() + ". Please try again.",
-			"Error saving schedule", JOptionPane.ERROR_MESSAGE);
-	    }
-	}
-    }
-
-    /**
-     * Prints the ia schedule.
-     */
-    public void print() {
-	try {
-	    IAScheduleViewFrame frame = new IAScheduleViewFrame(
-		    schedule.getSemesterTitle() + " - IA Schedule",
-		    ((IAWeeklyComponent) this.weekA).toCellsArray(),
-		    ((IAWeeklyComponent) this.weekB).toCellsArray());
-	    frame.printSchedule();
-	} catch (SQLException e1) {
-	    e1.printStackTrace();
-	}
-    }
-
-    /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == this.resetButton) {
-	    try {
-		schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+		this.panel = new JSplitPane();
+		this.panel.setOrientation(JSplitPane.HORIZONTAL_SPLIT);
+		this.panel.setResizeWeight(0.5);
+		this.panel.setDividerSize(25);
+		this.panel.setPreferredSize(new Dimension(1000, 750));
 		this.loadEditableSchedule();
-	    } catch (SQLException e1) {
-		e1.printStackTrace();
-	    }
+
+		resetButton = new JButton("Reset");
+		resetButton.addActionListener(this);
+
+		controlPanel = new JPanel(new FlowLayout());
+		controlPanel.add(resetButton);
+
+		fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Schedule");
+		fileChooser
+				.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+
+		this.add(this.panel, BorderLayout.CENTER);
+		this.add(controlPanel, BorderLayout.SOUTH);
 	}
-    }
+
+	/**
+	 * Loads a JPanel that displays an editable IA schedule with data from the
+	 * database.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	private void loadEditableSchedule() throws SQLException {
+		List<String> clinicianNames = clinicianDao.loadClinicianNames();
+
+		this.weekA = new IAWeeklyComponent(schedule.getIASessionsA(),
+				clinicianNames, IAWeektype.A, schedule);
+		this.weekB = new IAWeeklyComponent(schedule.getIASessionsB(),
+				clinicianNames, IAWeektype.B, schedule);
+
+		this.panel.setLeftComponent(weekA);
+		this.panel.setRightComponent(weekB);
+		repaint();
+	}
+
+	/**
+	 * Saves the ia schedule to an image.
+	 */
+	public void save() {
+		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			if (!file.getName().contains(".")) {
+				file = new File(file.getAbsoluteFile() + ".png");
+			}
+			try {
+				new IAScheduleComponent(schedule.getSemesterTitle()
+						+ " - IA Schedule",
+						((IAWeeklyComponent) this.weekA).toCellsArray(),
+						((IAWeeklyComponent) this.weekB).toCellsArray())
+						.save(file);
+			} catch (IOException e2) {
+				JOptionPane.showMessageDialog(this, "Unable to save to file: "
+						+ file.getAbsolutePath() + ". Please try again.",
+						"Error saving schedule", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	/**
+	 * Prints the ia schedule.
+	 */
+	public void print() {
+		try {
+			IAScheduleViewFrame frame = new IAScheduleViewFrame(
+					schedule.getSemesterTitle() + " - IA Schedule",
+					((IAWeeklyComponent) this.weekA).toCellsArray(),
+					((IAWeeklyComponent) this.weekB).toCellsArray());
+			frame.printSchedule();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == this.resetButton) {
+			try {
+				schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+				this.loadEditableSchedule();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 }

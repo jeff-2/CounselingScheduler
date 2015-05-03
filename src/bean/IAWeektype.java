@@ -5,5 +5,5 @@ package bean;
  * and B).
  */
 public enum IAWeektype {
-    A, B
+	A, B
 }

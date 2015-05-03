@@ -21,138 +21,148 @@ import bean.ClinicianBean;
  */
 public class ClinicianDAOTest {
 
-    /** The clinician dao. */
-    private ClinicianDAO clinicianDAO;
-    
-    /** The conn. */
-    private Connection conn;
-    
-    /** The gen. */
-    private TestDataGenerator gen;
+	/** The clinician dao. */
+	private ClinicianDAO clinicianDAO;
 
-    /**
-     * Sets the test up.
-     *
-     * @throws Exception the exception
-     */
-    @Before
-    public void setUp() throws Exception {
-	conn = ConnectionFactory.getInstance();
-	clinicianDAO = new ClinicianDAO(conn);
-	gen = new TestDataGenerator(conn);
-	gen.clearCliniciansTable();
-    }
+	/** The conn. */
+	private Connection conn;
 
-    /**
-     * Tear down.
-     *
-     * @throws Exception the exception
-     */
-    @After
-    public void tearDown() throws Exception {
-	gen.clearCliniciansTable();
-    }
+	/** The gen. */
+	private TestDataGenerator gen;
 
-    /**
-     * Test insert valid clinician into the database.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testInsertValidClinician() throws Exception {
-	ClinicianBean clinician = new ClinicianBean(0, "Jeff");
-	clinicianDAO.insert(clinician);
+	/**
+	 * Sets the test up.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		conn = ConnectionFactory.getInstance();
+		clinicianDAO = new ClinicianDAO(conn);
+		gen = new TestDataGenerator(conn);
+		gen.clearCliniciansTable();
+	}
 
-	List<ClinicianBean> actual = clinicianDAO.loadClinicians();
-	List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
-	expected.add(clinician);
+	/**
+	 * Tear down.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		gen.clearCliniciansTable();
+	}
 
-	assertEquals(expected, actual);
-	assertEquals(clinicianDAO.getNextClinicianID(), 1);
-    }
+	/**
+	 * Test insert valid clinician into the database.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testInsertValidClinician() throws Exception {
+		ClinicianBean clinician = new ClinicianBean(0, "Jeff");
+		clinicianDAO.insert(clinician);
 
-    /**
-     * Test insert duplicate clinician into the database.
-     *
-     * @throws Exception the exception
-     */
-    @Test(expected = SQLException.class)
-    public void testInsertDuplicateClinician() throws Exception {
-	ClinicianBean clinician = new ClinicianBean(1, "Jeff");
-	clinicianDAO.insert(clinician);
-	clinicianDAO.insert(clinician);
-    }
+		List<ClinicianBean> actual = clinicianDAO.loadClinicians();
+		List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
+		expected.add(clinician);
 
-    /**
-     * Test load clinicians from the database.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testLoadClinicians() throws Exception {
-	ClinicianBean clinicianBeanOne = new ClinicianBean(0, "Jeff");
-	ClinicianBean clinicianBeanTwo = new ClinicianBean(1, "Kevin");
-	clinicianDAO.insert(clinicianBeanOne);
-	clinicianDAO.insert(clinicianBeanTwo);
+		assertEquals(expected, actual);
+		assertEquals(clinicianDAO.getNextClinicianID(), 1);
+	}
 
-	List<ClinicianBean> actual = clinicianDAO.loadClinicians();
-	List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
-	expected.add(clinicianBeanOne);
-	expected.add(clinicianBeanTwo);
-	assertEquals(expected, actual);
-	assertEquals(clinicianDAO.getNextClinicianID(), 2);
-    }
+	/**
+	 * Test insert duplicate clinician into the database.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test(expected = SQLException.class)
+	public void testInsertDuplicateClinician() throws Exception {
+		ClinicianBean clinician = new ClinicianBean(1, "Jeff");
+		clinicianDAO.insert(clinician);
+		clinicianDAO.insert(clinician);
+	}
 
-    /**
-     * Test load clinicians when there are none.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testLoadCliniciansEmpty() throws Exception {
-	List<ClinicianBean> actual = clinicianDAO.loadClinicians();
-	List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
-	assertEquals(actual, expected);
-    }
+	/**
+	 * Test load clinicians from the database.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testLoadClinicians() throws Exception {
+		ClinicianBean clinicianBeanOne = new ClinicianBean(0, "Jeff");
+		ClinicianBean clinicianBeanTwo = new ClinicianBean(1, "Kevin");
+		clinicianDAO.insert(clinicianBeanOne);
+		clinicianDAO.insert(clinicianBeanTwo);
 
-    /**
-     * Test delete valid clinician from the database.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testDeleteValidClinician() throws Exception {
-	ClinicianBean expected = new ClinicianBean(0, "Jeff");
-	clinicianDAO.insert(expected);
-	clinicianDAO.delete(expected.getClinicianID());
+		List<ClinicianBean> actual = clinicianDAO.loadClinicians();
+		List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
+		expected.add(clinicianBeanOne);
+		expected.add(clinicianBeanTwo);
+		assertEquals(expected, actual);
+		assertEquals(clinicianDAO.getNextClinicianID(), 2);
+	}
 
-	List<ClinicianBean> actualClinicians = clinicianDAO.loadClinicians();
-	List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
-	assertEquals(expectedClinicians, actualClinicians);
-    }
+	/**
+	 * Test load clinicians when there are none.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testLoadCliniciansEmpty() throws Exception {
+		List<ClinicianBean> actual = clinicianDAO.loadClinicians();
+		List<ClinicianBean> expected = new ArrayList<ClinicianBean>();
+		assertEquals(actual, expected);
+	}
 
-    /**
-     * Test get valid clinician id from the database.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testGetValidClinicianID() throws Exception {
-	ClinicianBean expected = new ClinicianBean(0, "Jeff");
-	clinicianDAO.insert(expected);
+	/**
+	 * Test delete valid clinician from the database.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testDeleteValidClinician() throws Exception {
+		ClinicianBean expected = new ClinicianBean(0, "Jeff");
+		clinicianDAO.insert(expected);
+		clinicianDAO.delete(expected.getClinicianID());
 
-	int actualID = clinicianDAO.getClinicianID(expected.getName());
-	assertEquals(expected.getClinicianID(), actualID);
-    }
+		List<ClinicianBean> actualClinicians = clinicianDAO.loadClinicians();
+		List<ClinicianBean> expectedClinicians = new ArrayList<ClinicianBean>();
+		assertEquals(expectedClinicians, actualClinicians);
+	}
 
-    /**
-     * Test get clinician id for a clinician which does not exist in the database.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testGetInvalidClinicianID() throws Exception {
-	int actualID = clinicianDAO.getClinicianID("Jeff");
-	assertEquals(actualID, -1);
-    }
+	/**
+	 * Test get valid clinician id from the database.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testGetValidClinicianID() throws Exception {
+		ClinicianBean expected = new ClinicianBean(0, "Jeff");
+		clinicianDAO.insert(expected);
+
+		int actualID = clinicianDAO.getClinicianID(expected.getName());
+		assertEquals(expected.getClinicianID(), actualID);
+	}
+
+	/**
+	 * Test get clinician id for a clinician which does not exist in the
+	 * database.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testGetInvalidClinicianID() throws Exception {
+		int actualID = clinicianDAO.getClinicianID("Jeff");
+		assertEquals(actualID, -1);
+	}
 }

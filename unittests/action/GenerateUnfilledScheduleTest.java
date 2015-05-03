@@ -27,85 +27,91 @@ import dao.SessionsDAO;
  */
 public class GenerateUnfilledScheduleTest {
 
-    /** The conn. */
-    private Connection conn;
-    
-    /** The gen. */
-    private TestDataGenerator gen;
-    
-    /** The sessions dao. */
-    private SessionsDAO sessionsDAO;
-    
-    /** The action. */
-    private GenerateUnfilledScheduleAction action;
+	/** The conn. */
+	private Connection conn;
 
-    /**
-     * Sets the test up.
-     *
-     * @throws Exception the exception
-     */
-    @Before
-    public void setUp() throws Exception {
-	conn = ConnectionFactory.getInstance();
-	sessionsDAO = new SessionsDAO(conn);
-	gen = new TestDataGenerator(conn);
-	gen.clearTables();
-	action = new GenerateUnfilledScheduleAction(conn);
-    }
+	/** The gen. */
+	private TestDataGenerator gen;
 
-    /**
-     * Test generate unfilled schedule.
-     *
-     * @throws SQLException the SQL exception
-     * @throws ParseException the parse exception
-     */
-    @Test
-    public void testGenerateUnfilledSchedule() throws SQLException,
-	    ParseException {
-	gen.generateStandardDataset();
-	action.generateUnfilledSchedule();
-	List<SessionBean> sessions = sessionsDAO.loadSessions();
-	assertEquals(sessions.size(), 490);
-	boolean onlyWeekdays = true;
-	for (SessionBean sesh : sessions) {
-	    onlyWeekdays = onlyWeekdays && Weekday.isWeekday(sesh.getDate());
+	/** The sessions dao. */
+	private SessionsDAO sessionsDAO;
+
+	/** The action. */
+	private GenerateUnfilledScheduleAction action;
+
+	/**
+	 * Sets the test up.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		conn = ConnectionFactory.getInstance();
+		sessionsDAO = new SessionsDAO(conn);
+		gen = new TestDataGenerator(conn);
+		gen.clearTables();
+		action = new GenerateUnfilledScheduleAction(conn);
 	}
-	assertEquals(onlyWeekdays, true);
-	CalendarDAO calendarDAO = new CalendarDAO(
-		ConnectionFactory.getInstance());
-	CalendarBean calBean = calendarDAO.loadCalendar();
-	Date start = sessions.get(0).getDate();
-	assertEquals(
-		!Weekday.isWeekday(calBean.getStartDate())
-			|| start.equals(calBean.getStartDate()), true);
-	Date end = sessions.get(sessions.size() - 1).getDate();
-	assertEquals(
-		!Weekday.isWeekday(calBean.getEndDate())
-			|| end.equals(calBean.getEndDate()), true);
-    }
 
-    /**
-     * Test generate unfilled empty schedule.
-     *
-     * @throws SQLException the SQL exception
-     * @throws ParseException the parse exception
-     */
-    @Test
-    public void testGenerateUnfilledEmptySchedule() throws SQLException,
-	    ParseException {
-	gen.generateEmptySemesterDataset();
-	action.generateUnfilledSchedule();
-	List<SessionBean> sessions = sessionsDAO.loadSessions();
-	assertEquals(sessions.size(), 0);
-    }
+	/**
+	 * Test generate unfilled schedule.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 * @throws ParseException
+	 *             the parse exception
+	 */
+	@Test
+	public void testGenerateUnfilledSchedule() throws SQLException,
+			ParseException {
+		gen.generateStandardDataset();
+		action.generateUnfilledSchedule();
+		List<SessionBean> sessions = sessionsDAO.loadSessions();
+		assertEquals(sessions.size(), 490);
+		boolean onlyWeekdays = true;
+		for (SessionBean sesh : sessions) {
+			onlyWeekdays = onlyWeekdays && Weekday.isWeekday(sesh.getDate());
+		}
+		assertEquals(onlyWeekdays, true);
+		CalendarDAO calendarDAO = new CalendarDAO(
+				ConnectionFactory.getInstance());
+		CalendarBean calBean = calendarDAO.loadCalendar();
+		Date start = sessions.get(0).getDate();
+		assertEquals(
+				!Weekday.isWeekday(calBean.getStartDate())
+						|| start.equals(calBean.getStartDate()), true);
+		Date end = sessions.get(sessions.size() - 1).getDate();
+		assertEquals(
+				!Weekday.isWeekday(calBean.getEndDate())
+						|| end.equals(calBean.getEndDate()), true);
+	}
 
-    /**
-     * Clean up.
-     *
-     * @throws Exception the exception
-     */
-    @After
-    public void cleanUp() throws Exception {
-	gen.clearTables();
-    }
+	/**
+	 * Test generate unfilled empty schedule.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 * @throws ParseException
+	 *             the parse exception
+	 */
+	@Test
+	public void testGenerateUnfilledEmptySchedule() throws SQLException,
+			ParseException {
+		gen.generateEmptySemesterDataset();
+		action.generateUnfilledSchedule();
+		List<SessionBean> sessions = sessionsDAO.loadSessions();
+		assertEquals(sessions.size(), 0);
+	}
+
+	/**
+	 * Clean up.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@After
+	public void cleanUp() throws Exception {
+		gen.clearTables();
+	}
 }

@@ -20,73 +20,79 @@ import javax.swing.JScrollPane;
  */
 public class IAScheduleViewFrame extends JFrame {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -4271567771784608985L;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -4271567771784608985L;
 
-    /** The panel. */
-    private JPanel panel;
-    
-    /** The pane. */
-    private JScrollPane pane;
-    
-    /** The ia component. */
-    private IAScheduleComponent iaComponent;
+	/** The panel. */
+	private JPanel panel;
 
-    /**
-     * Create an empty client ID list.
-     *
-     * @param semesterTitle the semester title
-     * @param weekACells the week a cells
-     * @param weekBCells the week b cells
-     * @throws SQLException the SQL exception
-     */
-    public IAScheduleViewFrame(String semesterTitle, List<List<List<String>>> weekACells,
-	    List<List<List<String>>> weekBCells) throws SQLException {
-	super("View IA Schedule");
-	this.iaComponent = new IAScheduleComponent(semesterTitle, weekACells, weekBCells);
-	this.panel = new JPanel();
-	this.panel.setPreferredSize(new Dimension(700, iaComponent
-		.requiredHeight()));
-	this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
-	this.panel.setBackground(Color.WHITE);
-	this.panel.add(iaComponent);
-	this.pane = new JScrollPane(this.panel);
-	this.pane
-		.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-	this.setContentPane(this.pane);
-	this.initializeFrame();
-	this.setLocationRelativeTo(null); // Center JFrame in middle of screen
-    }
+	/** The pane. */
+	private JScrollPane pane;
 
-    /**
-     * Set up the components of this JFrame, pack, and make it visible.
-     */
-    private void initializeFrame() {
-	this.getContentPane().setPreferredSize(new Dimension(700, 800));
-	this.pack();
-	this.setVisible(true);
-    }
+	/** The ia component. */
+	private IAScheduleComponent iaComponent;
 
-    /**
-     * Open print dialog and prints ia schedule.
-     */
-    private void openPrintDialog() {
-	PrinterJob job = PrinterJob.getPrinterJob();
-	job.setPrintable((Printable) iaComponent);
-	boolean ok = job.printDialog();
-	if (ok) {
-	    try {
-		job.print();
-	    } catch (PrinterException ex) {
-		/* The job did not successfully complete */
-	    }
+	/**
+	 * Create an empty client ID list.
+	 *
+	 * @param semesterTitle
+	 *            the semester title
+	 * @param weekACells
+	 *            the week a cells
+	 * @param weekBCells
+	 *            the week b cells
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	public IAScheduleViewFrame(String semesterTitle,
+			List<List<List<String>>> weekACells,
+			List<List<List<String>>> weekBCells) throws SQLException {
+		super("View IA Schedule");
+		this.iaComponent = new IAScheduleComponent(semesterTitle, weekACells,
+				weekBCells);
+		this.panel = new JPanel();
+		this.panel.setPreferredSize(new Dimension(700, iaComponent
+				.requiredHeight()));
+		this.panel.setLayout(new BoxLayout(this.panel, BoxLayout.Y_AXIS));
+		this.panel.setBackground(Color.WHITE);
+		this.panel.add(iaComponent);
+		this.pane = new JScrollPane(this.panel);
+		this.pane
+				.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		this.setContentPane(this.pane);
+		this.initializeFrame();
+		this.setLocationRelativeTo(null); // Center JFrame in middle of screen
 	}
-    }
 
-    /**
-     * Prints the ia schedule.
-     */
-    public void printSchedule() {
-	this.openPrintDialog();
-    }
+	/**
+	 * Set up the components of this JFrame, pack, and make it visible.
+	 */
+	private void initializeFrame() {
+		this.getContentPane().setPreferredSize(new Dimension(700, 800));
+		this.pack();
+		this.setVisible(true);
+	}
+
+	/**
+	 * Open print dialog and prints ia schedule.
+	 */
+	private void openPrintDialog() {
+		PrinterJob job = PrinterJob.getPrinterJob();
+		job.setPrintable((Printable) iaComponent);
+		boolean ok = job.printDialog();
+		if (ok) {
+			try {
+				job.print();
+			} catch (PrinterException ex) {
+				/* The job did not successfully complete */
+			}
+		}
+	}
+
+	/**
+	 * Prints the ia schedule.
+	 */
+	public void printSchedule() {
+		this.openPrintDialog();
+	}
 }

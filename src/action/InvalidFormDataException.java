@@ -7,31 +7,31 @@ package action;
  */
 public class InvalidFormDataException extends Exception {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -8341706410868259084L;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -8341706410868259084L;
 
-    /** The context. */
-    private String context;
+	/** The context. */
+	private String context;
 
-    /**
-     * Instantiates a new invalid form data exception.
-     *
-     * @param msg
-     *            the msg
-     * @param context
-     *            the context
-     */
-    public InvalidFormDataException(String msg, String context) {
-	super(msg);
-	this.context = context;
-    }
+	/**
+	 * Instantiates a new invalid form data exception.
+	 *
+	 * @param msg
+	 *            the msg
+	 * @param context
+	 *            the context
+	 */
+	public InvalidFormDataException(String msg, String context) {
+		super(msg);
+		this.context = context;
+	}
 
-    /**
-     * Gets the context.
-     *
-     * @return the context
-     */
-    public String getContext() {
-	return context;
-    }
+	/**
+	 * Gets the context.
+	 *
+	 * @return the context
+	 */
+	public String getContext() {
+		return context;
+	}
 }

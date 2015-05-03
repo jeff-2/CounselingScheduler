@@ -34,156 +34,162 @@ import dao.ConnectionFactory;
  */
 public class ECScheduleFrame extends JPanel implements ActionListener {
 
-    /** The Constant serialVersionUID. */
-    private static final long serialVersionUID = -4271567771784608985L;
+	/** The Constant serialVersionUID. */
+	private static final long serialVersionUID = -4271567771784608985L;
 
-    /** The clinician dao. */
-    private ClinicianDAO clinicianDao;
-    
-    /** The scroll panel. */
-    private JScrollPane scrollPanel;
-    
-    /** The ec components. */
-    private List<ECWeeklyComponent> ecComponents;
-    
-    /** The reset button. */
-    private JButton resetButton;
-    
-    /** The control panel. */
-    private JPanel controlPanel;
-    
-    /** The file chooser. */
-    private JFileChooser fileChooser;
-    
-    /** The schedule. */
-    private Schedule schedule;
+	/** The clinician dao. */
+	private ClinicianDAO clinicianDao;
 
-    /**
-     * Create an empty client ID list.
-     *
-     * @param s the s
-     * @throws SQLException the SQL exception
-     */
-    public ECScheduleFrame(Schedule s) throws SQLException {
-	clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
-	this.schedule = s;
+	/** The scroll panel. */
+	private JScrollPane scrollPanel;
 
-	this.scrollPanel = new JScrollPane();
+	/** The ec components. */
+	private List<ECWeeklyComponent> ecComponents;
 
-	this.scrollPanel = new JScrollPane();
-	loadEditableSchedule();
-	this.scrollPanel.setPreferredSize(new Dimension(700, 750));
-	this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
-	this.scrollPanel
-		.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+	/** The reset button. */
+	private JButton resetButton;
 
-	fileChooser = new JFileChooser();
-	fileChooser.setDialogTitle("Save Schedule");
-	fileChooser
-		.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+	/** The control panel. */
+	private JPanel controlPanel;
 
-	resetButton = new JButton("Reset");
-	resetButton.addActionListener(this);
+	/** The file chooser. */
+	private JFileChooser fileChooser;
 
-	controlPanel = new JPanel(new FlowLayout());
-	controlPanel.add(resetButton);
+	/** The schedule. */
+	private Schedule schedule;
 
-	this.setLayout(new FlowLayout());
-	this.add(scrollPanel);
-	this.add(controlPanel);
-    }
+	/**
+	 * Create an empty client ID list.
+	 *
+	 * @param s
+	 *            the s
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	public ECScheduleFrame(Schedule s) throws SQLException {
+		clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
+		this.schedule = s;
 
-    /**
-     * Loads a JPanel that displays an editable EC schedule with data from the
-     * database.
-     *
-     * @throws SQLException the SQL exception
-     */
-    private void loadEditableSchedule() throws SQLException {
-	ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean
-		.getECScheduleWeekBeans(schedule);
-	Vector<String> clinicianNames = clinicianDao.loadClinicianNames();
-	ecComponents = new ArrayList<>();
+		this.scrollPanel = new JScrollPane();
 
-	JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1,
-		1, 0, 50));
-	editableSchedule.add(new JLabel(schedule.getSemesterTitle()
-		+ " - EC Schedule"));
-	for (ECScheduleWeekBean week : weeks) {
-	    ECWeeklyComponent curr = new ECWeeklyComponent(week,
-		    clinicianNames, schedule);
-	    editableSchedule.add(curr);
-	    ecComponents.add(curr);
+		this.scrollPanel = new JScrollPane();
+		loadEditableSchedule();
+		this.scrollPanel.setPreferredSize(new Dimension(700, 750));
+		this.scrollPanel.getVerticalScrollBar().setUnitIncrement(20);
+		this.scrollPanel
+				.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+
+		fileChooser = new JFileChooser();
+		fileChooser.setDialogTitle("Save Schedule");
+		fileChooser
+				.setFileFilter(new FileNameExtensionFilter("PNG file", "png"));
+
+		resetButton = new JButton("Reset");
+		resetButton.addActionListener(this);
+
+		controlPanel = new JPanel(new FlowLayout());
+		controlPanel.add(resetButton);
+
+		this.setLayout(new FlowLayout());
+		this.add(scrollPanel);
+		this.add(controlPanel);
 	}
 
-	editableSchedule.setBackground(Color.white);
+	/**
+	 * Loads a JPanel that displays an editable EC schedule with data from the
+	 * database.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	private void loadEditableSchedule() throws SQLException {
+		ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean
+				.getECScheduleWeekBeans(schedule);
+		Vector<String> clinicianNames = clinicianDao.loadClinicianNames();
+		ecComponents = new ArrayList<>();
 
-	scrollPanel.setViewportView(editableSchedule);
-	repaint();
-    }
+		JPanel editableSchedule = new JPanel(new GridLayout(weeks.size() + 1,
+				1, 0, 50));
+		editableSchedule.add(new JLabel(schedule.getSemesterTitle()
+				+ " - EC Schedule"));
+		for (ECScheduleWeekBean week : weeks) {
+			ECWeeklyComponent curr = new ECWeeklyComponent(week,
+					clinicianNames, schedule);
+			editableSchedule.add(curr);
+			ecComponents.add(curr);
+		}
 
-    /**
-     * Gets the representation of the ec schedule as a grid of 
-     * strings.
-     *
-     * @return the cells as strings in the ec schedule
-     */
-    private List<List<List<String>>> getCells() {
-	List<List<List<String>>> cells = new ArrayList<List<List<String>>>();
-	for (ECWeeklyComponent comp : ecComponents) {
-	    List<List<String>> l = comp.toCellsList();
-	    cells.add(l);
+		editableSchedule.setBackground(Color.white);
+
+		scrollPanel.setViewportView(editableSchedule);
+		repaint();
 	}
-	return cells;
-    }
 
-    /**
-     * Saves the ec schedule to an image file.
-     */
-    public void save() {
-	List<List<List<String>>> cells = getCells();
-	if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-	    File file = fileChooser.getSelectedFile();
-	    if (!file.getName().contains(".")) {
-		file = new File(file.getAbsoluteFile() + ".png");
-	    }
-	    try {
-		new ECScheduleComponent(schedule.getSemesterTitle() + " - EC Schedule", cells).save(file);
-	    } catch (IOException e2) {
-		JOptionPane.showMessageDialog(this, "Unable to save to file: "
-			+ file.getAbsolutePath() + ". Please try again.",
-			"Error saving schedule", JOptionPane.ERROR_MESSAGE);
-	    }
+	/**
+	 * Gets the representation of the ec schedule as a grid of strings.
+	 *
+	 * @return the cells as strings in the ec schedule
+	 */
+	private List<List<List<String>>> getCells() {
+		List<List<List<String>>> cells = new ArrayList<List<List<String>>>();
+		for (ECWeeklyComponent comp : ecComponents) {
+			List<List<String>> l = comp.toCellsList();
+			cells.add(l);
+		}
+		return cells;
 	}
-    }
 
-    /**
-     * Prints the ec schedule.
-     */
-    public void print() {
-	List<List<List<String>>> cells = getCells();
-	try {
-	    ECScheduleViewFrame frame = new ECScheduleViewFrame(
-		    new ECScheduleComponent(schedule.getSemesterTitle()
-			    + " - EC Schedule", cells));
-	    frame.printSchedule();
-	} catch (SQLException e1) {
-	    e1.printStackTrace();
+	/**
+	 * Saves the ec schedule to an image file.
+	 */
+	public void save() {
+		List<List<List<String>>> cells = getCells();
+		if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+			File file = fileChooser.getSelectedFile();
+			if (!file.getName().contains(".")) {
+				file = new File(file.getAbsoluteFile() + ".png");
+			}
+			try {
+				new ECScheduleComponent(schedule.getSemesterTitle()
+						+ " - EC Schedule", cells).save(file);
+			} catch (IOException e2) {
+				JOptionPane.showMessageDialog(this, "Unable to save to file: "
+						+ file.getAbsolutePath() + ". Please try again.",
+						"Error saving schedule", JOptionPane.ERROR_MESSAGE);
+			}
+		}
 	}
-    }
 
-    /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-     */
-    @Override
-    public void actionPerformed(ActionEvent e) {
-	if (e.getSource() == this.resetButton) {
-	    try {
-		schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
-		this.loadEditableSchedule();
-	    } catch (SQLException e1) {
-		e1.printStackTrace();
-	    }
+	/**
+	 * Prints the ec schedule.
+	 */
+	public void print() {
+		List<List<List<String>>> cells = getCells();
+		try {
+			ECScheduleViewFrame frame = new ECScheduleViewFrame(
+					new ECScheduleComponent(schedule.getSemesterTitle()
+							+ " - EC Schedule", cells));
+			frame.printSchedule();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
+		}
 	}
-    }
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == this.resetButton) {
+			try {
+				schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+				this.loadEditableSchedule();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 }

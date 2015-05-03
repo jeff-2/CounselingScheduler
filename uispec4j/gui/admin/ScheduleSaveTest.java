@@ -24,175 +24,183 @@ import runner.AdminApplicationRunner;
 import dao.ConnectionFactory;
 
 /**
- * The Class ScheduleSaveTest tests the save functionality for both IA and EC schedules.
+ * The Class ScheduleSaveTest tests the save functionality for both IA and EC
+ * schedules.
  */
 public class ScheduleSaveTest extends UISpecTestCase {
 
-    /** The gen. */
-    private TestDataGenerator gen;
-    
-    /** The conn. */
-    private Connection conn;
-    
-    /** The Constant filePath. */
-    private static final String filePath = new File("tmp.png")
-	    .getAbsolutePath();
+	/** The gen. */
+	private TestDataGenerator gen;
 
-    /* (non-Javadoc)
-     * @see org.uispec4j.UISpecTestCase#setUp()
-     */
-    protected void setUp() throws Exception {
-	super.setUp();
-	setAdapter(new MainClassAdapter(AdminApplicationRunner.class, new String[0]));
-	conn = ConnectionFactory.getInstance();
-	gen = new TestDataGenerator(conn);
-	gen.clearTables();
-	gen.generateStandardDataset();
-    }
+	/** The conn. */
+	private Connection conn;
 
-    /**
-     * Test save ec schedule overwrites an existing saved schedule with the same name.
-     *
-     * @throws IOException Signals that an I/O exception has occurred.
-     */
-    public void testSaveECScheduleOverwrite() throws IOException {
-	String s = "Hello World!";
-	byte data[] = s.getBytes();
-	OutputStream out = new BufferedOutputStream(Files.newOutputStream(
-		Paths.get("tmp.png"), StandardOpenOption.CREATE,
-		StandardOpenOption.APPEND));
-	out.write(data, 0, data.length);
-	out.close();
+	/** The Constant filePath. */
+	private static final String filePath = new File("tmp.png")
+			.getAbsolutePath();
 
-	Window window = this.getMainWindow();
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.uispec4j.UISpecTestCase#setUp()
+	 */
+	protected void setUp() throws Exception {
+		super.setUp();
+		setAdapter(new MainClassAdapter(AdminApplicationRunner.class,
+				new String[0]));
+		conn = ConnectionFactory.getInstance();
+		gen = new TestDataGenerator(conn);
+		gen.clearTables();
+		gen.generateStandardDataset();
+	}
 
-	MenuBar menuBar = window.getMenuBar();
-	MenuItem menu = menuBar.getMenu("File");
-	MenuItem generate = menu.getSubMenu("Generate Schedule");
-	MenuItem save = menu.getSubMenu("Save");
-	generate.click();
+	/**
+	 * Test save ec schedule overwrites an existing saved schedule with the same
+	 * name.
+	 *
+	 * @throws IOException
+	 *             Signals that an I/O exception has occurred.
+	 */
+	public void testSaveECScheduleOverwrite() throws IOException {
+		String s = "Hello World!";
+		byte data[] = s.getBytes();
+		OutputStream out = new BufferedOutputStream(Files.newOutputStream(
+				Paths.get("tmp.png"), StandardOpenOption.CREATE,
+				StandardOpenOption.APPEND));
+		out.write(data, 0, data.length);
+		out.close();
 
-	TabGroup tabbedPane = window.getTabGroup("tabbedPane");
-	tabbedPane.selectTab("EC Schedule");
+		Window window = this.getMainWindow();
 
-	WindowInterceptor
-		.init(save.triggerClick())
-		.process(
-			FileChooserHandler.init().titleEquals("Save Schedule")
-				.assertAcceptsFilesOnly().select(filePath))
-		.run();
-	File f = new File(filePath);
-	assertTrue(f.exists());
-	assertTrue(f.getTotalSpace() > data.length);
-    }
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		MenuItem save = menu.getSubMenu("Save");
+		generate.click();
 
-    /**
-     * Tests saving an ec schedule.
-     */
-    public void testSaveECSchedule() {
-	Window window = this.getMainWindow();
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("EC Schedule");
 
-	MenuBar menuBar = window.getMenuBar();
-	MenuItem menu = menuBar.getMenu("File");
-	MenuItem save = menu.getSubMenu("Save");
-	MenuItem generate = menu.getSubMenu("Generate Schedule");
-	generate.click();
+		WindowInterceptor
+				.init(save.triggerClick())
+				.process(
+						FileChooserHandler.init().titleEquals("Save Schedule")
+								.assertAcceptsFilesOnly().select(filePath))
+				.run();
+		File f = new File(filePath);
+		assertTrue(f.exists());
+		assertTrue(f.getTotalSpace() > data.length);
+	}
 
-	TabGroup tabbedPane = window.getTabGroup("tabbedPane");
-	tabbedPane.selectTab("EC Schedule");
+	/**
+	 * Tests saving an ec schedule.
+	 */
+	public void testSaveECSchedule() {
+		Window window = this.getMainWindow();
 
-	WindowInterceptor
-		.init(save.triggerClick())
-		.process(
-			FileChooserHandler.init().titleEquals("Save Schedule")
-				.assertAcceptsFilesOnly().select(filePath))
-		.run();
-	File f = new File(filePath);
-	assertTrue(f.exists());
-    }
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
 
-    /**
-     * Test saving an ia schedule.
-     */
-    public void testSaveIASchedule() {
-	Window window = this.getMainWindow();
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("EC Schedule");
 
-	MenuBar menuBar = window.getMenuBar();
-	MenuItem menu = menuBar.getMenu("File");
-	MenuItem save = menu.getSubMenu("Save");
-	MenuItem generate = menu.getSubMenu("Generate Schedule");
-	generate.click();
+		WindowInterceptor
+				.init(save.triggerClick())
+				.process(
+						FileChooserHandler.init().titleEquals("Save Schedule")
+								.assertAcceptsFilesOnly().select(filePath))
+				.run();
+		File f = new File(filePath);
+		assertTrue(f.exists());
+	}
 
-	TabGroup tabbedPane = window.getTabGroup("tabbedPane");
-	tabbedPane.selectTab("IA Schedule");
+	/**
+	 * Test saving an ia schedule.
+	 */
+	public void testSaveIASchedule() {
+		Window window = this.getMainWindow();
 
-	WindowInterceptor
-		.init(save.triggerClick())
-		.process(
-			FileChooserHandler.init().titleEquals("Save Schedule")
-				.assertAcceptsFilesOnly().select(filePath))
-		.run();
-	File f = new File(filePath);
-	assertTrue(f.exists());
-    }
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
 
-    /**
-     * Test cancel when saving an ia schedule.
-     */
-    public void testCancelSaveIASchedule() {
-	Window window = this.getMainWindow();
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("IA Schedule");
 
-	MenuBar menuBar = window.getMenuBar();
-	MenuItem menu = menuBar.getMenu("File");
-	MenuItem save = menu.getSubMenu("Save");
-	MenuItem generate = menu.getSubMenu("Generate Schedule");
-	generate.click();
+		WindowInterceptor
+				.init(save.triggerClick())
+				.process(
+						FileChooserHandler.init().titleEquals("Save Schedule")
+								.assertAcceptsFilesOnly().select(filePath))
+				.run();
+		File f = new File(filePath);
+		assertTrue(f.exists());
+	}
 
-	TabGroup tabbedPane = window.getTabGroup("tabbedPane");
-	tabbedPane.selectTab("IA Schedule");
+	/**
+	 * Test cancel when saving an ia schedule.
+	 */
+	public void testCancelSaveIASchedule() {
+		Window window = this.getMainWindow();
 
-	WindowInterceptor
-		.init(save.triggerClick())
-		.process(
-			FileChooserHandler.init().titleEquals("Save Schedule")
-				.assertAcceptsFilesOnly().cancelSelection())
-		.run();
-	File f = new File(filePath);
-	assertFalse(f.exists());
-    }
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
 
-    /**
-     * Test cancel when saving an ec schedule.
-     */
-    public void testCancelSaveECSchedule() {
-	Window window = this.getMainWindow();
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("IA Schedule");
 
-	MenuBar menuBar = window.getMenuBar();
-	MenuItem menu = menuBar.getMenu("File");
-	MenuItem save = menu.getSubMenu("Save");
-	MenuItem generate = menu.getSubMenu("Generate Schedule");
-	generate.click();
+		WindowInterceptor
+				.init(save.triggerClick())
+				.process(
+						FileChooserHandler.init().titleEquals("Save Schedule")
+								.assertAcceptsFilesOnly().cancelSelection())
+				.run();
+		File f = new File(filePath);
+		assertFalse(f.exists());
+	}
 
-	TabGroup tabbedPane = window.getTabGroup("tabbedPane");
-	tabbedPane.selectTab("EC Schedule");
+	/**
+	 * Test cancel when saving an ec schedule.
+	 */
+	public void testCancelSaveECSchedule() {
+		Window window = this.getMainWindow();
 
-	WindowInterceptor
-		.init(save.triggerClick())
-		.process(
-			FileChooserHandler.init().titleEquals("Save Schedule")
-				.assertAcceptsFilesOnly().cancelSelection())
-		.run();
-	File f = new File(filePath);
-	assertFalse(f.exists());
-    }
+		MenuBar menuBar = window.getMenuBar();
+		MenuItem menu = menuBar.getMenu("File");
+		MenuItem save = menu.getSubMenu("Save");
+		MenuItem generate = menu.getSubMenu("Generate Schedule");
+		generate.click();
 
-    /* (non-Javadoc)
-     * @see org.uispec4j.UISpecTestCase#tearDown()
-     */
-    protected void tearDown() throws Exception {
-	super.tearDown();
-	gen.clearTables();
-	File f = new File(filePath);
-	f.delete();
-    }
+		TabGroup tabbedPane = window.getTabGroup("tabbedPane");
+		tabbedPane.selectTab("EC Schedule");
+
+		WindowInterceptor
+				.init(save.triggerClick())
+				.process(
+						FileChooserHandler.init().titleEquals("Save Schedule")
+								.assertAcceptsFilesOnly().cancelSelection())
+				.run();
+		File f = new File(filePath);
+		assertFalse(f.exists());
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.uispec4j.UISpecTestCase#tearDown()
+	 */
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		gen.clearTables();
+		File f = new File(filePath);
+		f.delete();
+	}
 }

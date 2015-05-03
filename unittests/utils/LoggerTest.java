@@ -18,90 +18,91 @@ import org.junit.Test;
  */
 public class LoggerTest {
 
-    /** The log file dir. */
-    private String logFileDir = "tempLogs/";
-    
-    /** The log file prefix. */
-    private String logFilePrefix = "temp";
-    
-    /** The log file name. */
-    private String logFileName = "";
+	/** The log file dir. */
+	private String logFileDir = "tempLogs/";
 
-    /** The out content. */
-    private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+	/** The log file prefix. */
+	private String logFilePrefix = "temp";
 
-    /**
-     * Sets the test up.
-     */
-    @Before
-    public void setUp() {
-	System.setOut(new PrintStream(outContent));
-    }
+	/** The log file name. */
+	private String logFileName = "";
 
-    /**
-     * Test pre setup of logging.
-     */
-    @Test
-    public void testPreSetup() {
-	assertEquals(Logger.logFileIsOpen(), false);
-	logFileName = Logger.getLogFileName();
-	assertEquals(logFileName.isEmpty(), true);
-	assertEquals(Logger.getLogStatus(), false);
-	assertEquals(Logger.getDebugStatus(), false);
-    }
+	/** The out content. */
+	private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 
-    /**
-     * Test initialize logging.
-     */
-    @Test
-    public void testInitialize() {
-	Logger.setLogDir(logFileDir);
-	assertEquals(Logger.getLogDir(), logFileDir);
-	Logger.initialize(logFilePrefix);
-	assertEquals(Logger.logFileIsOpen(), true);
-	logFileName = Logger.getLogFileName();
-	assertEquals(logFileName.isEmpty(), false);
-	assertEquals(logFileName.contains(logFilePrefix), true);
-	assertEquals(Logger.getLogStatus(), true);
-	assertEquals(Logger.getDebugStatus(), false);
-    }
+	/**
+	 * Sets the test up.
+	 */
+	@Before
+	public void setUp() {
+		System.setOut(new PrintStream(outContent));
+	}
 
-    /**
-     * Test writing to log file.
-     */
-    @Test
-    public void testWriting() {
-	Logger.setLogStatus(false);
-	assertEquals(Logger.getLogStatus(), false);
-	Logger.setDebugStatus(true);
-	assertEquals(Logger.getDebugStatus(), true);
-	String statement = "hello world";
-	Logger.log(statement);
-	String console = outContent.toString();
-	assertEquals(statement, console);
-    }
+	/**
+	 * Test pre setup of logging.
+	 */
+	@Test
+	public void testPreSetup() {
+		assertEquals(Logger.logFileIsOpen(), false);
+		logFileName = Logger.getLogFileName();
+		assertEquals(logFileName.isEmpty(), true);
+		assertEquals(Logger.getLogStatus(), false);
+		assertEquals(Logger.getDebugStatus(), false);
+	}
 
-    /**
-     * Test closing the log file.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testClose() throws Exception {
-	Logger.closeFileForLogging();
-	assertEquals(Logger.logFileIsOpen(), false);
-	assertEquals(Logger.getLogStatus(), false);
-    }
+	/**
+	 * Test initialize logging.
+	 */
+	@Test
+	public void testInitialize() {
+		Logger.setLogDir(logFileDir);
+		assertEquals(Logger.getLogDir(), logFileDir);
+		Logger.initialize(logFilePrefix);
+		assertEquals(Logger.logFileIsOpen(), true);
+		logFileName = Logger.getLogFileName();
+		assertEquals(logFileName.isEmpty(), false);
+		assertEquals(logFileName.contains(logFilePrefix), true);
+		assertEquals(Logger.getLogStatus(), true);
+		assertEquals(Logger.getDebugStatus(), false);
+	}
 
-    /**
-     * Clean up.
-     */
-    @After
-    public void cleanUp() {
-	System.setOut(null);
-	File logFile = new File(logFileName);
-	logFile.delete();
-	File dir = new File(logFileDir);
-	dir.delete();
-    }
+	/**
+	 * Test writing to log file.
+	 */
+	@Test
+	public void testWriting() {
+		Logger.setLogStatus(false);
+		assertEquals(Logger.getLogStatus(), false);
+		Logger.setDebugStatus(true);
+		assertEquals(Logger.getDebugStatus(), true);
+		String statement = "hello world";
+		Logger.log(statement);
+		String console = outContent.toString();
+		assertEquals(statement, console);
+	}
+
+	/**
+	 * Test closing the log file.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testClose() throws Exception {
+		Logger.closeFileForLogging();
+		assertEquals(Logger.logFileIsOpen(), false);
+		assertEquals(Logger.getLogStatus(), false);
+	}
+
+	/**
+	 * Clean up.
+	 */
+	@After
+	public void cleanUp() {
+		System.setOut(null);
+		File logFile = new File(logFileName);
+		logFile.delete();
+		File dir = new File(logFileDir);
+		dir.delete();
+	}
 }

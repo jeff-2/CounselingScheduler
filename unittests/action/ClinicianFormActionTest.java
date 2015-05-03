@@ -28,192 +28,201 @@ import dao.ConnectionFactory;
 import dao.TimeAwayDAO;
 
 /**
- * The Class ClinicianFormActionTest tests the functionality of ClinicianFormAction.
+ * The Class ClinicianFormActionTest tests the functionality of
+ * ClinicianFormAction.
  *
  * @author jmfoste2, lim92
  */
 public class ClinicianFormActionTest {
 
-    /** The action. */
-    private ClinicianFormAction action;
-    
-    /** The conn. */
-    private Connection conn;
-    
-    /** The commitments. */
-    private List<List<CommitmentBean>> commitments;
-    
-    /** The preferences. */
-    private ClinicianPreferencesBean preferences;
-    
-    /** The time away. */
-    private DefaultListModel<TimeAwayBean> timeAway;
-    
-    /** The clinician preferences dao. */
-    private ClinicianPreferencesDAO clinicianPreferencesDAO;
-    
-    /** The commitments dao. */
-    private CommitmentsDAO commitmentsDAO;
-    
-    /** The time away dao. */
-    private TimeAwayDAO timeAwayDAO;
-    
-    /** The gen. */
-    private TestDataGenerator gen;
+	/** The action. */
+	private ClinicianFormAction action;
 
-    /**
-     * Sets the test up.
-     *
-     * @throws Exception the exception
-     */
-    @Before
-    public void setUp() throws Exception {
-	conn = ConnectionFactory.getInstance();
+	/** The conn. */
+	private Connection conn;
 
-	gen = new TestDataGenerator(conn);
-	gen.clearTables();
+	/** The commitments. */
+	private List<List<CommitmentBean>> commitments;
 
-	clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
-	commitmentsDAO = new CommitmentsDAO(conn);
-	timeAwayDAO = new TimeAwayDAO(conn);
+	/** The preferences. */
+	private ClinicianPreferencesBean preferences;
 
-	ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
-	clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
+	/** The time away. */
+	private DefaultListModel<TimeAwayBean> timeAway;
 
-	preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 5, 10);
-	commitments = new ArrayList<List<CommitmentBean>>();
-	List<CommitmentBean> listOne = new ArrayList<CommitmentBean>();
-	listOne.add(new CommitmentBean(0, 8, 9, DateRangeValidator
-		.parseDate("4/1/2015"), "desc"));
-	List<CommitmentBean> listTwo = new ArrayList<CommitmentBean>();
-	listTwo.add(new CommitmentBean(0, 10, 11, DateRangeValidator
-		.parseDate("3/30/2015"), "other desc"));
-	commitments.add(listOne);
-	commitments.add(listTwo);
+	/** The clinician preferences dao. */
+	private ClinicianPreferencesDAO clinicianPreferencesDAO;
 
-	timeAway = new DefaultListModel<TimeAwayBean>();
-	timeAway.addElement(new TimeAwayBean(0, "some desc", DateRangeValidator
-		.parseDate("1/5/2015"), DateRangeValidator
-		.parseDate("2/7/2015")));
-	timeAway.addElement(new TimeAwayBean(0, "some other desc",
-		DateRangeValidator.parseDate("2/1/2015"), DateRangeValidator
-			.parseDate("2/1/2015")));
+	/** The commitments dao. */
+	private CommitmentsDAO commitmentsDAO;
 
-	action = new ClinicianFormAction(conn, preferences, commitments,
-		timeAway);
-    }
+	/** The time away dao. */
+	private TimeAwayDAO timeAwayDAO;
 
-    /**
-     * Tear down.
-     *
-     * @throws Exception the exception
-     */
-    @After
-    public void tearDown() throws Exception {
-	gen.clearTables();
-    }
+	/** The gen. */
+	private TestDataGenerator gen;
 
-    /**
-     * Test whether preferences will be overwritten with no current preferences.
-     *
-     * @throws SQLException the SQL exception
-     */
-    @Test
-    public void testCheckWillOverwritePreferencesWithNoPreferences()
-	    throws SQLException {
-	assertFalse(action.willOverwritePreferences());
-    }
+	/**
+	 * Sets the test up.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		conn = ConnectionFactory.getInstance();
 
-    /**
-     * Test whether preferences will be overwritten preferences when preferences already exist.
-     *
-     * @throws SQLException the SQL exception
-     * @throws InvalidFormDataException the invalid form data exception
-     */
-    @Test
-    public void testCheckWillOverwritePreferencesWithPreferences()
-	    throws SQLException, InvalidFormDataException {
-	action.submit(false);
-	assertTrue(action.willOverwritePreferences());
-    }
+		gen = new TestDataGenerator(conn);
+		gen.clearTables();
 
-    /**
-     * Test submit preferences and overwrite existing preferences.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSubmitAndOverwrite() throws Exception {
+		clinicianPreferencesDAO = new ClinicianPreferencesDAO(conn);
+		commitmentsDAO = new CommitmentsDAO(conn);
+		timeAwayDAO = new TimeAwayDAO(conn);
 
-	action.submit(false);
+		ClinicianDAO clinicianDAO = new ClinicianDAO(conn);
+		clinicianDAO.insert(new ClinicianBean(0, "Jeff"));
 
-	ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2,
-		1, 5, 10);
-	List<List<CommitmentBean>> cmts = new ArrayList<List<CommitmentBean>>();
-	List<CommitmentBean> listOne = new ArrayList<CommitmentBean>();
-	listOne.add(new CommitmentBean(0, 11, 12, DateRangeValidator
-		.parseDate("3/31/2015"), "apple"));
-	List<CommitmentBean> listTwo = new ArrayList<CommitmentBean>();
-	listTwo.add(new CommitmentBean(0, 14, 15, DateRangeValidator
-		.parseDate("4/2/2015"), "pear"));
-	cmts.add(listOne);
-	cmts.add(listTwo);
+		preferences = new ClinicianPreferencesBean(0, 1, 2, 3, 5, 10);
+		commitments = new ArrayList<List<CommitmentBean>>();
+		List<CommitmentBean> listOne = new ArrayList<CommitmentBean>();
+		listOne.add(new CommitmentBean(0, 8, 9, DateRangeValidator
+				.parseDate("4/1/2015"), "desc"));
+		List<CommitmentBean> listTwo = new ArrayList<CommitmentBean>();
+		listTwo.add(new CommitmentBean(0, 10, 11, DateRangeValidator
+				.parseDate("3/30/2015"), "other desc"));
+		commitments.add(listOne);
+		commitments.add(listTwo);
 
-	DefaultListModel<TimeAwayBean> tsAway = new DefaultListModel<TimeAwayBean>();
-	tsAway.addElement(new TimeAwayBean(0, "orange", DateRangeValidator
-		.parseDate("2/2/2015"), DateRangeValidator
-		.parseDate("2/17/2015")));
+		timeAway = new DefaultListModel<TimeAwayBean>();
+		timeAway.addElement(new TimeAwayBean(0, "some desc", DateRangeValidator
+				.parseDate("1/5/2015"), DateRangeValidator
+				.parseDate("2/7/2015")));
+		timeAway.addElement(new TimeAwayBean(0, "some other desc",
+				DateRangeValidator.parseDate("2/1/2015"), DateRangeValidator
+						.parseDate("2/1/2015")));
 
-	ClinicianFormAction actionTwo = new ClinicianFormAction(conn, prefs,
-		cmts, tsAway);
-	actionTwo.submit(true);
-
-	ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO
-		.loadClinicianPreferences(0);
-	List<CommitmentBean> actualCommitments = commitmentsDAO
-		.loadCommitments(0);
-	List<TimeAwayBean> actualTimeAway = timeAwayDAO.loadTimeAway(0);
-
-	List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
-	for (List<CommitmentBean> commitmentList : cmts) {
-	    expectedCommitments.addAll(commitmentList);
-	}
-	List<TimeAwayBean> expectedTimesAway = new ArrayList<TimeAwayBean>();
-	for (int i = 0; i < tsAway.size(); i++) {
-	    expectedTimesAway.add(tsAway.get(i));
+		action = new ClinicianFormAction(conn, preferences, commitments,
+				timeAway);
 	}
 
-	assertEquals(prefs, actualPreferences);
-	assertEquals(expectedCommitments, actualCommitments);
-	assertEquals(expectedTimesAway, actualTimeAway);
-    }
-
-    /**
-     * Test submit preferences with no pre-existing preferences.
-     *
-     * @throws Exception the exception
-     */
-    @Test
-    public void testSubmit() throws Exception {
-	action.submit(false);
-
-	ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO
-		.loadClinicianPreferences(0);
-	List<CommitmentBean> actualCommitments = commitmentsDAO
-		.loadCommitments(0);
-	List<TimeAwayBean> actualTimeAway = timeAwayDAO.loadTimeAway(0);
-
-	List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
-	for (List<CommitmentBean> commitmentList : commitments) {
-	    expectedCommitments.addAll(commitmentList);
-	}
-	List<TimeAwayBean> expectedTimesAway = new ArrayList<TimeAwayBean>();
-	for (int i = 0; i < timeAway.size(); i++) {
-	    expectedTimesAway.add(timeAway.get(i));
+	/**
+	 * Tear down.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+		gen.clearTables();
 	}
 
-	assertEquals(preferences, actualPreferences);
-	assertEquals(expectedCommitments, actualCommitments);
-	assertEquals(expectedTimesAway, actualTimeAway);
-    }
+	/**
+	 * Test whether preferences will be overwritten with no current preferences.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 */
+	@Test
+	public void testCheckWillOverwritePreferencesWithNoPreferences()
+			throws SQLException {
+		assertFalse(action.willOverwritePreferences());
+	}
+
+	/**
+	 * Test whether preferences will be overwritten preferences when preferences
+	 * already exist.
+	 *
+	 * @throws SQLException
+	 *             the SQL exception
+	 * @throws InvalidFormDataException
+	 *             the invalid form data exception
+	 */
+	@Test
+	public void testCheckWillOverwritePreferencesWithPreferences()
+			throws SQLException, InvalidFormDataException {
+		action.submit(false);
+		assertTrue(action.willOverwritePreferences());
+	}
+
+	/**
+	 * Test submit preferences and overwrite existing preferences.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testSubmitAndOverwrite() throws Exception {
+
+		action.submit(false);
+
+		ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2,
+				1, 5, 10);
+		List<List<CommitmentBean>> cmts = new ArrayList<List<CommitmentBean>>();
+		List<CommitmentBean> listOne = new ArrayList<CommitmentBean>();
+		listOne.add(new CommitmentBean(0, 11, 12, DateRangeValidator
+				.parseDate("3/31/2015"), "apple"));
+		List<CommitmentBean> listTwo = new ArrayList<CommitmentBean>();
+		listTwo.add(new CommitmentBean(0, 14, 15, DateRangeValidator
+				.parseDate("4/2/2015"), "pear"));
+		cmts.add(listOne);
+		cmts.add(listTwo);
+
+		DefaultListModel<TimeAwayBean> tsAway = new DefaultListModel<TimeAwayBean>();
+		tsAway.addElement(new TimeAwayBean(0, "orange", DateRangeValidator
+				.parseDate("2/2/2015"), DateRangeValidator
+				.parseDate("2/17/2015")));
+
+		ClinicianFormAction actionTwo = new ClinicianFormAction(conn, prefs,
+				cmts, tsAway);
+		actionTwo.submit(true);
+
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO
+				.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO
+				.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDAO.loadTimeAway(0);
+
+		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		for (List<CommitmentBean> commitmentList : cmts) {
+			expectedCommitments.addAll(commitmentList);
+		}
+		List<TimeAwayBean> expectedTimesAway = new ArrayList<TimeAwayBean>();
+		for (int i = 0; i < tsAway.size(); i++) {
+			expectedTimesAway.add(tsAway.get(i));
+		}
+
+		assertEquals(prefs, actualPreferences);
+		assertEquals(expectedCommitments, actualCommitments);
+		assertEquals(expectedTimesAway, actualTimeAway);
+	}
+
+	/**
+	 * Test submit preferences with no pre-existing preferences.
+	 *
+	 * @throws Exception
+	 *             the exception
+	 */
+	@Test
+	public void testSubmit() throws Exception {
+		action.submit(false);
+
+		ClinicianPreferencesBean actualPreferences = clinicianPreferencesDAO
+				.loadClinicianPreferences(0);
+		List<CommitmentBean> actualCommitments = commitmentsDAO
+				.loadCommitments(0);
+		List<TimeAwayBean> actualTimeAway = timeAwayDAO.loadTimeAway(0);
+
+		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		for (List<CommitmentBean> commitmentList : commitments) {
+			expectedCommitments.addAll(commitmentList);
+		}
+		List<TimeAwayBean> expectedTimesAway = new ArrayList<TimeAwayBean>();
+		for (int i = 0; i < timeAway.size(); i++) {
+			expectedTimesAway.add(timeAway.get(i));
+		}
+
+		assertEquals(preferences, actualPreferences);
+		assertEquals(expectedCommitments, actualCommitments);
+		assertEquals(expectedTimesAway, actualTimeAway);
+	}
 }
