@@ -63,7 +63,6 @@ public class ClinicianDAO extends DAO {
 			clinicians.add(loadClinician(results));
 		}
 		stmt.close();
-
 		return clinicians;
 	}
 
@@ -80,7 +79,6 @@ public class ClinicianDAO extends DAO {
 		for (ClinicianBean cb : clinicians) {
 			names.add(cb.getName());
 		}
-
 		return names;
 	}
 

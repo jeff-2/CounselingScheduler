@@ -39,7 +39,8 @@ public class ScheduleDAO extends DAO {
 	 */
 	private List<SessionNameBean> loadAllECSessions() throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
+				.prepareStatement("SELECT Sessions.startTime, Sessions.weekday, "
+						+ "Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
 						+ " FROM SessionClinicians SessionClinicians"
 						+ " INNER JOIN Sessions Sessions"
 						+ " ON SessionClinicians.sessionID=Sessions.id"
@@ -71,7 +72,8 @@ public class ScheduleDAO extends DAO {
 	private List<SessionNameBean> loadAllIASessions(int weekType)
 			throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("SELECT Sessions.startTime, Sessions.weekday, Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
+				.prepareStatement("SELECT Sessions.startTime, Sessions.weekday, "
+						+ "Sessions.sDate, Sessions.weektype, Clinicians.name, Sessions.id"
 						+ " FROM SessionClinicians SessionClinicians"
 						+ " INNER JOIN Sessions Sessions"
 						+ " ON SessionClinicians.sessionID=Sessions.id"
@@ -98,6 +100,9 @@ public class ScheduleDAO extends DAO {
 	 *
 	 * @param scheduleType
 	 *            the schedule type
+	 *            0 = week A of IA sessions
+	 *            1 = week B of IA sessions
+	 *            2 = all weeks of EC sessions
 	 * @return the list
 	 * @throws SQLException
 	 *             the SQL exception
@@ -105,11 +110,11 @@ public class ScheduleDAO extends DAO {
 	public List<SessionNameBean> loadScheduleType(int scheduleType)
 			throws SQLException {
 		List<SessionNameBean> schedule = null;
-		if (scheduleType == 0) { // week A of IA sessions
+		if (scheduleType == 0) {
 			schedule = loadIAScheduleType(0);
-		} else if (scheduleType == 1) { // week B of IA sessions
+		} else if (scheduleType == 1) {
 			schedule = loadIAScheduleType(0);
-		} else if (scheduleType == 2) { // All weeks of EC sessions
+		} else if (scheduleType == 2) {
 			schedule = loadAllECSessions();
 		}
 		return schedule;

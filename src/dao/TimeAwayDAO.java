@@ -38,7 +38,8 @@ public class TimeAwayDAO extends DAO {
 	 */
 	public void insert(TimeAwayBean timeAway) throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) VALUES (?, ?, ?, ?)");
+				.prepareStatement("INSERT INTO TimeAway (id, startDate, endDate, description) "
+						+ "VALUES (?, ?, ?, ?)");
 		stmt.setInt(1, timeAway.getClinicianID());
 		stmt.setDate(2, new java.sql.Date(timeAway.getStartDate().getTime()));
 		stmt.setDate(3, new java.sql.Date(timeAway.getEndDate().getTime()));
@@ -68,7 +69,6 @@ public class TimeAwayDAO extends DAO {
 			timesAway.add(loadTimeAway(clinicianID, results));
 		}
 		stmt.close();
-
 		return timesAway;
 	}
 

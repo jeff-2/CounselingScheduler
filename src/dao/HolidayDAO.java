@@ -69,7 +69,6 @@ public class HolidayDAO extends DAO {
 			holidays.add(loadHoliday(results));
 		}
 		stmt.close();
-
 		return holidays;
 	}
 
@@ -89,5 +88,4 @@ public class HolidayDAO extends DAO {
 		Date endDate = res.getDate("endDate");
 		return new HolidayBean(id, name, startDate, endDate);
 	}
-
 }

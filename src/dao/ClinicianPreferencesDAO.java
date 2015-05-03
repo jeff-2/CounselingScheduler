@@ -36,7 +36,9 @@ public class ClinicianPreferencesDAO extends DAO {
 	public void insert(ClinicianPreferencesBean preferences)
 			throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("INSERT INTO ClinicianPreferences (id, morningRank, noonRank, afternoonRank, iaHours, ecHours) VALUES (?, ?, ?, ?, ?, ?)");
+				.prepareStatement("INSERT INTO ClinicianPreferences "
+						+ "(id, morningRank, noonRank, afternoonRank, iaHours, ecHours) "
+						+ "VALUES (?, ?, ?, ?, ?, ?)");
 		stmt.setInt(1, preferences.getClinicianID());
 		stmt.setInt(2, preferences.getMorningRank());
 		stmt.setInt(3, preferences.getNoonRank());
@@ -59,7 +61,8 @@ public class ClinicianPreferencesDAO extends DAO {
 	public ClinicianPreferencesBean loadClinicianPreferences(int clinicianID)
 			throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("SELECT morningRank, noonRank, afternoonRank, iaHours, ecHours FROM ClinicianPreferences WHERE id = ?");
+				.prepareStatement("SELECT morningRank, noonRank, afternoonRank, iaHours, ecHours "
+						+ "FROM ClinicianPreferences WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -76,7 +79,6 @@ public class ClinicianPreferencesDAO extends DAO {
 				clinicianID, morningRank, noonRank, afternoonRank, iaHours,
 				ecHours);
 		stmt.close();
-
 		return preferences;
 	}
 
@@ -105,7 +107,9 @@ public class ClinicianPreferencesDAO extends DAO {
 	public void update(ClinicianPreferencesBean preferences)
 			throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("UPDATE ClinicianPreferences SET morningRank = ?, noonRank = ?, afternoonRank = ?, iaHours = ?, ecHours = ? WHERE id = ?");
+				.prepareStatement("UPDATE ClinicianPreferences "
+						+ "SET morningRank = ?, noonRank = ?, afternoonRank = ?, "
+						+ "iaHours = ?, ecHours = ? WHERE id = ?");
 		stmt.setInt(1, preferences.getMorningRank());
 		stmt.setInt(2, preferences.getNoonRank());
 		stmt.setInt(3, preferences.getAfternoonRank());

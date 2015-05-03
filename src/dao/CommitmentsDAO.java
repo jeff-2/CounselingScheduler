@@ -38,7 +38,8 @@ public class CommitmentsDAO extends DAO {
 	 */
 	public void insert(CommitmentBean commitment) throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("INSERT INTO Commitments (id, startHour, endHour, commitmentDate, description) VALUES (?, ?, ?, ?, ?)");
+				.prepareStatement("INSERT INTO Commitments (id, startHour, "
+						+ "endHour, commitmentDate, description) VALUES (?, ?, ?, ?, ?)");
 		stmt.setInt(1, commitment.getClinicianID());
 		stmt.setInt(2, commitment.getStartHour());
 		stmt.setInt(3, commitment.getEndHour());
@@ -61,7 +62,8 @@ public class CommitmentsDAO extends DAO {
 	public List<CommitmentBean> loadCommitments(int clinicianID)
 			throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("SELECT startHour, endHour, commitmentDate, description FROM Commitments WHERE id = ?");
+				.prepareStatement("SELECT startHour, endHour, commitmentDate, description "
+						+ "FROM Commitments WHERE id = ?");
 		stmt.setInt(1, clinicianID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
@@ -71,7 +73,6 @@ public class CommitmentsDAO extends DAO {
 			commitments.add(loadCommitment(clinicianID, results));
 		}
 		stmt.close();
-
 		return commitments;
 	}
 

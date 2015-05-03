@@ -43,7 +43,8 @@ public class SessionsDAO extends DAO {
 	 */
 	public void insertSession(SessionBean session) throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType, semester, weektype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+				.prepareStatement("INSERT INTO Sessions (id, startTime, duration, weekday, sDate, sType, "
+						+ "semester, weektype) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
 		stmt.setInt(1, session.getID());
 		stmt.setInt(2, session.getStartTime());
 		stmt.setInt(3, session.getDuration());
@@ -161,7 +162,8 @@ public class SessionsDAO extends DAO {
 	public List<Integer> loadSessionClinicians(int sessionID)
 			throws SQLException {
 		PreparedStatement stmt = connection
-				.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
+				.prepareStatement("SELECT clinicianID FROM Sessions JOIN SessionClinicians "
+						+ "ON Sessions.id = SessionClinicians.sessionID WHERE SessionClinicians.sessionID = ?");
 		stmt.setInt(1, sessionID);
 		stmt.execute();
 		ResultSet results = stmt.getResultSet();
