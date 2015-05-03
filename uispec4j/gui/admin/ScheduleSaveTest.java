@@ -55,7 +55,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test save ec schedule overwrites an existing saved schedule with the same
+	 * Test save EC schedule overwrites an existing saved schedule with the same
 	 * name.
 	 *
 	 * @throws IOException
@@ -93,7 +93,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Tests saving an ec schedule.
+	 * Tests saving an EC schedule.
 	 */
 	public void testSaveECSchedule() {
 		Window window = this.getMainWindow();
@@ -118,7 +118,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test saving an ia schedule.
+	 * Test saving an IA schedule.
 	 */
 	public void testSaveIASchedule() {
 		Window window = this.getMainWindow();
@@ -143,7 +143,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test cancel when saving an ia schedule.
+	 * Test cancel when saving an IA schedule.
 	 */
 	public void testCancelSaveIASchedule() {
 		Window window = this.getMainWindow();
@@ -168,7 +168,7 @@ public class ScheduleSaveTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test cancel when saving an ec schedule.
+	 * Test canceling when saving an EC schedule.
 	 */
 	public void testCancelSaveECSchedule() {
 		Window window = this.getMainWindow();

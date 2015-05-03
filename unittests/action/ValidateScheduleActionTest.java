@@ -56,7 +56,7 @@ public class ValidateScheduleActionTest {
 	}
 
 	/**
-	 * Test validate ec schedule with conflicts.
+	 * Test validate EC schedule with conflicts.
 	 */
 	@Test
 	public void testValidateECScheduleConflicts() {
@@ -79,7 +79,7 @@ public class ValidateScheduleActionTest {
 	}
 
 	/**
-	 * Test validate same day noon ec, ia conflicts.
+	 * Test validate same day noon EC, IA conflicts.
 	 */
 	@Test
 	public void testValidateSameDayNoonECIAConflicts() {
@@ -96,7 +96,7 @@ public class ValidateScheduleActionTest {
 	}
 
 	/**
-	 * Test validate afternoon meeting morning ec conflicts.
+	 * Test validate afternoon meeting morning EC conflicts.
 	 */
 	@Test
 	public void testValidateAfternoonMeetingMorningECConflicts() {
@@ -119,7 +119,7 @@ public class ValidateScheduleActionTest {
 	}
 
 	/**
-	 * Test validate morning meeting afternoon ec conflicts.
+	 * Test validate morning meeting afternoon EC conflicts.
 	 */
 	@Test
 	public void testValidateMorningMeetingAfternoonECConflicts() {
@@ -142,7 +142,7 @@ public class ValidateScheduleActionTest {
 	}
 
 	/**
-	 * Test validate one ia per day.
+	 * Test validate one IA per day.
 	 */
 	@Test
 	public void testValidateOneIAPerDay() {
@@ -158,7 +158,7 @@ public class ValidateScheduleActionTest {
 	}
 
 	/**
-	 * Test validate one ec per week.
+	 * Test validate one EC per week.
 	 */
 	@Test
 	public void testValidateOneECPerWeek() {
@@ -174,5 +174,4 @@ public class ValidateScheduleActionTest {
 		assertTrue(violations.contains(cl1));
 		assertTrue(violations.contains(cl2));
 	}
-
 }

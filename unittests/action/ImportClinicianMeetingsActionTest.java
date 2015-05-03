@@ -59,7 +59,7 @@ public class ImportClinicianMeetingsActionTest {
 	/** The end date. */
 	private Date endDate;
 
-	/** The ryan id. */
+	/** The jeff, nathan, and ryan id. */
 	private int jeffID, nathanID, ryanID;
 
 	/**
@@ -465,8 +465,8 @@ public class ImportClinicianMeetingsActionTest {
 		for (CommitmentBean commitment : tmp) {
 			commitments.add(commitment);
 		}
-
 		List<CommitmentBean> expectedCommitments = new ArrayList<CommitmentBean>();
+		
 		expectedCommitments.add(new CommitmentBean(jeffID, 10, 12,
 				DateRangeValidator.parseDate("1/26/2015"), "Other Meeting"));
 		expectedCommitments.add(new CommitmentBean(jeffID, 10, 12,
@@ -501,7 +501,8 @@ public class ImportClinicianMeetingsActionTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the tables and deletes the file created as
+	 * a result of the testing.
 	 *
 	 * @throws Exception
 	 *             the exception

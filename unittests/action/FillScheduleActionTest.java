@@ -33,7 +33,9 @@ public class FillScheduleActionTest {
 	private SessionsDAO sessionsDAO;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, 
+	 * populating the database tables with the standard dataset, 
+	 * and generating a schedule with the standard dataset.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -53,7 +55,7 @@ public class FillScheduleActionTest {
 	}
 
 	/**
-	 * Test that ia sessions have multiple clinicians.
+	 * Test that IA sessions have multiple clinicians.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -75,7 +77,7 @@ public class FillScheduleActionTest {
 	}
 
 	/**
-	 * Test that exactly one clinician is assigned to each ce sessions.
+	 * Test that exactly one clinician is assigned to each EC session.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -92,7 +94,7 @@ public class FillScheduleActionTest {
 	}
 
 	/**
-	 * Tear down.
+	 * Tear down. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

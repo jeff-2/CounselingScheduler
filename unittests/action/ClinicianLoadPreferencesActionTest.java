@@ -37,7 +37,9 @@ public class ClinicianLoadPreferencesActionTest {
 	private ClinicianLoadPreferencesAction action;
 
 	/**
-	 * Sets the test up.
+	 * Sets the test up by getting the database connection, clearing
+	 * the tables, generating the standard dataset, and loading a clinician's
+	 * preferences.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -52,7 +54,7 @@ public class ClinicianLoadPreferencesActionTest {
 	}
 
 	/**
-	 * Clean up.
+	 * Clean up. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

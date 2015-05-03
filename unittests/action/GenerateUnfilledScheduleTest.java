@@ -40,7 +40,8 @@ public class GenerateUnfilledScheduleTest {
 	private GenerateUnfilledScheduleAction action;
 
 	/**
-	 * Sets the test up.
+	 * Sets the tests up by getting the database connection and
+	 * clearing the tables.
 	 *
 	 * @throws Exception
 	 *             the exception
@@ -105,7 +106,7 @@ public class GenerateUnfilledScheduleTest {
 	}
 
 	/**
-	 * Clean up.
+	 * Clean up. Clears the database tables.
 	 *
 	 * @throws Exception
 	 *             the exception

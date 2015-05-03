@@ -152,7 +152,6 @@ public class ClinicianFormActionTest {
 	 */
 	@Test
 	public void testSubmitAndOverwrite() throws Exception {
-
 		action.submit(false);
 
 		ClinicianPreferencesBean prefs = new ClinicianPreferencesBean(0, 3, 2,

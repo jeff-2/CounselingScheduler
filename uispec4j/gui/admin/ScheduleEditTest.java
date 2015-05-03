@@ -70,7 +70,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test first ec selection.
+	 * Test first EC selection.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -80,7 +80,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test second ec selection.
+	 * Test second EC selection.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -90,7 +90,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test third ec selection.
+	 * Test third EC selection.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -100,21 +100,21 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test remove clinician ia schedule week a.
+	 * Test remove clinician IA schedule week a.
 	 */
 	public void testRemoveClinicianIAScheduleWeekA() {
 		testRemoveClinicianIAScheduleWeektype(IAWeektype.A);
 	}
 
 	/**
-	 * Test remove clinician ia schedule week b.
+	 * Test remove clinician IA schedule week b.
 	 */
 	public void testRemoveClinicianIAScheduleWeekB() {
 		testRemoveClinicianIAScheduleWeektype(IAWeektype.B);
 	}
 
 	/**
-	 * Test add clinician ia schedule week a.
+	 * Test add clinician IA schedule week a.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -124,7 +124,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test add clinician ia schedule week b.
+	 * Test add clinician IA schedule week b.
 	 *
 	 * @throws SQLException
 	 *             the SQL exception
@@ -134,7 +134,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test add clinician ia schedule weektype.
+	 * Test add clinician IA schedule weektype.
 	 *
 	 * @param weekType
 	 *            the week type
@@ -176,7 +176,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test remove clinician ia schedule weektype.
+	 * Test remove clinician IA schedule weektype.
 	 *
 	 * @param weekType
 	 *            the week type
@@ -223,7 +223,7 @@ public class ScheduleEditTest extends UISpecTestCase {
 	}
 
 	/**
-	 * Test edit ec schedule and catch the constraints broken notification
+	 * Test edit EC schedule and catch the constraints broken notification
 	 * window.
 	 *
 	 * @param boxnum
