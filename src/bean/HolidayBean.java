@@ -28,8 +28,7 @@ public class HolidayBean {
 	/**
 	 * Default constructor.
 	 */
-	public HolidayBean() {
-	}
+	public HolidayBean() {}
 
 	/**
 	 * Full constructor.

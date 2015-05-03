@@ -332,5 +332,4 @@ public class SessionBean implements Comparable<SessionBean> {
 			return dayOfWeek + "_" + startTime + "_" + type + "_" + weekType;
 		}
 	}
-
 }

@@ -153,12 +153,12 @@ public class Schedule {
 	}
 
 	/**
-	 * Returns the number of weeks in this schedule.
+	 * Returns the number of weeks in this schedule. Must be called
+	 * before the initialLoader
 	 *
 	 * @return the number of weeks
 	 */
 	public int getNumberOfWeeks() {
-		// initialLoader needs to be called first
 		return weeks.size();
 	}
 
@@ -218,7 +218,7 @@ public class Schedule {
 	 *
 	 * @param c
 	 *            the c
-	 * @return ??
+	 * @return list of commitmentBean
 	 */
 	public List<CommitmentBean> getCommitment(Clinician c) {
 		int id = c.getClinicianBean().getClinicianID();
@@ -312,8 +312,7 @@ public class Schedule {
 						schedule.ia.get(weekNum % 2).put(sb, assigned);
 					}
 				}
-			} else {
-				// This is an EC session.
+			} else { // This is an EC session.
 				schedule.ec.get(weekNum).put(sb,
 						schedule.clinicians.get(clinicianIDs.get(0)));
 			}
@@ -330,9 +329,7 @@ public class Schedule {
 				}
 			}
 		}
-
 		schedule.fillIASessionNameBeans();
-
 		return schedule;
 	}
 
@@ -655,7 +652,6 @@ public class Schedule {
 				sb.removeClinician(c);
 			}
 		}
-
 		return removed;
 	}
 

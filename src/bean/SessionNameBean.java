@@ -50,7 +50,6 @@ public class SessionNameBean {
 		date = sDate;
 		weekType = sWeekType;
 		sessionID = sSessionID;
-
 	}
 
 	/**

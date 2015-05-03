@@ -263,9 +263,7 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 				entries.get(t).add(name);
 			}
 		}
-
 		return entries;
-
 	}
 
 	/**
