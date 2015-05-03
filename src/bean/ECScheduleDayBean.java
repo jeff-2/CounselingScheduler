@@ -5,38 +5,32 @@ import java.util.Date;
 import utils.DateUtils;
 
 /**
- * Stores a day in the EC calendar
- * 
- * @author ramusa2, lim92
+ * Stores a day in the EC calendar.
  *
+ * @author ramusa2, lim92
  */
 public class ECScheduleDayBean {
 
-    /**
-     * The date of this day
-     */
+    /** The date of this day. */
     private final Date date;
 
-    /**
-     * The name of this weekday
-     */
+    /** The name of this weekday. */
     private final String dayName;
 
-    /**
-     * If day is a holiday, the HolidayBean object storing this information;
-     * null otherwise
-     */
+    /** If day is a holiday, the HolidayBean object storing this information; null otherwise. */
     private HolidayBean holiday;
 
-    /**
-     * An array storing the names of the clinicians working this day's sessions
-     */
+    /** An array storing the names of the clinicians working this day's sessions. */
     private final String[] clinicians;
 
+    /** The session i ds. */
     private int[] sessionIDs;
 
     /**
-     * Default constructor
+     * Default constructor.
+     *
+     * @param myDate the my date
+     * @param myDayName the my day name
      */
     public ECScheduleDayBean(Date myDate, String myDayName) {
 	date = myDate;
@@ -47,28 +41,38 @@ public class ECScheduleDayBean {
     }
 
     /**
-     * Returns this day's Date object
+     * Returns this day's Date object.
+     *
+     * @return the date
      */
     public Date date() {
 	return date;
     }
 
     /**
-     * Returns this day's name
+     * Returns this day's name.
+     *
+     * @return the string
      */
     public String dayName() {
 	return dayName;
     }
 
     /**
-     * Returns true if this day starts a month
+     * Returns true if this day starts a month.
+     *
+     * @return true, if successful
      */
     public boolean startsMonth() {
-	return DateUtils.getDate(this.date) == 1;
+	return DateUtils.getDayOfMonth(this.date) == 1;
     }
 
     /**
-     * Adds a clinicians for this day's EC sessions (0 = 8am, 1 = noon, 2 = 4pm)
+     * Adds a clinicians for this day's EC sessions (0 = 8am, 1 = noon, 2 = 4pm).
+     *
+     * @param name the name
+     * @param timeslot the timeslot
+     * @param id the id
      */
     public void addClinician(String name, int timeslot, int id) {
 	int mappedTimeslot = -1;
@@ -91,41 +95,64 @@ public class ECScheduleDayBean {
     }
 
     /**
-     * Gets a clinicians for this day's EC sessions (0 = 8am, 1 = noon, 2 = 4pm)
+     * Gets a clinicians for this day's EC sessions (0 = 8am, 1 = noon, 2 = 4pm).
+     *
+     * @return the clinicians
      */
     public String[] getClinicians() {
 	return clinicians;
     }
 
     /**
-     * Sets this day's holiday
+     * Sets this day's holiday.
+     *
+     * @param holidayBean the new holiday
      */
     public void setHoliday(HolidayBean holidayBean) {
 	holiday = holidayBean;
     }
 
     /**
-     * Returns this day's holiday
+     * Returns this day's holiday.
+     *
+     * @return the holiday
      */
     public HolidayBean getHoliday() {
 	return holiday;
     }
 
     /**
-     * Returns true if this day is a holiday
+     * Returns true if this day is a holiday.
+     *
+     * @return true, if is holiday
      */
     public boolean isHoliday() {
 	return holiday != null;
     }
 
+    /**
+     * Header string.
+     *
+     * @return the string
+     */
     public String headerString() {
-	return this.dayName + " " + DateUtils.getDate(this.date);
+	return this.dayName + " " + DateUtils.getDayOfMonth(this.date);
     }
 
+    /**
+     * Gets the session ids.
+     *
+     * @return the session ids
+     */
     public int[] getSessionIDs() {
 	return sessionIDs;
     }
 
+    /**
+     * Sets the session ids.
+     *
+     * @param sessionIDs the new session ids
+     */
     public void setSessionIDs(int[] sessionIDs) {
 	this.sessionIDs = sessionIDs;
     }

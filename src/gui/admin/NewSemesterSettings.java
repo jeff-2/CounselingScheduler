@@ -45,22 +45,47 @@ import dao.HolidayDAO;
  */
 public class NewSemesterSettings extends JPanel implements ActionListener {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 992467448521859468L;
+    
+    /** The clinician hours label. */
     private JLabel semesterStartDateLabel, semesterEndDateLabel,
 	    clinicianHoursLabel;
+    
+    /** The holiday end date label. */
     private JLabel holidayNameLabel, holidayStartDateLabel,
 	    holidayEndDateLabel;
+    
+    /** The EC hours label. */
     private JLabel IALabel, ECLabel, IAHoursLabel, ECHoursLabel;
+    
+    /** The EC hours text. */
     private JTextField holidayNameText, startHolidayText, endHolidayText,
 	    startDateText, endDateText, IAHoursText, ECHoursText;
+    
+    /** The remove meetings button. */
     private JButton submitButton, addHolidayButton, removeHolidayButton,
 	    removeMeetingsButton;
+    
+    /** The semester season box. */
     private JComboBox<Semester> semesterSeasonBox;
+    
+    /** The list scroll pane. */
     private JScrollPane listScrollPane;
+    
+    /** The holiday string list. */
     private JList<String> holidayStringList;
+    
+    /** The holiday list. */
     private List<HolidayBean> holidayList = new ArrayList<HolidayBean>();
+    
+    /** The import meetings button. */
     private JButton importMeetingsButton;
+    
+    /** The file chooser. */
     private JFileChooser fileChooser;
+    
+    /** The excel filename label. */
     private JLabel excelFilenameLabel;
 
     /**
@@ -275,6 +300,9 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 	});
     }
 
+    /**
+     * Adds the meeting components.
+     */
     private void addMeetingComponents() {
 	add(importMeetingsButton);
 	add(excelFilenameLabel, "span 2");
@@ -331,6 +359,8 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 
     /**
      * Creates the semester.
+     *
+     * @return true, if successful
      */
     private boolean createSemester() {
 	String IAHours = IAHoursText.getText().trim();
@@ -384,8 +414,8 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 
     /**
      * Adds the holiday to the list of displayed holidays.
-     * 
-     * @throws ParseException
+     *
+     * @throws ParseException the parse exception
      */
     private void addHoliday() throws ParseException {
 	String holiday = holidayNameText.getText().trim();
@@ -426,6 +456,11 @@ public class NewSemesterSettings extends JPanel implements ActionListener {
 	holidayList.add(h);
     }
 
+    /**
+     * Load settings.
+     *
+     * @throws SQLException the SQL exception
+     */
     private void loadSettings() throws SQLException {
 	Connection conn = ConnectionFactory.getInstance();
 	LoadNewSemesterSettingsAction action = new LoadNewSemesterSettingsAction(

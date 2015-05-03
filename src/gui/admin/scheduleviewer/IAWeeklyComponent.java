@@ -41,17 +41,38 @@ import bean.Schedule;
 import bean.SessionNameBean;
 import bean.Weekday;
 
+/**
+ * The Class IAWeeklyComponent.
+ */
 public class IAWeeklyComponent extends JPanel implements ActionListener,
 	MouseListener {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -2863270676214624155L;
+    
+    /** The pane. */
     private Component[][] pane;
+    
+    /** The clinician names. */
     private List<String> clinicianNames;
+    
+    /** The menu. */
     private JPopupMenu menu;
+    
+    /** The remove. */
     private JMenuItem add, remove;
+    
+    /** The schedule. */
     private Schedule schedule;
+    
+    /** The Constant rowLabels. */
     private static final int[] rowLabels = { 11, 12, 13, 14, 15 };
 
+    /**
+     * Converts ia components to grid of strings.
+     *
+     * @return the list
+     */
     public List<List<List<String>>> toCellsArray() {
 	List<List<List<String>>> cells = new ArrayList<List<List<String>>>();
 	for (int row = 0; row < pane.length; row++) {
@@ -74,6 +95,14 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	return cells;
     }
 
+    /**
+     * Instantiates a new IA weekly component.
+     *
+     * @param sessionNames the session names
+     * @param clinicianNames the clinician names
+     * @param weekType the week type
+     * @param schedule the schedule
+     */
     public IAWeeklyComponent(List<SessionNameBean> sessionNames,
 	    List<String> clinicianNames, IAWeektype weekType, Schedule schedule) {
 
@@ -144,6 +173,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	}
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == add) {
@@ -178,6 +210,14 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	}
     }
 
+    /**
+     * Gets the clinicians.
+     *
+     * @param sessions the sessions
+     * @param day the day
+     * @param time the time
+     * @return the clinicians
+     */
     private List<String> getClinicians(List<SessionNameBean> sessions,
 	    Weekday day, int time) {
 	ArrayList<String> clinicianNames = new ArrayList<String>();
@@ -189,17 +229,43 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	return clinicianNames;
     }
 
+    /**
+     * The Class ToTransferHandler provides implementation for drag and drop functionalities.
+     */
     private class ToTransferHandler extends TransferHandler {
 
+	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1157878033666829034L;
+	
+	/** The action. */
 	private int action;
+	
+	/** The column. */
 	private int row, column;
+	
+	/** The clinician name. */
 	private String clinicianName;
+	
+	/** The weekly component. */
 	private IAWeeklyComponent weeklyComponent;
+	
+	/** The export time. */
 	private int exportDay, exportTime;
+	
+	/** The import time. */
 	private int importDay, importTime;
+	
+	/** The import is type a. */
 	private boolean exportIsTypeA, importIsTypeA;
 
+	/**
+	 * Instantiates a new to transfer handler.
+	 *
+	 * @param action the action
+	 * @param row the row
+	 * @param col the col
+	 * @param weeklyComponent the weekly component
+	 */
 	public ToTransferHandler(int action, int row, int col,
 		IAWeeklyComponent weeklyComponent) {
 	    this.action = action;
@@ -208,6 +274,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	    this.weeklyComponent = weeklyComponent;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#canImport(javax.swing.TransferHandler.TransferSupport)
+	 */
 	public boolean canImport(TransferHandler.TransferSupport support) {
 	    if (!support.isDrop()) {
 		return false;
@@ -244,6 +313,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	    return false;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#importData(javax.swing.TransferHandler.TransferSupport)
+	 */
 	public boolean importData(TransferHandler.TransferSupport support) {
 	    if (!canImport(support)) {
 		return false;
@@ -286,12 +358,19 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	    return true;
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#getSourceActions(javax.swing.JComponent)
+	 */
 	public int getSourceActions(JComponent comp) {
 	    return MOVE;
 	}
 
+	/** The index. */
 	private int index = 0;
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#createTransferable(javax.swing.JComponent)
+	 */
 	public Transferable createTransferable(JComponent comp) {
 
 	    @SuppressWarnings("unchecked")
@@ -305,6 +384,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	    return new StringSelection((String) l.getSelectedValue());
 	}
 
+	/* (non-Javadoc)
+	 * @see javax.swing.TransferHandler#exportDone(javax.swing.JComponent, java.awt.datatransfer.Transferable, int)
+	 */
 	public void exportDone(JComponent comp, Transferable trans, int action) {
 	    if (action != MOVE) {
 		return;
@@ -325,6 +407,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	    ((DefaultListModel<String>) l.getModel()).removeElementAt(index);
 	}
 
+	/**
+	 * Validates the ia schedule.
+	 */
 	private void validate() {
 	    Set<Clinician> clinicians = new ValidateScheduleAction()
 		    .validateSchedule(schedule);
@@ -345,18 +430,30 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	}
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+     */
     @Override
     public void mouseClicked(MouseEvent e) {
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+     */
     @Override
     public void mouseEntered(MouseEvent e) {
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+     */
     @Override
     public void mouseExited(MouseEvent e) {
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+     */
     @Override
     public void mousePressed(MouseEvent e) {
 	if (e.isPopupTrigger()) {
@@ -367,6 +464,9 @@ public class IAWeeklyComponent extends JPanel implements ActionListener,
 	list.setSelectedIndex(list.locationToIndex(e.getPoint()));
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+     */
     @Override
     public void mouseReleased(MouseEvent e) {
 	if (e.isPopupTrigger()) {

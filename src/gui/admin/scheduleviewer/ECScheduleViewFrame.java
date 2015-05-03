@@ -15,22 +15,26 @@ import javax.swing.ScrollPaneConstants;
 import net.miginfocom.swing.MigLayout;
 
 /**
- * A GUI window for displaying the EC appointments for a semester
- * 
- * @author ramusa2, lim92
+ * A GUI window for displaying the EC appointments for a semester.
  *
+ * @author ramusa2, lim92
  */
 public class ECScheduleViewFrame extends JFrame {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -4271567771784608985L;
 
+    /** The scroll panel. */
     private JScrollPane scrollPanel;
+    
+    /** The ec component. */
     private ECScheduleComponent ecComponent;
 
     /**
-     * Create an empty client ID list
-     * 
-     * @throws SQLException
+     * Create an empty client ID list.
+     *
+     * @param ecComponent the ec component
+     * @throws SQLException the SQL exception
      */
     public ECScheduleViewFrame(ECScheduleComponent ecComponent)
 	    throws SQLException {
@@ -57,6 +61,9 @@ public class ECScheduleViewFrame extends JFrame {
 	this.setLocationRelativeTo(null); // Center JFrame in middle of screen
     }
 
+    /**
+     * Open print dialog and prints ec schedule.
+     */
     private void openPrintDialog() {
 	PrinterJob job = PrinterJob.getPrinterJob();
 	job.setPrintable((Printable) ecComponent);
@@ -70,6 +77,9 @@ public class ECScheduleViewFrame extends JFrame {
 	}
     }
 
+    /**
+     * Prints the ec schedule.
+     */
     public void printSchedule() {
 	this.openPrintDialog();
     }

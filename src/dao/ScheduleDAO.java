@@ -20,15 +20,20 @@ import bean.Weekday;
  */
 public class ScheduleDAO extends DAO {
 
+    /**
+     * Instantiates a new schedule dao.
+     *
+     * @param conn the conn
+     */
     public ScheduleDAO(Connection conn) {
 	super(conn);
     }
 
     /**
-     * Gets all the assigned EC sessions from the database
-     * 
+     * Gets all the assigned EC sessions from the database.
+     *
      * @return List of SessionNameBean
-     * @throws SQLException
+     * @throws SQLException the SQL exception
      */
     private List<SessionNameBean> loadAllECSessions() throws SQLException {
 	PreparedStatement stmt = connection
@@ -53,11 +58,11 @@ public class ScheduleDAO extends DAO {
     }
 
     /**
-     * Gets a week's worth (A or B) of assigned IA Sessions
-     * 
-     * @param 0 gives week A, 1 gives week B
-     * @return
-     * @throws SQLException
+     * Gets a week's worth (A or B) of assigned IA Sessions.
+     *
+     * @param weekType the week type
+     * @return the list
+     * @throws SQLException the SQL exception
      */
     private List<SessionNameBean> loadAllIASessions(int weekType)
 	    throws SQLException {
@@ -85,12 +90,11 @@ public class ScheduleDAO extends DAO {
     }
 
     /**
-     * Wrapper method for loading the assigned clinicians to sessions
-     * 
-     * @param 0 refers to week A of IA sessions, 1 refers to week B of IA
-     *        sessions, and 2 refers to EC sessions
-     * @return
-     * @throws SQLException
+     * Wrapper method for loading the assigned clinicians to sessions.
+     *
+     * @param scheduleType the schedule type
+     * @return the list
+     * @throws SQLException the SQL exception
      */
     public List<SessionNameBean> loadScheduleType(int scheduleType)
 	    throws SQLException {
@@ -106,12 +110,11 @@ public class ScheduleDAO extends DAO {
     }
 
     /**
-     * Helper method to load a specific type of IA schedule
-     * 
-     * @param 0 refers to week A of IA sessions, 1 refers to week B of IA
-     *        sessions
-     * @return
-     * @throws SQLException
+     * Helper method to load a specific type of IA schedule.
+     *
+     * @param scheduleType the schedule type
+     * @return the list
+     * @throws SQLException the SQL exception
      */
     private List<SessionNameBean> loadIAScheduleType(int scheduleType)
 	    throws SQLException {

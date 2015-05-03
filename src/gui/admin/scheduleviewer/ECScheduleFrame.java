@@ -1,6 +1,5 @@
 package gui.admin.scheduleviewer;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -29,27 +28,41 @@ import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 
 /**
- * A GUI window for displaying the EC appointments for a semester
- * 
- * @author ramusa2, lim92
+ * A GUI window for displaying the EC appointments for a semester.
  *
+ * @author ramusa2, lim92
  */
 public class ECScheduleFrame extends JPanel implements ActionListener {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -4271567771784608985L;
 
+    /** The clinician dao. */
     private ClinicianDAO clinicianDao;
+    
+    /** The scroll panel. */
     private JScrollPane scrollPanel;
+    
+    /** The ec components. */
     private List<ECWeeklyComponent> ecComponents;
+    
+    /** The reset button. */
     private JButton resetButton;
+    
+    /** The control panel. */
     private JPanel controlPanel;
+    
+    /** The file chooser. */
     private JFileChooser fileChooser;
+    
+    /** The schedule. */
     private Schedule schedule;
 
     /**
-     * Create an empty client ID list
-     * 
-     * @throws SQLException
+     * Create an empty client ID list.
+     *
+     * @param s the s
+     * @throws SQLException the SQL exception
      */
     public ECScheduleFrame(Schedule s) throws SQLException {
 	clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
@@ -82,9 +95,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 
     /**
      * Loads a JPanel that displays an editable EC schedule with data from the
-     * database
-     * 
-     * @throws SQLException
+     * database.
+     *
+     * @throws SQLException the SQL exception
      */
     private void loadEditableSchedule() throws SQLException {
 	ArrayList<ECScheduleWeekBean> weeks = ECScheduleWeekBean
@@ -109,6 +122,12 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	repaint();
     }
 
+    /**
+     * Gets the representation of the ec schedule as a grid of 
+     * strings.
+     *
+     * @return the cells as strings in the ec schedule
+     */
     private List<List<List<String>>> getCells() {
 	List<List<List<String>>> cells = new ArrayList<List<List<String>>>();
 	for (ECWeeklyComponent comp : ecComponents) {
@@ -118,6 +137,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	return cells;
     }
 
+    /**
+     * Saves the ec schedule to an image file.
+     */
     public void save() {
 	List<List<List<String>>> cells = getCells();
 	if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -135,6 +157,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	}
     }
 
+    /**
+     * Prints the ec schedule.
+     */
     public void print() {
 	List<List<List<String>>> cells = getCells();
 	try {
@@ -147,6 +172,9 @@ public class ECScheduleFrame extends JPanel implements ActionListener {
 	}
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == this.resetButton) {

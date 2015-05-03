@@ -23,28 +23,44 @@ import dao.ClinicianDAO;
 import dao.ConnectionFactory;
 
 /**
- * A GUI window for displaying the IA appointment for weeks A and B
- * 
- * @author ramusa2, lim92
+ * A GUI window for displaying the IA appointment for weeks A and B.
  *
+ * @author ramusa2, lim92
  */
 public class IAScheduleFrame extends JPanel implements ActionListener {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -4271567771784608985L;
 
+    /** The clinician dao. */
     private ClinicianDAO clinicianDao;
+    
+    /** The panel. */
     private JSplitPane panel;
+    
+    /** The week a. */
     private JPanel weekA;
+    
+    /** The week b. */
     private JPanel weekB;
+    
+    /** The reset button. */
     private JButton resetButton;
+    
+    /** The control panel. */
     private JPanel controlPanel;
+    
+    /** The file chooser. */
     private JFileChooser fileChooser;
+    
+    /** The schedule. */
     private Schedule schedule;
 
     /**
-     * Create an empty client ID list
-     * 
-     * @throws SQLException
+     * Create an empty client ID list.
+     *
+     * @param s the s
+     * @throws SQLException the SQL exception
      */
     public IAScheduleFrame(Schedule s) throws SQLException {
 	clinicianDao = new ClinicianDAO(ConnectionFactory.getInstance());
@@ -74,9 +90,9 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 
     /**
      * Loads a JPanel that displays an editable IA schedule with data from the
-     * database
-     * 
-     * @throws SQLException
+     * database.
+     *
+     * @throws SQLException the SQL exception
      */
     private void loadEditableSchedule() throws SQLException {
 	List<String> clinicianNames = clinicianDao.loadClinicianNames();
@@ -91,6 +107,9 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	repaint();
     }
 
+    /**
+     * Saves the ia schedule to an image.
+     */
     public void save() {
 	if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
 	    File file = fileChooser.getSelectedFile();
@@ -111,6 +130,9 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	}
     }
 
+    /**
+     * Prints the ia schedule.
+     */
     public void print() {
 	try {
 	    IAScheduleViewFrame frame = new IAScheduleViewFrame(
@@ -123,6 +145,9 @@ public class IAScheduleFrame extends JPanel implements ActionListener {
 	}
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     @Override
     public void actionPerformed(ActionEvent e) {
 	if (e.getSource() == this.resetButton) {

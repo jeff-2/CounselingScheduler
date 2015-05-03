@@ -16,24 +16,30 @@ import bean.Schedule;
 import bean.TimeAwayBean;
 
 /**
- * Class that validates a generated schedule
+ * Class that validates a generated schedule.
  */
 public class ValidateScheduleAction {
 
+    /** The ec hours. */
     private int[] ecHours;
+    
+    /** The ia hours. */
     private int[] iaHours;
 
     /**
      * Instantiates a new validate schedule action.
-     *
-     * @param connection
-     *            the connection
      */
     public ValidateScheduleAction() {
 	ecHours = new int[] { 8, 12, 16 };
 	iaHours = new int[] { 11, 13, 14, 15 };
     }
 
+    /**
+     * Validate schedules and returns list of the clinicians which break constraints.
+     *
+     * @param sch the sch
+     * @return the sets the clinicians which conflict with constraints
+     */
     public Set<Clinician> validateSchedule(Schedule sch) {
 	Set<Clinician> resultSet = new HashSet<Clinician>();
 	resultSet.addAll(validateIAScheduleConflicts(sch));
@@ -50,10 +56,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether the IA schedule conflicts with the clinicians' regular
-     * commitments
-     * 
-     * @param sch
-     *            a schedule
+     * commitments.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with those conflict
      */
     private Set<Clinician> validateIAScheduleConflicts(Schedule sch) {
@@ -70,7 +75,7 @@ public class ValidateScheduleAction {
 	    // Checks whether commitment with IA session
 	    for (CommitmentBean cmt : commitments) {
 		Date date = cmt.getDate();
-		int weekday = DateUtils.getDay(date) - 1;
+		int weekday = DateUtils.getDayOfWeek(date) - 1;
 		cal.setTime(date);
 		int week = cal.get(Calendar.WEEK_OF_YEAR);
 		int weekdiff = week - startweek;
@@ -111,10 +116,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether the EC schedule conflicts with the clinicians' regular
-     * commitments as well as times away
-     * 
-     * @param sch
-     *            a schedule
+     * commitments as well as times away.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with those conflict
      */
     public Set<Clinician> validateECScheduleConflicts(Schedule sch) {
@@ -132,7 +136,7 @@ public class ValidateScheduleAction {
 	    // Checks whether commitment with EC session
 	    for (CommitmentBean cmt : commitments) {
 		Date date = cmt.getDate();
-		int weekday = DateUtils.getDay(date) - 1;
+		int weekday = DateUtils.getDayOfWeek(date) - 1;
 		cal.setTime(date);
 		int week = cal.get(Calendar.WEEK_OF_YEAR);
 		int weekdiff = week - startweek;
@@ -170,7 +174,7 @@ public class ValidateScheduleAction {
 
 		while (!start.after(end)) {
 		    Date date = start.getTime();
-		    int weekday = DateUtils.getDay(date) - 1;
+		    int weekday = DateUtils.getDayOfWeek(date) - 1;
 		    int week = start.get(Calendar.WEEK_OF_YEAR);
 		    int weekdiff = week - startweek;
 		    boolean withinSemester = weekdiff >= 0
@@ -195,10 +199,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether a clinician is assigned to a noon EC session and an 1:00
-     * IA session on the same day
-     * 
-     * @param sch
-     *            a schedule
+     * IA session on the same day.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with those conflict
      */
     public Set<Clinician> validateSameDayNoonECIAConflicts(Schedule sch) {
@@ -228,10 +231,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether a clinician is assigned a meeting after 5:00 and a 8:00 EC
-     * the next morning
-     * 
-     * @param sch
-     *            a schedule
+     * the next morning.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with those conflict
      */
     public Set<Clinician> validateAfternoonMeetingMorningECConflicts(
@@ -251,7 +253,7 @@ public class ValidateScheduleAction {
 	    // session
 	    for (CommitmentBean cmt : commitments) {
 		Date date = cmt.getDate();
-		int weekday = DateUtils.getDay(date) - 1;
+		int weekday = DateUtils.getDayOfWeek(date) - 1;
 		int hour = cmt.getEndHour();
 		cal.setTime(date);
 		int week = cal.get(Calendar.WEEK_OF_YEAR);
@@ -278,7 +280,7 @@ public class ValidateScheduleAction {
 
 		while (!start.after(end)) {
 		    Date date = start.getTime();
-		    int weekday = DateUtils.getDay(date) - 1;
+		    int weekday = DateUtils.getDayOfWeek(date) - 1;
 		    int week = start.get(Calendar.WEEK_OF_YEAR);
 		    int weekdiff = week - startweek;
 		    boolean withinSemester = weekdiff >= 0
@@ -300,10 +302,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether a clinician is assigned to a 4:00 EC session and an 8:00
-     * meeting the next morning
-     * 
-     * @param sch
-     *            a schedule
+     * meeting the next morning.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with those conflict
      */
     public Set<Clinician> validateMorningMeetingAfternoonECConflicts(
@@ -323,7 +324,7 @@ public class ValidateScheduleAction {
 	    // EC session
 	    for (CommitmentBean cmt : commitments) {
 		Date date = cmt.getDate();
-		int weekday = DateUtils.getDay(date) - 2;
+		int weekday = DateUtils.getDayOfWeek(date) - 2;
 		int hour = cmt.getStartHour();
 		cal.setTime(date);
 		int week = cal.get(Calendar.WEEK_OF_YEAR);
@@ -350,7 +351,7 @@ public class ValidateScheduleAction {
 
 		while (!start.after(end)) {
 		    Date date = start.getTime();
-		    int weekday = DateUtils.getDay(date) - 1;
+		    int weekday = DateUtils.getDayOfWeek(date) - 1;
 		    int week = start.get(Calendar.WEEK_OF_YEAR);
 		    int weekdiff = week - startweek;
 		    boolean withinSemester = weekdiff >= 0
@@ -372,10 +373,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether the majority of EC sessions assigned to a clinician is for
-     * their preferred time
-     * 
-     * @param sch
-     *            a schedule
+     * their preferred time.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with with less than a majority of preferred EC
      *         times
      */
@@ -423,10 +423,9 @@ public class ValidateScheduleAction {
 
     /**
      * Checks whether all clinicians have been assigned between one less than
-     * and one more than the average number of 4:00 EC sessions
-     * 
-     * @param sch
-     *            a schedule
+     * and one more than the average number of 4:00 EC sessions.
+     *
+     * @param sch            a schedule
      * @return set of clinicians with too little or too many 4:00 EC sessions
      */
     private Set<Clinician> validateEvenlyDistributeECSessions(Schedule sch) {
@@ -458,10 +457,9 @@ public class ValidateScheduleAction {
     }
 
     /**
-     * Checks whether clinicians are assigned to at most 1 IA session per day
-     * 
-     * @param sch
-     *            a schedule
+     * Checks whether clinicians are assigned to at most 1 IA session per day.
+     *
+     * @param sch            a schedule
      * @return set of clinicians assigned to more than 1 IA session per day
      */
     public Set<Clinician> validateOneIAPerDay(Schedule sch) {
@@ -493,10 +491,9 @@ public class ValidateScheduleAction {
     }
 
     /**
-     * Checks whether clinicians are assigned to at most 1 EC session per week
-     * 
-     * @param sch
-     *            a schedule
+     * Checks whether clinicians are assigned to at most 1 EC session per week.
+     *
+     * @param sch            a schedule
      * @return set of clinicians assigned to more than 1 EC session per week
      */
     public Set<Clinician> validateOneECPerWeek(Schedule sch) {

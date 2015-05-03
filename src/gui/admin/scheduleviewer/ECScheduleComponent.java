@@ -18,26 +18,43 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 /**
- * Renders one page of the EC schedule
- * 
- * @author ramusa2, lim92
+ * Renders one page of the EC schedule.
  *
+ * @author ramusa2, lim92
  */
 public class ECScheduleComponent extends JComponent implements Printable {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = 6604353427809987021L;
+    
+    /** The title. */
     private String title;
+    
+    /** The cells. */
     private List<List<List<String>>> cells;
+    
+    /** The Constant cols. */
     private static final int[] cols = new int[] { 25, 75, 175, 275, 375, 475,
 	    575 };
+    
+    /** The page breaks. */
     private int[] pageBreaks = null;
 
+    /**
+     * Instantiates a new EC schedule component.
+     *
+     * @param title the title
+     * @param cells the cells
+     */
     public ECScheduleComponent(String title, List<List<List<String>>> cells) {
 	this.title = title;
 	this.cells = cells;
 	this.setPreferredSize(new Dimension(600, 175 + cells.size() * 250));
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paint(java.awt.Graphics)
+     */
     public void paint(Graphics g1) {
 	Graphics2D g = (Graphics2D) g1;
 	this.setVisible(true);
@@ -53,6 +70,16 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	}
     }
 
+    /**
+     * Draws a row of the ec schedule.
+     *
+     * @param g the g
+     * @param x the x
+     * @param y the y
+     * @param cells the cells
+     * @param cols the cols
+     * @return the int
+     */
     private int drawRow(Graphics2D g, int x, int y, List<String> cells,
 	    int[] cols) {
 	int maxNames = 1;
@@ -78,6 +105,9 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	return y + height;
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.print.Printable#print(java.awt.Graphics, java.awt.print.PageFormat, int)
+     */
     @Override
     public int print(Graphics g, PageFormat pf, int page)
 	    throws PrinterException {
@@ -118,6 +148,12 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	return PAGE_EXISTS;
     }
 
+    /**
+     * Gets an image with the ec schedule printed on it.
+     *
+     * @param component the component
+     * @return the image from panel
+     */
     private BufferedImage getImageFromPanel(Component component) {
 	BufferedImage image = new BufferedImage(600, 175 + cells.size() * 250,
 		BufferedImage.TYPE_INT_RGB);
@@ -130,6 +166,12 @@ public class ECScheduleComponent extends JComponent implements Printable {
 	return image;
     }
 
+    /**
+     * Save the ec schedule to an image.
+     *
+     * @param imageFile the image file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public void save(File imageFile) throws IOException {
 	ImageIO.write(getImageFromPanel(this), "png", imageFile);
     }

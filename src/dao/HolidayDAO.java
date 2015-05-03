@@ -15,6 +15,11 @@ import bean.HolidayBean;
  */
 public class HolidayDAO extends DAO {
 
+    /**
+     * Instantiates a new holiday dao.
+     *
+     * @param conn the conn
+     */
     public HolidayDAO(Connection conn) {
 	super(conn);
     }
@@ -68,9 +73,11 @@ public class HolidayDAO extends DAO {
     }
 
     /**
-     * Reads a holiday from the current loadHolidays results pointer
-     * 
+     * Reads a holiday from the current loadHolidays results pointer.
+     *
+     * @param res the res
      * @return the constructed HolidayBean object
+     * @throws SQLException the SQL exception
      */
     private HolidayBean loadHoliday(ResultSet res) throws SQLException {
 	int id = res.getInt("id");

@@ -51,13 +51,25 @@ public class Schedule {
      */
     private HashMap<Clinician, List<ClinicianWeekBean>> sessionsByClinician;
 
+    /** The calendar. */
     private CalendarBean calendar;
+    
+    /** The holidays. */
     private List<HolidayBean> holidays;
+    
+    /** The sessions. */
     private List<SessionBean> sessions;
+    
+    /** The weeks. */
     private List<Week> weeks;
 
+    /** The ec sessions. */
     private List<SessionNameBean> ecSessions;
+    
+    /** The ia sessions a. */
     private List<SessionNameBean> iaSessionsA;
+    
+    /** The ia sessions b. */
     private List<SessionNameBean> iaSessionsB;
 
     /**
@@ -65,8 +77,14 @@ public class Schedule {
      */
     private HashMap<Integer, Clinician> clinicians;
 
+    /** The conn. */
     private Connection conn;
 
+    /**
+     * Instantiates a new schedule.
+     *
+     * @param conn the conn
+     */
     public Schedule(Connection conn) {
 	this.conn = conn;
     }
@@ -76,8 +94,8 @@ public class Schedule {
      * algorithm, including the list of holidays, pre-assignment session slots,
      * properties of the calendar, the list of all clinicians, and each
      * clinician's preferences, commitments, and time away.
-     * 
-     * @throws SQLException
+     *
+     * @throws SQLException the SQL exception
      */
     private void initialLoader() throws SQLException {
 	ClinicianPreferencesDAO clinicianPreferencesDAO = new ClinicianPreferencesDAO(
@@ -131,7 +149,9 @@ public class Schedule {
     }
 
     /**
-     * Returns the number of weeks in this schedule
+     * Returns the number of weeks in this schedule.
+     *
+     * @return the number of weeks
      */
     public int getNumberOfWeeks() {
 	// initialLoader needs to be called first
@@ -139,22 +159,20 @@ public class Schedule {
     }
 
     /**
-     * Returns the list of weeks in the schedule
-     * 
-     * @return
+     * Returns the list of weeks in the schedule.
+     *
+     * @return the weeks
      */
     public List<Week> getWeeks() {
 	return weeks;
     }
 
     /**
-     * Finds the clinicians assigned to the specified IA session
-     * 
-     * @param isTypeA
-     * @param day
-     *            of week
-     * @param hour
-     *            of IA session
+     * Finds the clinicians assigned to the specified IA session.
+     *
+     * @param isTypeA the is type a
+     * @param day            of week
+     * @param hour            of IA session
      * @return list of clinicians assigned to the specified IA session
      */
     public List<Clinician> getIAClinician(boolean isTypeA, int day, int hour) {
@@ -168,14 +186,11 @@ public class Schedule {
     }
 
     /**
-     * Finds the clinicians assigned to the specified EC session
-     * 
-     * @param week
-     *            number
-     * @param day
-     *            of week
-     * @param hour
-     *            of EC session
+     * Finds the clinicians assigned to the specified EC session.
+     *
+     * @param week            number
+     * @param day            of week
+     * @param hour            of EC session
      * @return clinician assigned to the specified EC session
      */
     public Clinician getECClinician(int week, int day, int hour) {
@@ -189,10 +204,9 @@ public class Schedule {
     }
 
     /**
-     * Finds the Commitments of the specified clinician
-     * 
-     * @param specified
-     *            clinician
+     * Finds the Commitments of the specified clinician.
+     *
+     * @param c the c
      * @return ??
      */
     public List<CommitmentBean> getCommitment(Clinician c) {
@@ -204,10 +218,9 @@ public class Schedule {
     }
 
     /**
-     * Finds the vacation times of the specified clinician
-     * 
-     * @param specified
-     *            clinician
+     * Finds the vacation times of the specified clinician.
+     *
+     * @param c the c
      * @return list of TimeAwayBean
      */
     public List<TimeAwayBean> getTimeAway(Clinician c) {
@@ -218,6 +231,12 @@ public class Schedule {
 	return clinicians.get(id).getTimeAwayBeans();
     }
 
+    /**
+     * Load schedule from db.
+     *
+     * @return the schedule
+     * @throws SQLException the SQL exception
+     */
     public static Schedule loadScheduleFromDB() throws SQLException {
 	Schedule schedule = new Schedule(ConnectionFactory.getInstance());
 	schedule.initialLoader();
@@ -229,9 +248,9 @@ public class Schedule {
      * schedule mappings (ec, ia, sessionsByClinician) based on the assignments
      * given by ScheduleProgram, which adds the assignments to this "sessions"
      * List.
-     * 
+     *
      * @return instance of Schedule class containing everything.
-     * @throws SQLException
+     * @throws SQLException the SQL exception
      */
     public static Schedule loadScheduleFromDBAndAssignClinicians()
 	    throws SQLException {
@@ -303,6 +322,9 @@ public class Schedule {
 	return schedule;
     }
 
+    /**
+     * Fill ia session name beans.
+     */
     private void fillIASessionNameBeans() {
 	for (SessionBean sb : ia.get(0).keySet()) {
 	    for (int id : sb.getClinicians()) {
@@ -321,26 +343,56 @@ public class Schedule {
 	}
     }
 
+    /**
+     * Gets the holidays.
+     *
+     * @return the holidays
+     */
     public List<HolidayBean> getHolidays() {
 	return holidays;
     }
 
+    /**
+     * Sets the holidays.
+     *
+     * @param holidays the new holidays
+     */
     public void setHolidays(List<HolidayBean> holidays) {
 	this.holidays = holidays;
     }
 
+    /**
+     * Gets the sessions.
+     *
+     * @return the sessions
+     */
     public List<SessionBean> getSessions() {
 	return sessions;
     }
 
+    /**
+     * Sets the sessions.
+     *
+     * @param sessions the new sessions
+     */
     public void setSessions(List<SessionBean> sessions) {
 	this.sessions = sessions;
     }
 
+    /**
+     * Gets the calendar.
+     *
+     * @return the calendar
+     */
     public CalendarBean getCalendar() {
 	return calendar;
     }
 
+    /**
+     * Gets the clinicians.
+     *
+     * @return the clinicians
+     */
     public List<Clinician> getClinicians() {
 	Collection<Clinician> c = clinicians.values();
 	if (c instanceof List) {
@@ -349,26 +401,56 @@ public class Schedule {
 	return new ArrayList<Clinician>(c);
     }
 
+    /**
+     * Gets the EC schedule map.
+     *
+     * @return the EC schedule map
+     */
     public List<HashMap<SessionBean, Clinician>> getECScheduleMap() {
 	return ec;
     }
 
+    /**
+     * Gets the IA schedule map.
+     *
+     * @return the IA schedule map
+     */
     public List<HashMap<SessionBean, List<Clinician>>> getIAScheduleMap() {
 	return ia;
     }
 
+    /**
+     * Gets the map of clinicians to sessions.
+     *
+     * @return the map of clinicians to sessions
+     */
     public HashMap<Clinician, List<ClinicianWeekBean>> getMapOfCliniciansToSessions() {
 	return sessionsByClinician;
     }
 
+    /**
+     * Gets the EC sessions.
+     *
+     * @return the EC sessions
+     */
     public List<SessionNameBean> getECSessions() {
 	return ecSessions;
     }
 
+    /**
+     * Gets the IA sessions a.
+     *
+     * @return the IA sessions a
+     */
     public List<SessionNameBean> getIASessionsA() {
 	return iaSessionsA;
     }
 
+    /**
+     * Gets the IA sessions b.
+     *
+     * @return the IA sessions b
+     */
     public List<SessionNameBean> getIASessionsB() {
 	return iaSessionsB;
     }
@@ -563,10 +645,9 @@ public class Schedule {
 
     /**
      * Helper method to get instance of Clinician class from the clinician's
-     * name
-     * 
-     * @param name
-     *            Name of clinician
+     * name.
+     *
+     * @param name            Name of clinician
      * @return Clinician object associated with clinician name
      */
     private Clinician nameToClinician(String name) {
@@ -579,7 +660,8 @@ public class Schedule {
     }
     
     /**
-     * Generates a title to display with current semester and year
+     * Generates a title to display with current semester and year.
+     *
      * @return semester title
      */
     public String getSemesterTitle() {

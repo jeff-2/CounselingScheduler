@@ -14,25 +14,22 @@ import dao.ConnectionFactory;
 import dao.HolidayDAO;
 
 /**
- * Stores the information for one week in the EC schedule
- * 
- * @author ramusa2, lim92
+ * Stores the information for one week in the EC schedule.
  *
+ * @author ramusa2, lim92
  */
 public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 
-    /**
-     * List of the days for this week
-     */
+    /** List of the days for this week. */
     private ArrayList<ECScheduleDayBean> days;
 
-    /**
-     * Private map from dates to index in week
-     */
+    /** Private map from dates to index in week. */
     private HashMap<Date, Integer> dateMap;
 
     /**
-     * Default constructor
+     * Default constructor.
+     *
+     * @param mondayDate the monday date
      */
     private ECScheduleWeekBean(Date mondayDate) {
 	days = new ArrayList<ECScheduleDayBean>();
@@ -49,7 +46,9 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
     }
 
     /**
-     * Add a holiday to this week
+     * Add a holiday to this week.
+     *
+     * @param holiday the holiday
      */
     public void addHoliday(HolidayBean holiday) {
 	Date date = holiday.getStartDate();
@@ -66,7 +65,12 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
     }
 
     /**
-     * Add a clinician to a day in this week
+     * Add a clinician to a day in this week.
+     *
+     * @param date the date
+     * @param timeslot the timeslot
+     * @param clinician the clinician
+     * @param id the id
      */
     private void addClinician(Date date, int timeslot, String clinician, int id) {
 	Integer d = dateMap.get(date);
@@ -76,29 +80,38 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
     }
 
     /**
-     * Returns this week's days (with data)
+     * Returns this week's days (with data).
+     *
+     * @return the array list
      */
     public ArrayList<ECScheduleDayBean> days() {
 	return days;
     }
 
     /**
-     * Returns this week's month abbreviation
+     * Returns this week's month abbreviation.
+     *
+     * @return the string
      */
     public String monthAbbrev() {
 	SimpleDateFormat format = new SimpleDateFormat("MMM");
 	return format.format(days.get(0).date());
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
     @Override
     public int compareTo(ECScheduleWeekBean o) {
 	return this.days.get(0).date().compareTo(o.days.get(0).date());
     }
 
     /**
-     * Factory method
-     * 
-     * @throws SQLException
+     * Factory method.
+     *
+     * @param schedule the schedule
+     * @return the EC schedule week beans
+     * @throws SQLException the SQL exception
      */
     public static ArrayList<ECScheduleWeekBean> getECScheduleWeekBeans(
 	    Schedule schedule) throws SQLException {
@@ -133,6 +146,13 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	return weeks;
     }
 
+    /**
+     * Adds the holidays.
+     *
+     * @param weekMap the week map
+     * @param dao the dao
+     * @throws SQLException the SQL exception
+     */
     private static void addHolidays(HashMap<Date, ECScheduleWeekBean> weekMap,
 	    HolidayDAO dao) throws SQLException {
 	for (HolidayBean bean : dao.loadHolidays()) {
@@ -144,6 +164,13 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	}
     }
 
+    /**
+     * Increment date by days.
+     *
+     * @param date the date
+     * @param numDays the num days
+     * @return the date
+     */
     private static Date incrementDateByDays(Date date, int numDays) {
 	Calendar c = Calendar.getInstance();
 	c.setTime(date);
@@ -151,11 +178,24 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	return c.getTime();
     }
 
+    /**
+     * Gets the week.
+     *
+     * @param date the date
+     * @param weekMap the week map
+     * @return the week
+     */
     private static ECScheduleWeekBean getWeek(Date date,
 	    HashMap<Date, ECScheduleWeekBean> weekMap) {
 	return weekMap.get(getMondayDate(date));
     }
 
+    /**
+     * Gets the monday date.
+     *
+     * @param date the date
+     * @return the monday date
+     */
     private static Date getMondayDate(Date date) {
 	Calendar c = Calendar.getInstance();
 	c.setTime(date);
@@ -167,6 +207,12 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 	return date;
     }
 
+    /**
+     * Arrange cell content.
+     *
+     * @param isName the is name
+     * @return the array list
+     */
     private ArrayList<ArrayList<String>> arrangeCellContent(boolean isName) {
 	ArrayList<ArrayList<String>> entries = new ArrayList<ArrayList<String>>();
 	for (int row = 0; row < 4; row++) {
@@ -206,8 +252,8 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
     /**
      * Returns two dimensional array representing the text to go into the
      * calendar view of this week's schedule.
-     * 
-     * @return
+     *
+     * @return the cell content
      */
     public ArrayList<ArrayList<String>> getCellContent() {
 	return arrangeCellContent(true);
@@ -215,9 +261,9 @@ public class ECScheduleWeekBean implements Comparable<ECScheduleWeekBean> {
 
     /**
      * Returns two dimensional array contaning the session ID corresponding to
-     * each session in the schedule
-     * 
-     * @return
+     * each session in the schedule.
+     *
+     * @return the cell i ds
      */
     public ArrayList<ArrayList<String>> getCellIDs() {
 	return arrangeCellContent(false);

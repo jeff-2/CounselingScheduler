@@ -7,7 +7,6 @@ import javax.swing.ListModel;
 
 import action.InvalidFormDataException;
 
-// TODO: Auto-generated Javadoc
 /**
  * Contains commonly used static methods.
  *

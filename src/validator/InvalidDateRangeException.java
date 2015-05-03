@@ -11,6 +11,11 @@ public class InvalidDateRangeException extends Exception {
     /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7022376673173182715L;
 
+    /**
+     * Instantiates a new invalid date range exception.
+     *
+     * @param message the message
+     */
     public InvalidDateRangeException(String message) {
 	super(message);
     }

@@ -3,6 +3,7 @@ package bean;
 import java.util.Date;
 import java.util.List;
 
+// TODO: Auto-generated Javadoc
 /**
  * The Class SessionBean handles storage of data associated with a particular
  * session.
@@ -320,6 +321,11 @@ public class SessionBean implements Comparable<SessionBean> {
 	return res;
     }
 
+    /**
+     * Gets the variable string to represent the session bean.
+     *
+     * @return the variable string
+     */
     public String getVariableString() {
 	if (this.type == SessionType.EC) {
 	    return id + "_" + dayOfWeek + "_" + startTime + "_" + type;

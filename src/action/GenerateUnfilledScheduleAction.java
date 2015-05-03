@@ -19,21 +19,28 @@ import dao.HolidayDAO;
 import dao.SessionsDAO;
 
 /**
- * Class for assigning clinicians to slots in an unfilled schedule
- * 
- * @author ramusa2
+ * Class for assigning clinicians to slots in an unfilled schedule.
  *
+ * @author ramusa2
  */
 public class GenerateUnfilledScheduleAction {
 
+    /** The conn. */
     private Connection conn;
 
+    /**
+     * Instantiates a new generate unfilled schedule action.
+     *
+     * @param connection the connection
+     */
     public GenerateUnfilledScheduleAction(Connection connection) {
 	conn = connection;
     }
 
     /**
-     * Generates an unfilled schedule and (over)writes it to the database
+     * Generates an unfilled schedule and (over)writes it to the database.
+     *
+     * @throws SQLException the SQL exception
      */
     public void generateUnfilledSchedule() throws SQLException {
 	CalendarDAO calDAO = new CalendarDAO(this.conn);
@@ -77,7 +84,11 @@ public class GenerateUnfilledScheduleAction {
     }
 
     /**
-     * Returns the list of workdays for this semester
+     * Returns the list of workdays for this semester.
+     *
+     * @param calendarInfo the calendar info
+     * @return the work days
+     * @throws SQLException the SQL exception
      */
     private ArrayList<Date> getWorkDays(CalendarBean calendarInfo)
 	    throws SQLException {
@@ -97,7 +108,10 @@ public class GenerateUnfilledScheduleAction {
     }
 
     /**
-     * Return all holidays for this semester
+     * Return all holidays for this semester.
+     *
+     * @return the holidays
+     * @throws SQLException the SQL exception
      */
     private HashSet<Date> getHolidays() throws SQLException {
 	HashSet<Date> dates = new HashSet<Date>();
@@ -114,7 +128,11 @@ public class GenerateUnfilledScheduleAction {
     }
 
     /**
-     * Given start and end Dates, return a list of intervening Dates
+     * Given start and end Dates, return a list of intervening Dates.
+     *
+     * @param start the start
+     * @param end the end
+     * @return the date range
      */
     private static final ArrayList<Date> getDateRange(Date start, Date end) {
 	ArrayList<Date> dates = new ArrayList<Date>();

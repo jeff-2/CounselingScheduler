@@ -17,6 +17,11 @@ import bean.Semester;
  */
 public class CalendarDAO extends DAO {
 
+    /**
+     * Instantiates a new calendar dao.
+     *
+     * @param conn the conn
+     */
     public CalendarDAO(Connection conn) {
 	super(conn);
     }
@@ -48,10 +53,8 @@ public class CalendarDAO extends DAO {
     /**
      * Inserts a calendar object into the database.
      *
-     * @param calendar
-     *            the Calendar to add
-     * @throws SQLException
-     *             the SQL exception
+     * @return the calendar bean
+     * @throws SQLException             the SQL exception
      */
     public CalendarBean loadCalendar() throws SQLException {
 	Statement stmt = connection.createStatement();
@@ -70,6 +73,12 @@ public class CalendarDAO extends DAO {
 	return cal;
     }
 
+    /**
+     * Calendar exists.
+     *
+     * @return true, if successful
+     * @throws SQLException the SQL exception
+     */
     public boolean calendarExists() throws SQLException {
 	Statement stmt = connection.createStatement();
 	stmt.execute("Select * From Calendar");

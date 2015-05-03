@@ -18,18 +18,31 @@ import javax.imageio.ImageIO;
 import javax.swing.JComponent;
 
 /**
- * Swing component for rendering one week's IA schedule
- * 
- * @author ramusa2, lim92
+ * Swing component for rendering one week's IA schedule.
  *
+ * @author ramusa2, lim92
  */
 public class IAScheduleComponent extends JComponent implements Printable {
 
+    /** The Constant serialVersionUID. */
     private static final long serialVersionUID = -7813470335774759257L;
+    
+    /** The week b cells. */
     private List<List<List<String>>> weekACells, weekBCells;
+    
+    /** The page breaks. */
     private List<Integer> pageBreaks = null;
+    
+    /** The semester title. */
     private String semesterTitle;
 
+    /**
+     * Instantiates a new IA schedule component.
+     *
+     * @param semesterTitle the semester title
+     * @param weekACells the week a cells
+     * @param weekBCells the week b cells
+     */
     public IAScheduleComponent(String semesterTitle, List<List<List<String>>> weekACells,
 	    List<List<List<String>>> weekBCells) {
 	this.semesterTitle = semesterTitle;
@@ -39,11 +52,19 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	this.setBackground(Color.WHITE);
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paint(java.awt.Graphics)
+     */
     public void paint(Graphics g1) {
 	super.paint(g1);
 	buildGrid((Graphics2D) g1);
     }
 
+    /**
+     * Required height for this ia schedule.
+     *
+     * @return the int
+     */
     public int requiredHeight() {
 	int requiredHeight = 0;
 	for (List<List<String>> c : weekACells) {
@@ -63,6 +84,11 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	return requiredHeight + 225;
     }
 
+    /**
+     * Builds the grid for this ia schedule.
+     *
+     * @param g the g
+     */
     private void buildGrid(Graphics2D g) {
 
 	g.drawString(semesterTitle, 300, 50);
@@ -88,6 +114,17 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	}
     }
 
+    /**
+     * Draw row of the ia schedule.
+     *
+     * @param g the g
+     * @param x the x
+     * @param y the y
+     * @param rowLabel the row label
+     * @param entries the entries
+     * @param cols the cols
+     * @return the int
+     */
     private int drawRow(Graphics2D g, int x, int y, String rowLabel,
 	    List<List<String>> entries, int[] cols) {
 	int maxNames = 0;
@@ -122,6 +159,9 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	return y + height;
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.print.Printable#print(java.awt.Graphics, java.awt.print.PageFormat, int)
+     */
     @Override
     public int print(Graphics g, PageFormat pf, int page)
 	    throws PrinterException {
@@ -195,6 +235,12 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	return PAGE_EXISTS;
     }
 
+    /**
+     * Gets image representation of this ia schedule.
+     *
+     * @param component the component
+     * @return the image from panel
+     */
     private BufferedImage getImageFromPanel(Component component) {
 	int height = requiredHeight();
 	BufferedImage image = new BufferedImage(700, height,
@@ -208,6 +254,12 @@ public class IAScheduleComponent extends JComponent implements Printable {
 	return image;
     }
 
+    /**
+     * Save this ia schedule to an image.
+     *
+     * @param imageFile the image file
+     * @throws IOException Signals that an I/O exception has occurred.
+     */
     public void save(File imageFile) throws IOException {
 	ImageIO.write(getImageFromPanel(this), "png", imageFile);
     }
