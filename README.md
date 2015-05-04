@@ -10,7 +10,7 @@ The typical workflow of the scheduling application follows the following process
 5. The administrator can then generate a schedule which creates an IA and EC appointment schedule for the semester. They can freely modify the generated schedule and will be notified if they break any schedule constraints. When they are content with the final schedule they can choose to print or save the schedule to a file.  
 
 # Documentation
-Documentation on the project proposal from the Counseling Center is located in the doc folder.
+Documentation on the project proposal from the Counseling Center is located in the doc folder. The javadoc documentation can be generated from eclipse by selecting Project > Generate Javadoc once the project has been imported into eclipse.  
 
 # Installation
 The following are required for the usage of this application:  
