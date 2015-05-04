@@ -1,5 +1,4 @@
 # CounselingScheduler
-# CounselingScheduler
 This application is specifically tailored for the Counseling Center as a way to automate the scheduling process of clinicians to appointment slots. It comes with two levels of permissions: an administrator level and clinician level.
 
 The typical workflow of the scheduling application follows the following process:
