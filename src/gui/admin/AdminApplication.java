@@ -34,7 +34,7 @@ import dao.ConnectionFactory;
  * this functionality.
  */
 public class AdminApplication extends JFrame implements ActionListener,
-		ChangeListener {
+ChangeListener {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 8557735241347619359L;
@@ -151,16 +151,16 @@ public class AdminApplication extends JFrame implements ActionListener,
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception e) {
 			System.out
-					.println("Can't set system look and feel. Using default.");
+			.println("Can't set system look and feel. Using default.");
 		}
 		try {
 			new AdminApplication();
 		} catch (SQLException e) {
 			JOptionPane
-					.showMessageDialog(
-							null,
-							"Unable to launch application due to error with database. "
-									+ "Please check the database connection configuration properties file. ",
+			.showMessageDialog(
+					null,
+					"Unable to launch application due to error with database. "
+							+ "Please check the database connection configuration properties file. ",
 							"ERROR", JOptionPane.INFORMATION_MESSAGE);
 			e.printStackTrace();
 		}
@@ -184,10 +184,10 @@ public class AdminApplication extends JFrame implements ActionListener,
 
 				if (clinicians.size() == 0) {
 					JOptionPane
-							.showMessageDialog(
-									null,
-									"A schedule can't be generated without any clinicians.",
-									"ERROR", JOptionPane.INFORMATION_MESSAGE);
+					.showMessageDialog(
+							null,
+							"A schedule can't be generated without any clinicians.",
+							"ERROR", JOptionPane.INFORMATION_MESSAGE);
 					return;
 				}
 				ClinicianPreferencesDAO preferencesDAO = new ClinicianPreferencesDAO(
@@ -196,11 +196,11 @@ public class AdminApplication extends JFrame implements ActionListener,
 					if (!preferencesDAO.preferencesExist(clinician
 							.getClinicianID())) {
 						JOptionPane
-								.showMessageDialog(
-										null,
-										"A schedule can't be generated because "
-												+ clinician.getName()
-												+ " has not entered his/her preferences.",
+						.showMessageDialog(
+								null,
+								"A schedule can't be generated because "
+										+ clinician.getName()
+										+ " has not entered his/her preferences.",
 										"ERROR",
 										JOptionPane.INFORMATION_MESSAGE);
 						return;
@@ -214,7 +214,18 @@ public class AdminApplication extends JFrame implements ActionListener,
 				GenerateUnfilledScheduleAction action = new GenerateUnfilledScheduleAction(
 						conn);
 				action.generateUnfilledSchedule();
-				schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+				try {
+					schedule = Schedule.loadScheduleFromDBAndAssignClinicians();
+				}
+				catch(IndexOutOfBoundsException ex) {
+					JOptionPane
+					.showMessageDialog(
+							null,
+							"A schedule can't be generated because there are not enough clinicians to fill the required slots.",
+							"ERROR",
+							JOptionPane.INFORMATION_MESSAGE);
+					return;
+				}
 				tabbedPane.remove(ia);
 				ia = new IAScheduleFrame(schedule);
 				ia.setName("IAScheduleFrame");
