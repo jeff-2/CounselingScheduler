@@ -80,7 +80,7 @@ public class ECScheduleViewFrame extends JFrame {
 	}
 
 	/**
-	 * Prints the EC schedule.
+	 * Prints the EC schedule using the system print dialog.
 	 */
 	public void printSchedule() {
 		this.openPrintDialog();

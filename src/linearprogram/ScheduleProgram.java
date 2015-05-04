@@ -48,6 +48,8 @@ public class ScheduleProgram {
 	 * Given a schedule (which includes sessions and a list of clinicians,
 	 * including their availability), assign an optimal set of clinicians to
 	 * each session.
+	 * 
+	 * @param scheduleToAssign the Schedule object to modify/fill
 	 */
 	public static void assignClinicians(Schedule scheduleToAssign) {
 		ScheduleProgram program = new ScheduleProgram(scheduleToAssign);

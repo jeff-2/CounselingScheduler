@@ -74,7 +74,7 @@ public class IAScheduleViewFrame extends JFrame {
 	}
 
 	/**
-	 * Open print dialog and prints ia schedule.
+	 * Open print dialog and prints IA schedule.
 	 */
 	private void openPrintDialog() {
 		PrinterJob job = PrinterJob.getPrinterJob();
@@ -90,7 +90,7 @@ public class IAScheduleViewFrame extends JFrame {
 	}
 
 	/**
-	 * Prints the IA schedule.
+	 * Prints the IA schedule using the system print dialog.
 	 */
 	public void printSchedule() {
 		this.openPrintDialog();
